@@ -5,14 +5,14 @@
  * Author : Nick
  */ 
 
-#include <avr/io.h>
+#include "HCU_Funcs.h"
 
-
-int main(void)
+int main(void)  // This is for Nick Moore
 {
-    /* Replace with your application code */
+    Initial();
     while (1) 
     {
+		
     }
 }
 
