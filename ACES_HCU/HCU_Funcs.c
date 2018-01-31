@@ -15,51 +15,7 @@
 #include <util/delay.h>   // This library is so that easy delay functions can be implemented
 #include <avr/interrupt.h>
 
-#define bit_is_set(sfr,bit) \
-		(_SFR_BYTE(sfr) & _BV(bit))              //! Simple function define for testing if the bit is set
 
-#define bit_is_clear(sfr,bit) \
-		(!(_SFR_BYTE(sfr) & _BV(bit)))           //! Simple function define for testing if the bit is clear
-				
-
-#define fuelFlow 4.8    //! This is the desired mass flow rate of fuel in g/sec
-
-#define TempHBatMin 65        //! This is the minimum desired temperature of the Heater battery in degF          (ADC0)
-#define TempHBatMax 68        //! This is the maximum desired temperature of the Heater battery in degF
-#define TempEBatMin 65        //! This is the minimum desired temperature of the Engine battery in degF          (ADC1)
-#define TempEBatMax 68        //! This is the maximum desired temperature of the Engine battery in degF
-#define TempHopperMin 85      //! This is the minimum desired temperature of the hopper in degF                  (ADC2)
-#define TempHopperMax 88      //! This is the maximum desired temperature of the hopper in degF
-#define TempECUMin 70         //! This is the minimum desired temperature of the ECU in degF                     (ADC3)
-#define TempECUMax 73         //! This is the maximum desired temperature of the ECU in degF
-#define TempFLine1Min 85      //! This is the minimum desired temperature of the fuel line to the pump in degF   (ADC4)
-#define TempFLine1Max 88      //! This is the maximum desired temperature of the fuel line to the pump in degF
-#define TempFLine2Min 85      //! This is the minimum desired temperature of the fuel line to the engine in degF (ADC5)
-#define TempFLine2Max 88      //! This is the maximum desired temperature of the fuel line to the engine in degF
-#define TempESBMin 70         //! This is the minimum desired temperature of the ESB in degF                     (ADC6)      
-#define TempESBMax 73         //! This is the maximum desired temperature of the ESB in degF
-
-/** The reason why there are maximum and minimum values for this is because
-	there is a lot of loss associated with the toggling of the high power MOSFETS
-*/
-
-#define BatPin 0        //! Pin location for the Lipo Battery heating circuit
-#define HopperPin 2     //! Pin location for the Hopper heating circuit
-#define ECU_Pin 3       //! Pin location for the ECU heating circuit
-#define FLine1Pin 4     //! Pin location for the heating circuit for the first section of the fuel line
-#define FLine2Pin 5     //! Pin location for the heating circuit for the second section of the fuel line
-#define ESB_Pin 6       //! Pin location for the ESB heating circuit
-
-#define pumpPin 7
-#define heatDonePin 8
-#define ECUon_Pin 0                      //! Pin to close the power circuit for the ECU
-#define K_factor 110000                  //! This is the assumed K factor for the flow meter in pulses per liter
-#define density 0.81                     //! This is the density of the kerosene in g/ml
-#define max_time 0.262144                //! This is the maximum amount of time for an 8 bit timer with a prescalar of 1024
-#define pump_m 0.382587                  //! This is the slope for the linear relationship between voltage and mass flow (put in mf, get volts)
-#define pump_b 0.195783                  //! This is the y-intercept for the linear relationship between voltage and mass flow
-#define pump_tot_V 6                     //! This is the total voltage which will be sent to the pump
-#define V_per_pulse 0.0233708            //! This is the amount volts required to get a single change in pulse count
 
 /** @brief Initializes the microcontroller for its mainline execution.
  *
@@ -79,17 +35,17 @@
 void Initial(void)
 {
 	// First setup the port directions for the PWM lines and the
-	// make the entire B port outputs, A port inputs, C port outputs, D ports to inputs
-	DDRA = 0x00;
-	DDRB = 0xFF;
-	DDRC = 0xFF;
-	DDRD = 0x00;
-	DDRD |= (1 << PB5);     //! This will allow the LED light to be an output
+	// 0 are inputs 1 are outputs
+	DDRA = 0b10000000;          //! Only PA7 is an output
+	DDRB = 0b11011000;         
+	DDRC = 0xFF;                //! Make all outputs
+	DDRD = 0xFF;                //! Make all outputs
 	
 	cur_ADC = 0;     //! This is for ADC0    
 	opMode = 0;     //! This sets the function mode to heating mode
 	desired_temp = 0;
 	duty_cycle = (pump_m*fuelFlow + pump_b) / pump_tot_V;    //! This is the initial guess for the fuel pump
+	pulse_error_allow = (uint8_t)(desired_pulses * (fuelError / fuelFlow));   //! This is the amount of pulses I can be off for it to still be considered a sucesses
 	
 	// Now calculate the number of pulses I expect per 0.262144 seconds (max time for an 8 bit timer with prescalar of 1024)
 	float pulse_flow = (fuelFlow / density) * K_factor * max_time / 1000;
@@ -117,11 +73,42 @@ void Initial(void)
 	saveTemps[5] = -100.0;
 	saveTemps[6] = -100.0; 
 	
+	// Now I need to turn on all of the heaters as well as set the duty cycles for the PWMs which will be on timers 0 and 2
+	// Start with the PWM for the ECU, this will be on timer0
+	TCNT0 = 0;      //! Clear the timer register to make sure I have the full range on the first cycle
+	assign_bit(&TCCR0, WGM01, 1);
+	assign_bit(&TCCR0, WGM00, 1);      //! These two set the PWM Mode to "Fast PWM"
+	assign_bit(&TCCR0, COM01, 1); 
+	assign_bit(&TCCR0, COM00, 1);      //! These two set the PWM type to inverting PWM
+	
+	OCR0 = 255 - (255*ECU_duty);       //! This will set it to the specified duty by the #define
+	
+	TCCR0 |= (1 << CS02);              //! This will start the PWM with a duty cycle of 65.536 ms
+	
+	// Now do the PWM for the second fuel line which will use Timer 2,  this will look very similar to the last few lines of code
+	TCNT2 = 0;      //! Clear the timer register to make sure I have the full range on the first cycle
+	assign_bit(&TCCR2, WGM21, 1);
+	assign_bit(&TCCR2, WGM20, 1);      //! These two set the PWM Mode to "Fast PWM"
+	assign_bit(&TCCR2, COM21, 1);
+	assign_bit(&TCCR2, COM20, 1);      //! These two set the PWM type to inverting PWM
+		
+	OCR2 = 255 - (255*F_line_duty);       //! This will set it to the specified duty by the #define
+		
+	TCCR2 |= (1 << CS22);              //! This will start the PWM with a duty cycle of 65.536 ms, just like before
+	
+	// Now turn on all the other heaters
+	assign_bit(&PORTD, BatPin, 1);
+	assign_bit(&PORTD, HopperPin, 1);
+	assign_bit(&PORTD, FLine1Pin, 1);
+	assign_bit(&PORTD, ESB_Pin, 1);     // I can omit doing this for the ECU and FuelLine1
+		
+	
+	
 	ADCSRA |= (1 << ADSC);    //! Begin the first conversion
 
 }
 
-/** @brief Interrupt service routine for the timer which controls the alive LED
+/** @brief Interrupt service routine for the timer which controls the alive LED and warming LED
  *
  *  This performs the following functions:
  *  
@@ -137,7 +124,11 @@ void Initial(void)
 ISR(TIMER1_OVF_vect)
 {
 	// The LED is on PD5
-	PORTD ^= (1 << PB5);
+	alive_counter++;
+	if (alive_counter % 2 == 1)
+		PORTD ^= (1 << Alive_LED);
+		
+	PORTB ^= (1 << Warm_LED);   //! This will have the warming LED blink 0.5 sec on 0.5 sec off and the alive LED blinking twice as slow
 	
 	// Now reset the register
 	TCNT1 = 3036;  //! The interrupt will clear automatically when this function is called
@@ -219,56 +210,69 @@ void tempHeaterHelper(void)
 	for (uint8_t i = 0; i < 6; i++)
 	{
 		switch(i){
-			case 0:       //! This is the case for the Heater battery
+			case 0:       //! This is the case for the Heater battery    /////////////////////////////////////////////////
 				if (saveTemps[0] > TempHBatMax || saveTemps[1] > TempEBatMax)    //! safety first so make sure that the temperature always turns off if one of the batteries is getting too hot
-					assign_bit(&PORTC, BatPin, 0);       // Make sure this is the correct port and pin location
+					assign_bit(&PORTD, BatPin, 0);       // Make sure this is the correct port and pin location
 				else if(saveTemps[0] < TempHBatMin || saveTemps[1] < TempEBatMin)
-					assign_bit(&PORTC, BatPin, 1);
+					assign_bit(&PORTD, BatPin, 1);
 				else                   //! It must have reached its target temperature 
 					desired_temp |= 0x03;      
 				break;
 				
-			case 1:       //! This is the case for the Hopper 
+			case 1:       //! This is the case for the Hopper    /////////////////////////////////////////////////
 				if (saveTemps[2] < TempHopperMin)   //! Temp is too low so turn on the heater
-					assign_bit(&PORTC, HopperPin, 1);
+					assign_bit(&PORTD, HopperPin, 1);
 				else if(saveTemps[2] > TempHopperMax)
 					assign_bit(&PORTC, HopperPin, 0);   //! Too hot so turn off
 				else
 					desired_temp |= 0x04;
 				break;
 				
-			case 2:       //! This is the case for the ECU
+			case 2:       //! This is the case for the ECU  /////////////////////////////////////////////////
 				if (saveTemps[3] < TempECUMin)
-					assign_bit(&PORTC, ECU_Pin, 1);
+					if (!opMode)
+						assign_bit(&TCCR0, CS02, 1);      //! This will turn the PWM back on
+					else
+						assign_bit(&PORTB, ECU_pin, 1);   //! Turn the heater on manually
 				else if (saveTemps[3] > TempECUMax)
-					assign_bit(&PORTC, ECU_Pin, 0);
+					if (!opMode)
+						assign_bit(&TCCR0, CS02, 0);      //! This will turn the PWM off
+					else
+						assign_bit(&PORTB, ECU_pin, 0);   //! Turn the heater off manually
 				else
 					desired_temp |= 0x08;
 				break;
 				
-			case 3:       //! This is the case for Fuel Line 1
+			case 3:       //! This is the case for Fuel Line 1  /////////////////////////////////////////////////
 				if (saveTemps[4] < TempFLine1Min)
-					assign_bit(&PORTC, FLine1Pin, 1);
+					assign_bit(&PORTD, FLine1Pin, 1);
 				else if(saveTemps[4] > TempFLine1Max)
-					assign_bit(&PORTC, FLine1Pin, 0);
+					assign_bit(&PORTD, FLine1Pin, 0);
 				else
 					desired_temp |= 0x10;
 				break;
 				
-			case 4:       //! This is the case for Fuel Line 2
-				if (saveTemps[5] < TempFLine2Min)
-					assign_bit(&PORTC, FLine2Pin, 1);
+			case 4:       //! This is the case for Fuel Line 2 /////////////////////////////////////////////////
+				if (saveTemps[5] < TempFLine2Min){
+					if (!opMode)      //! We are in the warming mode so this can use the PWM
+						assign_bit(&TCCR2, CS22, 1);       //! Turn the PWM back on 
+					else
+						assign_bit(&PORTD,Fline2Pin,1);       //! Turn the heater on manually
+				}
 				else if (saveTemps[5] > TempFLine2Max)
-					assign_bit(&PORTC, FLine2Pin, 0);
+					if (!opMode)           //! We are in warming mode so this can use the PWM
+						assign_bit(&TCCR2, CS22, 0);       //! Turn the PWM off
+					else
+						assign_bit(&PORTD, Fline2Pin, 0);    //! Turn the heater off manually
 				else
 					desired_temp |= 0x20;
 				break;
 				
-			case 5:       //! This is the case for the ESB
+			case 5:       //! This is the case for the ESB    /////////////////////////////////////////////////
 				if (saveTemps[5] < TempESBMin)
-					assign_bit(&PORTC, ESB_Pin, 1);
+					assign_bit(&PORTD, ESB_Pin, 1);
 				else if(saveTemps[6] > TempESBMax)
-					assign_bit(&PORTC, ESB_Pin, 0);
+					assign_bit(&PORTD, ESB_Pin, 0);
 				else
 					desired_temp |= 0x40;
 				break;
@@ -284,7 +288,7 @@ void tempHeaterHelper(void)
 		*/
 		change_timers();                     //! New initialization routine which will change the prescalars and such for the timers which will be serving different purposes
 		opMode = 1;                          //! Change the operational mode
-		assign_bit(&PORTC,heatDonePin,1);    //! Turn on the LED to signal the heating sequence is complete
+		assign_bit(&PORTB,Warm_LED,1);    //! Turn on the LED to signal the heating sequence is complete
 		ECU_toggle(ECU_present);
 		
 		
@@ -302,6 +306,8 @@ void tempHeaterHelper(void)
  *  3) Pass this value to pumpOperation
  *
  *  4) Prepare the needed timers/counters to perform this function again
+ *
+ *  5) Shut the pump off when there is no more fuel to pump and turn all LED's on constant
  *
  *  @param void
  *  @return void
@@ -322,11 +328,31 @@ void flowMeter(void)
 	
 	assign_bit(&GICR, INT2, 0);   // disable external interrupts for INT2
 	
-	// Now I need to compare the number of pulses I got with what I should have received
-	char pulse_error = desired_pulses - pulse_count;   //! This will be able to handle negative numbers
-	OCR1B -= pulse_error * V_per_pulse * ICR1 / pump_tot_V;    //! Check page 94 in notebook for correct derivation.
-	// The above line should immediately change the PWM as well
+	if (!pulse_count)    //! There is either no more fuel or there is a stoppage.  This if statement might be the end of me...
+	{
+		opMode = 2;    //!  This means that the pumping has concluded
+		assign_bit(&TCCR1B, CS10, 0);              //! This should stop the PWM for the pump
+		assign_bit(&PORTD, Alive_LED, 1);
+		assign_bit(&PORTD, Fuel_LED, 1);
+		assign_bit(&PORTB, Warm_LED, 1);    //! Make sure all of the LEDs are solid on to signify the end of the mission. (The warming will still continue until power is turned off)
+		
+	}
+	else
+	{
+		// Now I need to compare the number of pulses I got with what I should have received
+		char pulse_error = desired_pulses - pulse_count;   //! This will be able to handle negative numbers
+		OCR1B -= pulse_error * V_per_pulse * ICR1 / pump_tot_V;    //! Check page 94 in notebook for correct derivation.
+		// The above line should immediately change the PWM as well
+		if (pulse_error < 0)
+			pulse_error = -pulse_error;    //! Make it the absolute value 
+		if (pulse_error < pulse_error_allow) //! mission is a success
+			PORTD |= (1 << Fuel_LED);        //! Make the fuel LED just stay on
+		else
+			PORTD ^= (1 << Fuel_LED);       //! Make the fuel LED blink saying that it is not done yet.
 	
+		// Now since some time has elapsed, toggle the Alive_LED
+		PORTD ^= (1 << Alive_LED);       //! So the Alive_LED should blink on ~0.25 sec off ~0.25 sec
+	}
 }
 
 /** @brief Checks if the ECU power circuit is closed and if it is not, it opens it.
@@ -372,7 +398,7 @@ void change_timers(void)
 		ICR1 = 20000;     //! this will set the period of oscillation to 20ms
 			
 		OCR1B = ICR1 - (int)(ICR1*duty_cycle);     //! This will set the count at which the PWM will change to on. Also make sure to round down to int
-		
+		assign_bit(&TCCR1B, CS10, 1);              //! This should start the PWM with a prescalar of 1
 		// Now the PWM should be running
 			
 		// Second change Timer 2 to serve as the counter for the pulse train from the flow meter

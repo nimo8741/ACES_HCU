@@ -13,10 +13,78 @@
 
 #ifndef HCU_FUNCS_H_
 #define HCU_FUNCS_H_
+
+//Function #defines that don't need to have an entire function call
+#define bit_is_set(sfr,bit) \
+		(_SFR_BYTE(sfr) & _BV(bit))              //! Simple function define for testing if the bit is set
+
+#define bit_is_clear(sfr,bit) \
+		(!(_SFR_BYTE(sfr) & _BV(bit)))           //! Simple function define for testing if the bit is clear
+				
+
+///////////////////////////////////////////////////////////////////////////
+//////////////////////// Project Constants ////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
+#define fuelFlow 4.8          //! This is the desired mass flow rate of fuel in g/sec
+#define fuelError 0.13        //! This is the acceptable error in terms of g/sec
+
+#define TempHBatMin 65        //! This is the minimum desired temperature of the Heater battery in degF          (ADC0)
+#define TempHBatMax 68        //! This is the maximum desired temperature of the Heater battery in degF
+#define TempEBatMin 65        //! This is the minimum desired temperature of the Engine battery in degF          (ADC1)
+#define TempEBatMax 68        //! This is the maximum desired temperature of the Engine battery in degF
+#define TempHopperMin 85      //! This is the minimum desired temperature of the hopper in degF                  (ADC2)
+#define TempHopperMax 88      //! This is the maximum desired temperature of the hopper in degF
+#define TempECUMin 70         //! This is the minimum desired temperature of the ECU in degF                     (ADC3)
+#define TempECUMax 73         //! This is the maximum desired temperature of the ECU in degF
+#define TempFLine1Min 85      //! This is the minimum desired temperature of the fuel line to the pump in degF   (ADC4)
+#define TempFLine1Max 88      //! This is the maximum desired temperature of the fuel line to the pump in degF
+#define TempFLine2Min 85      //! This is the minimum desired temperature of the fuel line to the engine in degF (ADC5)
+#define TempFLine2Max 88      //! This is the maximum desired temperature of the fuel line to the engine in degF
+#define TempESBMin 70         //! This is the minimum desired temperature of the ESB in degF                     (ADC6)      
+#define TempESBMax 73         //! This is the maximum desired temperature of the ESB in degF
+
+/** The reason why there are maximum and minimum values for this is because
+	there is a lot of loss associated with the toggling of the high power MOSFETS
+*/
+
 #define ECU_present 0    //! 0 means the dummy ECU is present, 1 means the real ECU is present
 
+
+///////////////////////////////////////////////////////////////////////////
+///////////////////////// Pin Assignments /////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
+
+// PORT A Assignments
+#define ECUon_Pin 7        //! Pin location for I/O port that will turn on the ECU
+
+// PORT B Assignments
+#define Warm_LED 1      //! Pin location for the warm up LED
+#define ECU_pin 3       //! Pin location for the ECU heater circuit output
+
+// PORT C Assignments
+
+// PORT D Assignments
+#define BatPin 0        //! Pin location for the Lipo Battery heating circuit
+#define HopperPin 1     //! Pin location for the Hopper heating circuit
+#define FLine1Pin 2     //! Pin location for the heating circuit for the first section of the fuel line
+#define ESB_Pin 3       //! Pin location for the ESB heating circuit
+#define Alive_LED 5     //! Pin location for the Alive LED
+#define Fuel_LED 6      //! Pin location for the fuel rate LED
+#define Fline2Pin 7     //! Pin location for the heating circuit for the second section of the fuel line
+
+#define K_factor 110000                  //! This is the assumed K factor for the flow meter in pulses per liter
+#define density 0.81                     //! This is the density of the kerosene in g/ml
+#define max_time 0.262144                //! This is the maximum amount of time for an 8 bit timer with a prescalar of 1024
+#define pump_m 0.382587                  //! This is the slope for the linear relationship between voltage and mass flow (put in mf, get volts)
+#define pump_b 0.195783                  //! This is the y-intercept for the linear relationship between voltage and mass flow
+#define pump_tot_V 6                     //! This is the total voltage which will be sent to the pump
+#define V_per_pulse 0.0107393            //! This is the amount volts required to get a single change in pulse count
+
+#define ECU_duty 0.5                     //! This represents a 50% duty cycle for the ECU heater
+#define F_line_duty 0.20946              //! This represents a 20.946% duty cycle for the second fuel line heater
+
 //////////////////////////////////////////////////////////////////////////
-                          //Functions//
+//////////////////////////////  Functions  ///////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
 void Initial(void);
@@ -29,15 +97,18 @@ void change_timers(void);
 
 
 //////////////////////////////////////////////////////////////////////////
-						//Global Variables//
+////////////////////////// Global Variables  /////////////////////////////
 //////////////////////////////////////////////////////////////////////////
-char opMode;                    //! This is the operational mode the system is in.  0 for heating, 1 for pumping
+char opMode;                    //! This is the operational mode the system is in.  0 for heating, 1 for pumping, 2 for pumping has finished
 float duty_cycle;               //! This is the value of the duty cycle in 0.XXXX
 unsigned char cur_ADC;          //! This is the variable which will keep track of which channel the ADC is currently on
 float saveTemps[7];             //! This is an array of the seven temperatures we are keeping track of
 unsigned char desired_temp;     //! This is a byte which will flip bits 0-7 to denote when each component has reached its desired temp
 uint8_t desired_pulses;         //! This is the number of pulse which should be observed during the 8 bit timing window
+uint8_t pulse_error_allow;      //! This is the most amount of error in the difference in the pulse amounts to be considered a success
 uint8_t pulse_count;            //! This is the variable which will keep track of how many pulses were actually received
+uint8_t alive_counter;          //! This will help delay the alive_led so that it blinks twice as slow as the warming LED
+
 
 /**
 saveTemps[0]:   Heater Battery
