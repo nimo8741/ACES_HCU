@@ -102,10 +102,6 @@ void Initial(void)
 	assign_bit(&PORTD, FLine1Pin, 1);
 	assign_bit(&PORTD, ESB_Pin, 1);     // I can omit doing this for the ECU and FuelLine1
 		
-	
-	
-	ADCSRA |= (1 << ADSC);    //! Begin the first conversion
-
 }
 
 /** @brief Interrupt service routine for the timer which controls the alive LED and warming LED
@@ -155,12 +151,11 @@ ISR(TIMER1_OVF_vect)
 void tempConversion(void)
 {
 	// First check if the ADC is done converting
-	if (bit_is_clear(ADCSRA, ADIF))   // If this returns true, it means the conversion is not complete which means it is still running
+	for (unsigned char i = 0; i < 7; i++)
 	{
-		return;   
-	}
-	else   // it is done converting
-	{
+		ADCSRA |= 1 << ADSC;   //! Start the conversion
+		while (bit_is_clear(ADCSRA, ADIF));   //! Hog execution until the ADC is done converting
+
 		// Save this as a float for the respective variable
 		uint8_t low_bits = ADCL;
 		uint16_t ADC_res = (ADCH << 2) | (low_bits >> 6);    //! Do the shifting so that there is room made inside of the 16 bit register
@@ -168,24 +163,19 @@ void tempConversion(void)
 		// Now I need to convert this 16 bit number into an actual temperature
 		
 		float act_temp = (float) ADC_res * 10.0 + 3;      // THIS CONVERSION SCHEME IS NOT CORRECT I ONLY HAVE IT HERE FOR FORM!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		saveTemps[cur_ADC] = act_temp;
-		cur_ADC++;
-		if (cur_ADC / 8)   //! If the cur_ADC goes up to 8 then reset it at 0
-			cur_ADC = 0;
-			
-		// Now update the channel the ADC is using 
+		saveTemps[i] = act_temp;
+		
+		// Now update the channel the ADC is using
 		
 		
-		assign_bit(&ADMUX,MUX0,cur_ADC & 0x01);    //! Assign bit 0
-		assign_bit(&ADMUX,MUX1,cur_ADC & 0x02);    //! Assign bit 1
-		assign_bit(&ADMUX,MUX2,cur_ADC & 0x04);    //! Assign bit 2
-				
-		
-		tempHeaterHelper();             //! Call the helper function.  This will serve the added bonus of killing some time so that if capacitors need to charge for the next conversion, it has the time here.  Data sheet didn't say that it needed this though.
-		
-		
-		ADCSRA |= 1 << ADSC;   //! Start the next conversion
+		assign_bit(&ADMUX,MUX0,i & 0x01);    //! Assign bit 0
+		assign_bit(&ADMUX,MUX1,i & 0x02);    //! Assign bit 1
+		assign_bit(&ADMUX,MUX2,i & 0x04);    //! Assign bit 2
+
 	}
+	tempHeaterHelper();             //! Call the helper function.  This will serve the added bonus of killing some time so that if capacitors need to charge for the next conversion, it has the time here.  Data sheet didn't say that it needed this though.
+	_delay_ms(250);                 //! Delay for 1/4 of a second.   Need to check that the Alive LED will still interrupt properly
+	
 }
 
 /** @brief Checks the recorded temperatures and ensures there is no overheating
@@ -211,30 +201,30 @@ void tempHeaterHelper(void)
 	{
 		switch(i){
 			case 0:       //! This is the case for the Heater battery    /////////////////////////////////////////////////
-				if (saveTemps[0] > TempHBatMax || saveTemps[1] > TempEBatMax)    //! safety first so make sure that the temperature always turns off if one of the batteries is getting too hot
+				if (saveTemps[0] > TempHBat || saveTemps[1] > TempEBat)    //! safety first so make sure that the temperature always turns off if one of the batteries is getting too hot
 					assign_bit(&PORTD, BatPin, 0);       // Make sure this is the correct port and pin location
-				else if(saveTemps[0] < TempHBatMin || saveTemps[1] < TempEBatMin)
+				else if(saveTemps[0] < TempHBat || saveTemps[1] < TempEBat)
 					assign_bit(&PORTD, BatPin, 1);
 				else                   //! It must have reached its target temperature 
 					desired_temp |= 0x03;      
 				break;
 				
 			case 1:       //! This is the case for the Hopper    /////////////////////////////////////////////////
-				if (saveTemps[2] < TempHopperMin)   //! Temp is too low so turn on the heater
+				if (saveTemps[2] < TempHopper)   //! Temp is too low so turn on the heater
 					assign_bit(&PORTD, HopperPin, 1);
-				else if(saveTemps[2] > TempHopperMax)
+				else if(saveTemps[2] > TempHopper)
 					assign_bit(&PORTC, HopperPin, 0);   //! Too hot so turn off
 				else
 					desired_temp |= 0x04;
 				break;
 				
 			case 2:       //! This is the case for the ECU  /////////////////////////////////////////////////
-				if (saveTemps[3] < TempECUMin)
+				if (saveTemps[3] < TempECU)
 					if (!opMode)
 						assign_bit(&TCCR0, CS02, 1);      //! This will turn the PWM back on
 					else
 						assign_bit(&PORTB, ECU_pin, 1);   //! Turn the heater on manually
-				else if (saveTemps[3] > TempECUMax)
+				else if (saveTemps[3] > TempECU)
 					if (!opMode)
 						assign_bit(&TCCR0, CS02, 0);      //! This will turn the PWM off
 					else
@@ -244,22 +234,22 @@ void tempHeaterHelper(void)
 				break;
 				
 			case 3:       //! This is the case for Fuel Line 1  /////////////////////////////////////////////////
-				if (saveTemps[4] < TempFLine1Min)
+				if (saveTemps[4] < TempFLine1)
 					assign_bit(&PORTD, FLine1Pin, 1);
-				else if(saveTemps[4] > TempFLine1Max)
+				else if(saveTemps[4] > TempFLine1)
 					assign_bit(&PORTD, FLine1Pin, 0);
 				else
 					desired_temp |= 0x10;
 				break;
 				
 			case 4:       //! This is the case for Fuel Line 2 /////////////////////////////////////////////////
-				if (saveTemps[5] < TempFLine2Min){
+				if (saveTemps[5] < TempFLine2){
 					if (!opMode)      //! We are in the warming mode so this can use the PWM
 						assign_bit(&TCCR2, CS22, 1);       //! Turn the PWM back on 
 					else
 						assign_bit(&PORTD,Fline2Pin,1);       //! Turn the heater on manually
 				}
-				else if (saveTemps[5] > TempFLine2Max)
+				else if (saveTemps[5] > TempFLine2)
 					if (!opMode)           //! We are in warming mode so this can use the PWM
 						assign_bit(&TCCR2, CS22, 0);       //! Turn the PWM off
 					else
@@ -269,9 +259,9 @@ void tempHeaterHelper(void)
 				break;
 				
 			case 5:       //! This is the case for the ESB    /////////////////////////////////////////////////
-				if (saveTemps[5] < TempESBMin)
+				if (saveTemps[5] < TempESB)
 					assign_bit(&PORTD, ESB_Pin, 1);
-				else if(saveTemps[6] > TempESBMax)
+				else if(saveTemps[6] > TempESB)
 					assign_bit(&PORTD, ESB_Pin, 0);
 				else
 					desired_temp |= 0x40;

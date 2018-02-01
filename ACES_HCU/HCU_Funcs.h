@@ -28,24 +28,14 @@
 #define fuelFlow 4.8          //! This is the desired mass flow rate of fuel in g/sec
 #define fuelError 0.13        //! This is the acceptable error in terms of g/sec
 
-#define TempHBatMin 65        //! This is the minimum desired temperature of the Heater battery in degF          (ADC0)
-#define TempHBatMax 68        //! This is the maximum desired temperature of the Heater battery in degF
-#define TempEBatMin 65        //! This is the minimum desired temperature of the Engine battery in degF          (ADC1)
-#define TempEBatMax 68        //! This is the maximum desired temperature of the Engine battery in degF
-#define TempHopperMin 85      //! This is the minimum desired temperature of the hopper in degF                  (ADC2)
-#define TempHopperMax 88      //! This is the maximum desired temperature of the hopper in degF
-#define TempECUMin 70         //! This is the minimum desired temperature of the ECU in degF                     (ADC3)
-#define TempECUMax 73         //! This is the maximum desired temperature of the ECU in degF
-#define TempFLine1Min 85      //! This is the minimum desired temperature of the fuel line to the pump in degF   (ADC4)
-#define TempFLine1Max 88      //! This is the maximum desired temperature of the fuel line to the pump in degF
-#define TempFLine2Min 85      //! This is the minimum desired temperature of the fuel line to the engine in degF (ADC5)
-#define TempFLine2Max 88      //! This is the maximum desired temperature of the fuel line to the engine in degF
-#define TempESBMin 70         //! This is the minimum desired temperature of the ESB in degF                     (ADC6)      
-#define TempESBMax 73         //! This is the maximum desired temperature of the ESB in degF
+#define TempHBat 65        //! This is the desired temperature of the Heater battery in degF          (ADC0)
+#define TempEBat 65        //! This is the desired temperature of the Engine battery in degF          (ADC1)
+#define TempHopper 88      //! This is the desired temperature of the hopper in degF                  (ADC2)
+#define TempECU 73         //! This is the desired temperature of the ECU in degF                     (ADC3)
+#define TempFLine1 85      //! This is the desired temperature of the fuel line to the pump in degF   (ADC4)
+#define TempFLine2 88      //! This is the desired temperature of the fuel line to the engine in degF (ADC5)
+#define TempESB 70         //! This is the desired temperature of the ESB in degF                     (ADC6) 
 
-/** The reason why there are maximum and minimum values for this is because
-	there is a lot of loss associated with the toggling of the high power MOSFETS
-*/
 
 #define ECU_present 0    //! 0 means the dummy ECU is present, 1 means the real ECU is present
 
