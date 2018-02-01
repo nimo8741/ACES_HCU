@@ -151,7 +151,7 @@ ISR(TIMER1_OVF_vect)
 void tempConversion(void)
 {
 	// First check if the ADC is done converting
-	for (unsigned char i = 0; i < 7; i++)
+	for (unsigned char i = 0; i < 6; i++)
 	{
 		ADCSRA |= 1 << ADSC;   //! Start the conversion
 		while (bit_is_clear(ADCSRA, ADIF));   //! Hog execution until the ADC is done converting
@@ -162,7 +162,8 @@ void tempConversion(void)
 		
 		// Now I need to convert this 16 bit number into an actual temperature
 		
-		float act_temp = (float) ADC_res * 10.0 + 3;      // THIS CONVERSION SCHEME IS NOT CORRECT I ONLY HAVE IT HERE FOR FORM!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		float act_temp = (float) ADC_res * (5/1024);      //! Use the bin number and reference voltage to get the analog voltage again
+		act_temp = 208.8*act_temp - 79.6;                 //! Derivation for this on page 98 in the notebook
 		saveTemps[i] = act_temp;
 		
 		// Now update the channel the ADC is using
@@ -201,17 +202,12 @@ void tempHeaterHelper(void)
 	{
 		switch(i){
 			case 0:       //! This is the case for the Lipo batteries might need to incorporate ranges for this to actually work   /////////
-				if (saveTemps[0] > TempHBat || saveTemps[1] > TempEBat)    //! safety first so make sure that the temperature always turns off if one of the batteries is getting too hot
-					 if (saveTemps[0] > TempHBat)
-					 {
-						 desired_temp |= 0x01;
-					 }
-					 if (saveTemps[1] > TempEBat)
-					 {
-						 desired_temp |= 0x02;
-					 }
+				if (saveTemps[0] > TempBat )    //! safety first so make sure that the temperature always turns off if one of the batteries is getting too hot
+				{
+					desired_temp |= 0x01;
 					assign_bit(&PORTD, BatPin, 0);       //! Turn the heater off if either of these get too high
-				else if(saveTemps[0] < TempHBat || saveTemps[1] < TempEBat)
+				}
+				else if(saveTemps[0] < TempBat)
 				{
 					assign_bit(&PORTD, BatPin, 1);    // Turn the heater back on to warm them up
 				}
@@ -223,7 +219,7 @@ void tempHeaterHelper(void)
 				else if(saveTemps[2] > TempHopper)
 				{
 					assign_bit(&PORTC, HopperPin, 0);   //! Too hot so turn off
-					desired_temp |= 0x04;				
+					desired_temp |= 0x02;				
 				}
 				break;
 				
@@ -237,7 +233,7 @@ void tempHeaterHelper(void)
 					if (!opMode)
 					{
 						assign_bit(&TCCR0, CS02, 0);      //! This will turn the PWM off
-						desired_temp |= 0x08;
+						desired_temp |= 0x04;
 					}
 					else
 						assign_bit(&PORTB, ECU_pin, 0);   //! Turn the heater off manually.  Don't do the same thing with desired_temp for the manual mode
@@ -249,7 +245,7 @@ void tempHeaterHelper(void)
 				else if(saveTemps[4] > TempFLine1)
 				{
 					assign_bit(&PORTD, FLine1Pin, 0);
-					desired_temp |= 0x10;
+					desired_temp |= 0x08;
 				}
 				break;
 				
@@ -264,7 +260,7 @@ void tempHeaterHelper(void)
 					if (!opMode)           //! We are in warming mode so this can use the PWM
 					{
 						assign_bit(&TCCR2, CS22, 0);       //! Turn the PWM off
-						desired_temp |= 0x20;
+						desired_temp |= 0x10;
 					}
 					else
 						assign_bit(&PORTD, Fline2Pin, 0);    //! Turn the heater off manually
@@ -276,13 +272,13 @@ void tempHeaterHelper(void)
 				else if(saveTemps[6] > TempESB)
 				{
 					assign_bit(&PORTD, ESB_Pin, 0);
-					desired_temp |= 0x40;
+					desired_temp |= 0x20;
 				}
 				break;
 		}
 		
 	}
-	if (!(~(desired_temp | 0x80)))      //! Will go in here every time after it stops being mode 0
+	if (!(~(desired_temp | 0xC0)))      //! Will go in here every time after it stops being mode 0
 	{
 		/** If desired_temp was 0111 1111, it would go to 1111 1111 with the or.
 		*   Then the bitwise not (~) would make it 0000 0000.  And finally,
