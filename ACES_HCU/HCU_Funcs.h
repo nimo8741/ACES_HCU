@@ -28,8 +28,7 @@
 #define fuelFlow 4.8          //! This is the desired mass flow rate of fuel in g/sec
 #define fuelError 0.13        //! This is the acceptable error in terms of g/sec
 
-#define TempHBat 65        //! This is the desired temperature of the Heater battery in degF          (ADC0)
-#define TempEBat 65        //! This is the desired temperature of the Engine battery in degF          (ADC1)
+#define TempBat 65         //! This is the desired temperature of the lipo batteries in degF          (ADC0)
 #define TempHopper 88      //! This is the desired temperature of the hopper in degF                  (ADC2)
 #define TempECU 73         //! This is the desired temperature of the ECU in degF                     (ADC3)
 #define TempFLine1 85      //! This is the desired temperature of the fuel line to the pump in degF   (ADC4)
@@ -92,7 +91,7 @@ void change_timers(void);
 char opMode;                    //! This is the operational mode the system is in.  0 for heating, 1 for pumping, 2 for pumping has finished
 float duty_cycle;               //! This is the value of the duty cycle in 0.XXXX
 unsigned char cur_ADC;          //! This is the variable which will keep track of which channel the ADC is currently on
-float saveTemps[7];             //! This is an array of the seven temperatures we are keeping track of
+float saveTemps[6];             //! This is an array of the seven temperatures we are keeping track of
 unsigned char desired_temp;     //! This is a byte which will flip bits 0-7 to denote when each component has reached its desired temp
 uint8_t desired_pulses;         //! This is the number of pulse which should be observed during the 8 bit timing window
 uint8_t pulse_error_allow;      //! This is the most amount of error in the difference in the pulse amounts to be considered a success
@@ -101,13 +100,12 @@ uint8_t alive_counter;          //! This will help delay the alive_led so that i
 
 
 /**
-saveTemps[0]:   Heater Battery
-saveTemps[1]:   Engine Battery
-saveTemps[2]:   Hopper
-saveTemps[3]:   ECU
-saveTemps[4]:   Fuel Line 1
-saveTemps[5]:   Fuel Line 2
-saveTemps[6]:   ESB
+saveTemps[0]:   Battery
+saveTemps[1]:   Hopper
+saveTemps[2]:   ECU
+saveTemps[3]:   Fuel Line 1
+saveTemps[4]:   Fuel Line 2
+saveTemps[5]:   ESB
 */
 
 
