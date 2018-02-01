@@ -200,22 +200,31 @@ void tempHeaterHelper(void)
 	for (uint8_t i = 0; i < 6; i++)
 	{
 		switch(i){
-			case 0:       //! This is the case for the Heater battery    /////////////////////////////////////////////////
+			case 0:       //! This is the case for the Lipo batteries might need to incorporate ranges for this to actually work   /////////
 				if (saveTemps[0] > TempHBat || saveTemps[1] > TempEBat)    //! safety first so make sure that the temperature always turns off if one of the batteries is getting too hot
-					assign_bit(&PORTD, BatPin, 0);       // Make sure this is the correct port and pin location
+					 if (saveTemps[0] > TempHBat)
+					 {
+						 desired_temp |= 0x01;
+					 }
+					 if (saveTemps[1] > TempEBat)
+					 {
+						 desired_temp |= 0x02;
+					 }
+					assign_bit(&PORTD, BatPin, 0);       //! Turn the heater off if either of these get too high
 				else if(saveTemps[0] < TempHBat || saveTemps[1] < TempEBat)
-					assign_bit(&PORTD, BatPin, 1);
-				else                   //! It must have reached its target temperature 
-					desired_temp |= 0x03;      
+				{
+					assign_bit(&PORTD, BatPin, 1);    // Turn the heater back on to warm them up
+				}
 				break;
 				
 			case 1:       //! This is the case for the Hopper    /////////////////////////////////////////////////
 				if (saveTemps[2] < TempHopper)   //! Temp is too low so turn on the heater
 					assign_bit(&PORTD, HopperPin, 1);
 				else if(saveTemps[2] > TempHopper)
+				{
 					assign_bit(&PORTC, HopperPin, 0);   //! Too hot so turn off
-				else
-					desired_temp |= 0x04;
+					desired_temp |= 0x04;				
+				}
 				break;
 				
 			case 2:       //! This is the case for the ECU  /////////////////////////////////////////////////
@@ -226,20 +235,22 @@ void tempHeaterHelper(void)
 						assign_bit(&PORTB, ECU_pin, 1);   //! Turn the heater on manually
 				else if (saveTemps[3] > TempECU)
 					if (!opMode)
+					{
 						assign_bit(&TCCR0, CS02, 0);      //! This will turn the PWM off
+						desired_temp |= 0x08;
+					}
 					else
-						assign_bit(&PORTB, ECU_pin, 0);   //! Turn the heater off manually
-				else
-					desired_temp |= 0x08;
+						assign_bit(&PORTB, ECU_pin, 0);   //! Turn the heater off manually.  Don't do the same thing with desired_temp for the manual mode
 				break;
 				
 			case 3:       //! This is the case for Fuel Line 1  /////////////////////////////////////////////////
 				if (saveTemps[4] < TempFLine1)
 					assign_bit(&PORTD, FLine1Pin, 1);
 				else if(saveTemps[4] > TempFLine1)
+				{
 					assign_bit(&PORTD, FLine1Pin, 0);
-				else
 					desired_temp |= 0x10;
+				}
 				break;
 				
 			case 4:       //! This is the case for Fuel Line 2 /////////////////////////////////////////////////
@@ -251,37 +262,35 @@ void tempHeaterHelper(void)
 				}
 				else if (saveTemps[5] > TempFLine2)
 					if (!opMode)           //! We are in warming mode so this can use the PWM
+					{
 						assign_bit(&TCCR2, CS22, 0);       //! Turn the PWM off
+						desired_temp |= 0x20;
+					}
 					else
 						assign_bit(&PORTD, Fline2Pin, 0);    //! Turn the heater off manually
-				else
-					desired_temp |= 0x20;
 				break;
 				
 			case 5:       //! This is the case for the ESB    /////////////////////////////////////////////////
 				if (saveTemps[5] < TempESB)
 					assign_bit(&PORTD, ESB_Pin, 1);
 				else if(saveTemps[6] > TempESB)
+				{
 					assign_bit(&PORTD, ESB_Pin, 0);
-				else
 					desired_temp |= 0x40;
+				}
 				break;
 		}
 		
 	}
-	if (!(~(desired_temp | 0x80))) 
+	if (!(~(desired_temp | 0x80)))      //! Will go in here every time after it stops being mode 0
 	{
 		/** If desired_temp was 0111 1111, it would go to 1111 1111 with the or.
 		*   Then the bitwise not (~) would make it 0000 0000.  And finally,
 		*   the logical not (!) would make it 0000 0001 and it would go into the if statement.
 		*   If desired_temp is anything but this, it will not go in here 
 		*/
-		change_timers();                     //! New initialization routine which will change the prescalars and such for the timers which will be serving different purposes
-		opMode = 1;                          //! Change the operational mode
-		assign_bit(&PORTB,Warm_LED,1);    //! Turn on the LED to signal the heating sequence is complete
-		ECU_toggle(ECU_present);
-		
-		
+		if (!opMode)    //! only do this if it has never gone in here before
+			change_timers();                     //! New initialization routine which will change the prescalars and such for the timers which will be serving different purposes
 	}
 }
 
@@ -314,7 +323,7 @@ void flowMeter(void)
 	assign_bit(&TCCR0,CS01,0);
 	assign_bit(&TCCR0,CS00,1);     //! TThis will start the timer with a prescalar of 1024
 	
-	while (!(TIFR & 0x01));    //! Hog the execution until the overflow flag is set
+	while (!(TIFR & 0x01));        //! Hog the execution until the overflow flag is set
 	
 	assign_bit(&GICR, INT2, 0);   // disable external interrupts for INT2
 	
@@ -378,8 +387,11 @@ void assign_bit(volatile uint8_t *sfr,uint8_t bit, uint8_t val)
  */
 void change_timers(void)
 {
-	if (!opMode)   //! This is so that it only enters this section of code once
-	{
+	opMode = 1;                          //! Change the operational mode
+	assign_bit(&PORTB,Warm_LED,1);    //! Turn on the LED to signal the heating sequence is complete
+	ECU_toggle(ECU_present);
+	
+	if (!ECU_present)
 		// First change Timer 1 to serve as the PWM output port for the pump
 		assign_bit(&TIMSK,TOIE1,0);    //! remove overflow interrupts for timer 1
 		TCCR1A |= (1 << WGM11);     //! The sets one of the bits for the mode 14 waveform
@@ -394,9 +406,8 @@ void change_timers(void)
 		// Second change Timer 2 to serve as the counter for the pulse train from the flow meter
 		assign_bit(&TCCR0,CS02,0);
 		assign_bit(&TCCR0,CS01,0);
-		assign_bit(&TCCR0,CS00,0);     //! TThis will make sure that the timer is stopped for now
+		assign_bit(&TCCR0,CS00,0);     //! TThis will make sure that the timer is stopped for now	
 	}
-		
 }
 
 /** @brief Interrupt Service Routine which reads in the pulse train and increments a count.
