@@ -172,6 +172,8 @@ void tempConversion(void)
 		assign_bit(&ADMUX,MUX0,i & 0x01);    //! Assign bit 0
 		assign_bit(&ADMUX,MUX1,i & 0x02);    //! Assign bit 1
 		assign_bit(&ADMUX,MUX2,i & 0x04);    //! Assign bit 2
+		
+		assign_bit(&ADCSRA, ADIF, 1);     //! write a logical 1 to clear the flag, page 216 in the data sheet
 
 	}
 	tempHeaterHelper();             //! Call the helper function.  This will serve the added bonus of killing some time so that if capacitors need to charge for the next conversion, it has the time here.  Data sheet didn't say that it needed this though.
@@ -230,6 +232,7 @@ void tempHeaterHelper(void)
 					else
 						assign_bit(&PORTB, ECU_pin, 1);   //! Turn the heater on manually
 				else if (saveTemps[3] > TempECU)
+				{
 					if (!opMode)
 					{
 						assign_bit(&TCCR0, CS02, 0);      //! This will turn the PWM off
@@ -237,6 +240,7 @@ void tempHeaterHelper(void)
 					}
 					else
 						assign_bit(&PORTB, ECU_pin, 0);   //! Turn the heater off manually.  Don't do the same thing with desired_temp for the manual mode
+				}
 				break;
 				
 			case 3:       //! This is the case for Fuel Line 1  /////////////////////////////////////////////////
@@ -257,6 +261,7 @@ void tempHeaterHelper(void)
 						assign_bit(&PORTD,Fline2Pin,1);       //! Turn the heater on manually
 				}
 				else if (saveTemps[5] > TempFLine2)
+				{
 					if (!opMode)           //! We are in warming mode so this can use the PWM
 					{
 						assign_bit(&TCCR2, CS22, 0);       //! Turn the PWM off
@@ -264,6 +269,7 @@ void tempHeaterHelper(void)
 					}
 					else
 						assign_bit(&PORTD, Fline2Pin, 0);    //! Turn the heater off manually
+				}
 				break;
 				
 			case 5:       //! This is the case for the ESB    /////////////////////////////////////////////////
@@ -388,6 +394,7 @@ void change_timers(void)
 	ECU_toggle(ECU_present);
 	
 	if (!ECU_present)
+	{
 		// First change Timer 1 to serve as the PWM output port for the pump
 		assign_bit(&TIMSK,TOIE1,0);    //! remove overflow interrupts for timer 1
 		TCCR1A |= (1 << WGM11);     //! The sets one of the bits for the mode 14 waveform
