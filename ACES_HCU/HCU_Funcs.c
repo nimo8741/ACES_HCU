@@ -161,7 +161,6 @@ void tempConversion(void)
 		uint16_t ADC_res = (ADCH << 2) | (low_bits >> 6);    //! Do the shifting so that there is room made inside of the 16 bit register
 		
 		// Now I need to convert this 16 bit number into an actual temperature
-		
 		float act_temp = (float) ADC_res * (5/1024);      //! Use the bin number and reference voltage to get the analog voltage again
 		act_temp = 208.8*act_temp - 79.6;                 //! Derivation for this on page 98 in the notebook
 		saveTemps[i] = act_temp;
@@ -410,6 +409,9 @@ void change_timers(void)
 		assign_bit(&TCCR0,CS02,0);
 		assign_bit(&TCCR0,CS01,0);
 		assign_bit(&TCCR0,CS00,0);     //! TThis will make sure that the timer is stopped for now	
+		
+		// Third set the MCU Control and Status Register for the Interrupt Sense Control 2
+		MCUCSR |= (1 << ISC2);         //! This will make interrupts occur on the rising edge, so the beginning of the pulse
 	}
 }
 
