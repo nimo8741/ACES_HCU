@@ -37,7 +37,7 @@ void Initial(void)
 	// First setup the port directions for the PWM lines and the
 	// 0 are inputs 1 are outputs
 	DDRA = 0b10000000;          //! Only PA7 is an output
-	DDRB = 0b11011000;         
+	DDRB = 0b11011010;         
 	DDRC = 0xFF;                //! Make all outputs
 	DDRD = 0xFF;                //! Make all outputs
 	

@@ -28,7 +28,7 @@
 #define fuelFlow 4.8          //! This is the desired mass flow rate of fuel in g/sec
 #define fuelError 0.13        //! This is the acceptable error in terms of g/sec
 
-#define TempBat 65         //! This is the desired temperature of the lipo batteries in degF          (ADC0)
+#define TempBat 100         //! This is the desired temperature of the lipo batteries in degF          (ADC0)
 #define TempHopper 88      //! This is the desired temperature of the hopper in degF                  (ADC2)
 #define TempECU 73         //! This is the desired temperature of the ECU in degF                     (ADC3)
 #define TempFLine1 85      //! This is the desired temperature of the fuel line to the pump in degF   (ADC4)
