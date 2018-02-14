@@ -291,6 +291,13 @@ uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_
 <dl class="section author"><dt>Author</dt><dd>Nick Moore </dd></dl>
 <dl class="section date"><dt>Date</dt><dd>February 14, 2018 </dd></dl>
 <dl class="bug"><dt><b><a class="el" href="bug.html#_bug000002">Bug:</a></b></dt><dd>No known bugs. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Below is the blinking pattern for the LEDs </dd>
+<dd>
+Mode 0 (Warming Mode) <code>Warm_LED</code> 0.5/0.5 (sec on / sec off), <code>Alive_LED</code> 1/1, <code>Fuel_LED</code> off </dd>
+<dd>
+Mode 1 (Pumping Mode) <code>Warm_LED</code> constant on, <code>Alive_LED</code> 0.75/0.25, <code>Fuel_LED</code> 0.25/0.25 </dd>
+<dd>
+Mode 2 (Exhaustion Mode) <code>Warm_LED</code> constant on, <code>Alive_LED</code> 0.1/0.9, <code>Fuel_LED</code> constant on </dd></dl>
 
 <p class="definition">Definition in file <a class="el" href="_h_c_u___funcs_8h_source.html">HCU_Funcs.h</a>.</p>
 </div><h2 class="groupheader">Function Documentation</h2>
@@ -337,7 +344,7 @@ uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_h_c_u___funcs_8c_source.html#l00391">391</a> of file <a class="el" href="_h_c_u___funcs_8c_source.html">HCU_Funcs.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_h_c_u___funcs_8c_source.html#l00393">393</a> of file <a class="el" href="_h_c_u___funcs_8c_source.html">HCU_Funcs.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -349,6 +356,7 @@ Here is the caller graph for this function:</div>
 <area shape="rect" id="node5" href="_h_c_u___funcs_8h.html#a560b1b76f46bf0b687417029801fd05a" title="Reads/times the pulse train coming from the flow meter and passes this to pumpOperation. " alt="" coords="141,157,219,184"/>
 <area shape="rect" id="node6" href="_h_c_u___funcs_8h.html#ae058494623946a8ea13c1cdb69082dd3" title="Checks if the ECU power circuit is closed and if it is not, it opens it. " alt="" coords="135,208,225,235"/>
 <area shape="rect" id="node7" href="_h_c_u___funcs_8h.html#af224025ba48225a48fc9eddc2e72150d" title="Changes the mode of the used timers such that they can perform new functions in the pumping phase of ..." alt="" coords="273,208,380,235"/>
+<area shape="rect" id="node8" href="_h_c_u___funcs_8c.html#a7cfcbe42bd266750aeb6e5d71e5ea479" title="Interrupt Service Routine which reads in the pulse train and increments a count. " alt="" coords="159,309,201,336"/>
 </map>
 </div>
 
@@ -371,6 +379,11 @@ Here is the caller graph for this function:</div>
 </div><div class="memdoc">
 
 <p>Changes the mode of the used timers such that they can perform new functions in the pumping phase of operation. </p>
+<p>This also performs the following functions: 1) Turns the warming LED on so that it will remain constant</p>
+<p>2) Configures the INT2 line to accept external interrupts coming from the flow meter</p>
+<p>3) Toggles the ECU to turn on (should it be present)</p>
+<p>4) Sets up Timer1 to serve as the PWM controller for the flow meter</p>
+<p>5) Sets up Timer2 to command the blinking of the Alive_LED</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">void</td><td></td></tr>
@@ -378,8 +391,9 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="_h_c_u___funcs_8c.html#a560b1b76f46bf0b687417029801fd05a" title="Reads/times the pulse train coming from the flow meter and passes this to pumpOperation. ">flowMeter</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_h_c_u___funcs_8c_source.html#l00410">410</a> of file <a class="el" href="_h_c_u___funcs_8c_source.html">HCU_Funcs.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_h_c_u___funcs_8c_source.html#l00424">424</a> of file <a class="el" href="_h_c_u___funcs_8c_source.html">HCU_Funcs.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -426,7 +440,7 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_h_c_u___funcs_8c_source.html#l00379">379</a> of file <a class="el" href="_h_c_u___funcs_8c_source.html">HCU_Funcs.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_h_c_u___funcs_8c_source.html#l00381">381</a> of file <a class="el" href="_h_c_u___funcs_8c_source.html">HCU_Funcs.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -468,8 +482,8 @@ Here is the caller graph for this function:</div>
 <p>This performs the following functions:</p>
 <p>1) Record the number of pulses that occur within an amount of time that gives to an accurate measurement</p>
 <p>2) Use the conversion factors from the flow meter's data sheet to convert this to g/sec</p>
-<p>3) Pass this value to pumpOperation</p>
-<p>4) Prepare the needed timers/counters to perform this function again</p>
+<p>3) Compare this against the desired flow rate and change the duty cycle on the PWM accordingly</p>
+<p>4) Control the fuel flowing LED, blinking when not at the proper flow rate, steady when at the proper flow rate</p>
 <p>5) Shut the pump off when there is no more fuel to pump and turn all LED's on constant</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -478,11 +492,9 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
-<dl class="section note"><dt>Note</dt><dd>Need to do a pump test to ensure that the voltage to flow rate function is actually correct. </dd>
-<dd>
-Need to add a function to return the timers to the proper configuration for phase 2 operation. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Need to do a pump test to ensure that the voltage to flow rate function is actually correct. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_h_c_u___funcs_8c_source.html#l00328">328</a> of file <a class="el" href="_h_c_u___funcs_8c_source.html">HCU_Funcs.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_h_c_u___funcs_8c_source.html#l00330">330</a> of file <a class="el" href="_h_c_u___funcs_8c_source.html">HCU_Funcs.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -522,7 +534,6 @@ Here is the call graph for this function:</div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Void </dd></dl>
-<p>Clear the timer register to make sure I have the full range on the first cycle </p>
 
 <p class="definition">Definition at line <a class="el" href="_h_c_u___funcs_8c_source.html#l00038">38</a> of file <a class="el" href="_h_c_u___funcs_8c_source.html">HCU_Funcs.c</a>.</p>
 <div class="dynheader">
@@ -558,7 +569,7 @@ Here is the call graph for this function:</div>
 <p>2) Perform a 10 bit ADC read and save that to its appropriate global variable</p>
 <p>3) Changes the ADC multiplexer to the next channel in the cycle. This means we want MUX4-0 to cycle through 00000 to 00111 (page 215)</p>
 <p>4) Change the global variable which denotes which temperature sensor we are currently measuring on</p>
-<p>5) The reseting of the interrupt flag is cleared automatically (page 113 of data sheet, make sure of this)</p>
+<p>5) The reseting of the interrupt flag is cleared automatically</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">void</td><td></td></tr>
@@ -566,8 +577,9 @@ Here is the call graph for this function:</div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="_h_c_u___funcs_8c.html#a7eb1892912f647fc11a82891ac8b0408" title="Checks the recorded temperatures and ensures there is no overheating. ">tempHeaterHelper</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_h_c_u___funcs_8c_source.html#l00154">154</a> of file <a class="el" href="_h_c_u___funcs_8c_source.html">HCU_Funcs.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_h_c_u___funcs_8c_source.html#l00155">155</a> of file <a class="el" href="_h_c_u___funcs_8c_source.html">HCU_Funcs.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -600,7 +612,7 @@ Here is the call graph for this function:</div>
 
 <p>Checks the recorded temperatures and ensures there is no overheating. </p>
 <p>This performs the following functions:</p>
-<p>1) Compares all 7 actual temperatures with each of the desired temperatures. If the desired temperature is reached, that heater is placed in a keep warm mode</p>
+<p>1) Compares all 6 actual temperatures with each of the desired temperatures. If the desired temperature is reached, that heater is placed in a keep warm mode</p>
 <p>2) In "keep warm" if temp falls below minimum desired, turn on heater. If goes above maximum, turn off.</p>
 <p>3) Once all temperatures have reached their desired temperatures, change the mode to fuel pumping and illuminate the warming complete light.</p>
 <p>4) Continue the "keep warm" state after the mode has been changed.</p>
@@ -612,8 +624,9 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>Need to confirm that heater operation is still sufficient for phase 1 and 2. </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="_h_c_u___funcs_8c.html#ab42f8654f10b780bd735bb55bd53d60d" title="Check for the completion of the ADC conversion, saves the result, and changes the channel...">tempConversion</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_h_c_u___funcs_8c_source.html#l00210">210</a> of file <a class="el" href="_h_c_u___funcs_8c_source.html">HCU_Funcs.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_h_c_u___funcs_8c_source.html#l00213">213</a> of file <a class="el" href="_h_c_u___funcs_8c_source.html">HCU_Funcs.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">

@@ -78,7 +78,7 @@ void Initial(void)
 	
 	// Now I need to turn on all of the heaters as well as set the duty cycles for the PWMs which will be on timers 0 and 2
 	// Start with the PWM for the ECU, this will be on timer0
-	TCNT0 = 0;      //! Clear the timer register to make sure I have the full range on the first cycle
+	TCNT0 = 0;      // Clear the timer register to make sure I have the full range on the first cycle
 	assign_bit(&TCCR0, WGM01, 1);
 	assign_bit(&TCCR0, WGM00, 1);      // These two set the PWM Mode to "Fast PWM"
 	assign_bit(&TCCR0, COM01, 1); 
@@ -146,10 +146,11 @@ ISR(TIMER1_OVF_vect)
  *
  *  4) Change the global variable which denotes which temperature sensor we are currently measuring on
  *
- *  5) The reseting of the interrupt flag is cleared automatically (page 113 of data sheet, make sure of this)
+ *  5) The reseting of the interrupt flag is cleared automatically
  *
  *  @param void
  *  @return void
+ *  @see tempHeaterHelper
  */
 void tempConversion(void)
 {
@@ -185,7 +186,8 @@ void tempConversion(void)
 
 	}
 	tempHeaterHelper();             // Call the helper function.  This will serve the added bonus of killing some time so that if capacitors need to charge for the next conversion, it has the time here.  Data sheet didn't say that it needed this though.
-	_delay_ms(250);                 // Delay for 1/4 of a second.   Need to check that the Alive LED will still interrupt properly
+	if (opMode != 1)
+		_delay_ms(250);                 // Delay for 1/4 of a second.   This will only impact modes 0 and 2
 	
 }
 
@@ -193,7 +195,7 @@ void tempConversion(void)
  *
  *  This performs the following functions:
  *
- *  1) Compares all 7 actual temperatures with each of the desired temperatures.  If
+ *  1) Compares all 6 actual temperatures with each of the desired temperatures.  If
  *     the desired temperature is reached, that heater is placed in a keep warm mode
  *
  *  2) In "keep warm" if temp falls below minimum desired, turn on heater.  If goes above maximum, turn off. 
@@ -206,6 +208,7 @@ void tempConversion(void)
  *  @param void
  *  @return void
  *  @note Need to confirm that heater operation is still sufficient for phase 1 and 2.
+ *  @see tempConversion
  */
 void tempHeaterHelper(void)
 {
@@ -284,7 +287,7 @@ void tempHeaterHelper(void)
 			case 5:       // This is the case for the ESB    /////////////////////////////////////////////////
 				if (saveTemps[5] < TempESB)
 					assign_bit(&PORTD, ESB_Pin, 1);
-				else if(saveTemps[6] > TempESB)
+				else if(saveTemps[5] > TempESB)
 				{
 					assign_bit(&PORTD, ESB_Pin, 0);
 					desired_temp |= 0x20;
@@ -314,24 +317,23 @@ void tempHeaterHelper(void)
  *
  *  2) Use the conversion factors from the flow meter's data sheet to convert this to g/sec
  *  
- *  3) Pass this value to pumpOperation
+ *  3) Compare this against the desired flow rate and change the duty cycle on the PWM accordingly
  *
- *  4) Prepare the needed timers/counters to perform this function again
+ *  4) Control the fuel flowing LED, blinking when not at the proper flow rate, steady when at the proper flow rate
  *
  *  5) Shut the pump off when there is no more fuel to pump and turn all LED's on constant
  *
  *  @param void
  *  @return void
  *  @note Need to do a pump test to ensure that the voltage to flow rate function is actually correct.
- *  @note Need to add a function to return the timers to the proper configuration for phase 2 operation.
  */
 void flowMeter(void)
 {
 	// First I need to enable interrupt on INT2
-	pulse_count = 1;
+	pulse_count = 0;
 	GICR |= (1 << INT2);     // enable INT2 external interrupts
 	
-	// Second I need to begin timer2
+	// Second I need to begin timer0
 	TCNT0 = 0;                                 // Make sure the timer/counter register is cleared so the full range can be used
 	assign_bit(&TIFR,TOV1,1);                  // Make sure the overflow flag is set
 	assign_bit(&TCCR0,CS02,1);
@@ -346,9 +348,11 @@ void flowMeter(void)
 	{
 		opMode = 2;                            //  This means that the pumping has concluded
 		assign_bit(&TCCR1B, CS10, 0);          // This should stop the PWM for the pump
-		assign_bit(&PORTD, Alive_LED, 1);
 		assign_bit(&PORTD, Fuel_LED, 1);
-		assign_bit(&PORTB, Warm_LED, 1);       // Make sure all of the LEDs are solid on to signify the end of the mission. (The warming will still continue until power is turned off)
+		TCNT2 = 60;                               // Value needed for the timer to run for 0.05 second
+		assign_bit(&PORTD, Alive_LED, 1);         // Start with turning on the LED
+		alive_counter = 0;                        // reset the hand made prescalar
+		TCCR2 = 0x06;                             // This will start the Timer with a prescalar of 256 and stop the PWM stuff
 		
 	}
 	else
@@ -366,8 +370,6 @@ void flowMeter(void)
 		else
 			PORTD ^= (1 << Fuel_LED);            // Make the fuel LED blink saying that it is not done yet.
 	
-		// Now since some time has elapsed, toggle the Alive_LED
-		PORTD ^= (1 << Alive_LED);               // So the Alive_LED should blink on ~0.25 sec off ~0.25 sec
 	}
 }
 
@@ -404,14 +406,28 @@ void assign_bit(volatile uint8_t *sfr,uint8_t bit, uint8_t val)
 
 /** @brief Changes the mode of the used timers such that they can perform new functions in the pumping phase of operation.
  *
+ *  This also performs the following functions:
+ *  1) Turns the warming LED on so that it will remain constant
+ * 
+ *  2) Configures the INT2 line to accept external interrupts coming from the flow meter
+ *
+ *  3) Toggles the ECU to turn on (should it be present)
+ *
+ *  4) Sets up Timer1 to serve as the PWM controller for the flow meter
+ * 
+ *  5) Sets up Timer2 to command the blinking of the Alive_LED
+ *
  *  @param void
  *  @return void
+ *  @see flowMeter
  */
 void change_timers(void)
 {
 	opMode = 1;                          // Change the operational mode
 	assign_bit(&PORTB,Warm_LED,1);    // Turn on the LED to signal the heating sequence is complete
 	ECU_toggle(ECU_present);
+	
+	// Now need to assign timer 2 to the alive LED
 	
 	if (!ECU_present)
 	{
@@ -426,14 +442,42 @@ void change_timers(void)
 		assign_bit(&TCCR1B, CS10, 1);              // This should start the PWM with a prescalar of 1
 		// Now the PWM should be running
 			
-		// Second change Timer 2 to serve as the counter for the pulse train from the flow meter
+		// Second change Timer0 to serve as the counter for the pulse train from the flow meter
+		TCCR0 = 0;                                 // Turn off the PWM so the ECU stops being warmed
 		assign_bit(&TCCR0,CS02,0);
 		assign_bit(&TCCR0,CS01,0);
-		assign_bit(&TCCR0,CS00,0);     // TThis will make sure that the timer is stopped for now	
+		assign_bit(&TCCR0,CS00,0);                 // TThis will make sure that the timer is stopped for now	
 		
 		// Third set the MCU Control and Status Register for the Interrupt Sense Control 2
-		MCUCSR |= (1 << ISC2);         // This will make interrupts occur on the rising edge, so the beginning of the pulse
+		MCUCSR |= (1 << ISC2);                    // This will make interrupts occur on the rising edge, so the beginning of the pulse
+		
+		// Fourth set Timer2 for the 0.75/0.25 second blink of the Alive LED
+		assign_bit(&PORTD, Alive_LED, 1);         // Start with turning on the LED
+		TIMSK |= (1 << TOIE2);                    // Enable overflow interrupts on the timer
+		TCNT2 = 11;                               // This is the value needed for the timer to run for 0.25 seconds
+		alive_counter = 0;                        // Reset the hand made prescalar
+		TCCR2 = 0x07;                             // Start the timer with a prescalar of 1024
+		
 
+	}
+	else           // We are directly skipping the pumping phase so just set up the 0.1/0.9 second blink and turn on the pumping light
+	{
+		opMode = 2;                               // Change to the Exhaustion Mode
+		assign_bit(&PORTD, Fuel_LED, 1);          // turn on the fuel LED
+		
+		// Now I need to set up Timer2 for the Alive LED
+		TIMSK |= (1 << TOIE2);                    // Enable overflow interrupts on the timer
+		TCNT2 = 60;                               // Value needed for the timer to run for 0.05 second
+		assign_bit(&PORTD, Alive_LED, 1);         // Start with turning on the LED
+		alive_counter = 0;                        // reset the hand made prescalar
+		TCCR2 = 0x06;                             // This will start the Timer with a prescalar of 256 and stop the PWM stuff
+		
+		// now remove the other PWMS
+		TCCR0 = 0;
+		TCCR1B = 0;         // This set is to prevent any unexpected triggering of the heating circuits
+		TCCR1A = 0;
+		
+		
 	}
 }
 
@@ -441,10 +485,69 @@ void change_timers(void)
  *
  *  @param[in] pulse_count This is the number which describes how many pulses have been received for the sampling period.  It is an implicit argument as it is a global variable which is not explicitly passed in.
  *  @return void
+ *  @see flowMeter
  */
 ISR(INT2_vect)
 {
 	pulse_count++;  // The interrupt flag will automatically be cleared by hardware
 }
 
+
+/** @brief Interrupt Service Routine which reads in the pulse train and increments a count.
+ *
+ *  This performs the following functions:
+ *
+ *  1) Switch to the right section of code depending on whether the code is in phase 1 or 2
+ *
+ *  2) Compares the @p alive_counter against the preset values to attain the correct blinking pattern
+ *
+ *  3) Toggle the LED (where appropriate), increment alive_counter (where appropriate), and reset the timer register
+ *
+ *  @param[in] alive_counter Variable to act as a custom prescalar for the timer
+ *  @return void
+ */
+ISR(TIMER2_OVF_vect)
+{
+	if (opMode == 1)     // Operation mode 1 so do 0.75 sec on and 0.25 sec off
+	{
+		if (alive_counter == 2)
+		{
+			assign_bit(&PORTD, Alive_LED, 0);        // Turn the LED off since it is at the end of the 0.75 sec portion
+			alive_counter++;
+			TCNT2 = 11;
+		}
+		else if (alive_counter == 3)
+		{
+			assign_bit(&PORTD, Alive_LED, 1);        // Turn the LED back on since it is about to begin the 0.75 second portion
+			alive_counter = 0;
+			TCNT2 = 11;                              // Assign the correct value into the Timer register so that it goes for 0.25 sec
+		}
+		else                                         // This section is for if it is in the middle of the 0.75 sec portion
+		{
+			alive_counter++;
+			TCNT2 = 11;
+		}
+	}
+	else   // I am in operation mode 2 so I need to do 0.1 sec on 0.9 sec off
+	{
+		if (alive_counter == 1)
+		{
+			assign_bit(&PORTD, Alive_LED, 0);            // Turn off the LED since we are at the end of the 0.1 sec period
+			alive_counter++;
+			TCNT2 = 60;
+		}
+		else if (alive_counter == 19)
+		{
+			assign_bit(&PORTD, Alive_LED, 1);            // Turn on the LED since we are at the end of the 0.9 sec period
+			alive_counter = 0;
+			TCNT2 = 60;
+
+		}
+		else
+		{
+			alive_counter++;                             // At one of the intermediate points so just keep the LED how it is
+			TCNT2 = 60; 
+		}
+	}
+}
 

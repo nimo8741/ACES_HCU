@@ -8,6 +8,7 @@ var _h_c_u___funcs_8c =
     [ "Initial", "_h_c_u___funcs_8c.html#a23459ced73501cbafb717ca9cbb10ce7", null ],
     [ "ISR", "_h_c_u___funcs_8c.html#ab16889ae984b9b798989a0d239283cac", null ],
     [ "ISR", "_h_c_u___funcs_8c.html#a30a0ad88a89a84c0161cf09eace108e8", null ],
+    [ "ISR", "_h_c_u___funcs_8c.html#a7cfcbe42bd266750aeb6e5d71e5ea479", null ],
     [ "tempConversion", "_h_c_u___funcs_8c.html#ab42f8654f10b780bd735bb55bd53d60d", null ],
     [ "tempHeaterHelper", "_h_c_u___funcs_8c.html#a7eb1892912f647fc11a82891ac8b0408", null ]
 ];

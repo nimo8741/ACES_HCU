@@ -3,31 +3,31 @@ ACES_HCU.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .text         00000d1c  00000000  00000000  00000074  2**1
+  0 .text         00000de8  00000000  00000000  00000074  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  1 .data         00000000  00800060  00800060  00000d90  2**0
+  1 .data         00000000  00800060  00800060  00000e5c  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  2 .bss          00000027  00800060  00800060  00000d90  2**0
+  2 .bss          00000022  00800060  00800060  00000e5c  2**0
                   ALLOC
-  3 .comment      00000030  00000000  00000000  00000d90  2**0
+  3 .comment      00000030  00000000  00000000  00000e5c  2**0
                   CONTENTS, READONLY
-  4 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000dc0  2**2
+  4 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000e8c  2**2
                   CONTENTS, READONLY
-  5 .debug_aranges 00000080  00000000  00000000  00000dfc  2**0
+  5 .debug_aranges 00000088  00000000  00000000  00000ec8  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_info   000011a3  00000000  00000000  00000e7c  2**0
+  6 .debug_info   0000120e  00000000  00000000  00000f50  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_abbrev 0000074a  00000000  00000000  0000201f  2**0
+  7 .debug_abbrev 00000764  00000000  00000000  0000215e  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   00000796  00000000  00000000  00002769  2**0
+  8 .debug_line   00000859  00000000  00000000  000028c2  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_frame  0000014c  00000000  00000000  00002f00  2**2
+  9 .debug_frame  000001a4  00000000  00000000  0000311c  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    0000047b  00000000  00000000  0000304c  2**0
+ 10 .debug_str    0000047e  00000000  00000000  000032c0  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    00000346  00000000  00000000  000034c7  2**0
+ 11 .debug_loc    00000451  00000000  00000000  0000373e  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 00000060  00000000  00000000  0000380d  2**0
+ 12 .debug_ranges 00000068  00000000  00000000  00003b8f  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -36,9 +36,9 @@ Disassembly of section .text:
    0:	0c 94 2a 00 	jmp	0x54	; 0x54 <__ctors_end>
    4:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
    8:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
-   c:	0c 94 32 04 	jmp	0x864	; 0x864 <__vector_3>
+   c:	0c 94 29 04 	jmp	0x852	; 0x852 <__vector_3>
   10:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
-  14:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
+  14:	0c 94 3a 04 	jmp	0x874	; 0x874 <__vector_5>
   18:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
   1c:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
   20:	0c 94 3c 00 	jmp	0x78	; 0x78 <__bad_interrupt>
@@ -73,11 +73,11 @@ Disassembly of section .text:
   68:	1d 92       	st	X+, r1
 
 0000006a <.do_clear_bss_start>:
-  6a:	a7 38       	cpi	r26, 0x87	; 135
+  6a:	a2 38       	cpi	r26, 0x82	; 130
   6c:	b2 07       	cpc	r27, r18
   6e:	e1 f7       	brne	.-8      	; 0x68 <.do_clear_bss_loop>
-  70:	0e 94 43 04 	call	0x886	; 0x886 <main>
-  74:	0c 94 8c 06 	jmp	0xd18	; 0xd18 <_exit>
+  70:	0e 94 a9 04 	call	0x952	; 0x952 <main>
+  74:	0c 94 f2 06 	jmp	0xde4	; 0xde4 <_exit>
 
 00000078 <__bad_interrupt>:
   78:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
@@ -110,14 +110,14 @@ ISR(TIMER1_OVF_vect)
   9c:	89 27       	eor	r24, r25
   9e:	82 bb       	out	0x12, r24	; 18
 		
-	PORTB ^= (1 << Warm_LED);   //! This will have the warming LED blink 0.5 sec on 0.5 sec off and the alive LED blinking twice as slow
+	PORTB ^= (1 << Warm_LED);   // This will have the warming LED blink 0.5 sec on 0.5 sec off and the alive LED blinking twice as slow
   a0:	98 b3       	in	r25, 0x18	; 24
   a2:	82 e0       	ldi	r24, 0x02	; 2
   a4:	89 27       	eor	r24, r25
   a6:	88 bb       	out	0x18, r24	; 24
 	
 	// Now reset the register
-	TCNT1 = 3036;  //! The interrupt will clear automatically when this function is called
+	TCNT1 = 3036;  // The interrupt will clear automatically when this function is called
   a8:	8c ed       	ldi	r24, 0xDC	; 220
   aa:	9b e0       	ldi	r25, 0x0B	; 11
   ac:	9d bd       	out	0x2d, r25	; 45
@@ -137,7 +137,7 @@ ISR(TIMER1_OVF_vect)
  */
 void assign_bit(volatile uint8_t *sfr,uint8_t bit, uint8_t val)
 {
-	if (val)      //! This is for if I want the value to be a 1
+	if (val)      // This is for if I want the value to be a 1
   be:	44 23       	and	r20, r20
   c0:	59 f0       	breq	.+22     	; 0xd8 <assign_bit+0x1a>
 	{
@@ -155,7 +155,7 @@ void assign_bit(volatile uint8_t *sfr,uint8_t bit, uint8_t val)
   d4:	40 83       	st	Z, r20
   d6:	08 95       	ret
 	}
-	else             //! This is for if I want the value to be a 0
+	else             // This is for if I want the value to be a 0
 	{
 		val = ~(1 << bit);
   d8:	21 e0       	ldi	r18, 0x01	; 1
@@ -179,1765 +179,1927 @@ void Initial(void)
 {
 	// First setup the port directions for the PWM lines and the
 	// 0 are inputs 1 are outputs
-	DDRA = 0b10000000;          //! Only PA7 is an output
+	DDRA = 0b10000000;          // Only PA7 is an output
   f2:	80 e8       	ldi	r24, 0x80	; 128
   f4:	8a bb       	out	0x1a, r24	; 26
 	DDRB = 0b11011010;         
   f6:	8a ed       	ldi	r24, 0xDA	; 218
   f8:	87 bb       	out	0x17, r24	; 23
-	DDRC = 0xFF;                //! Make all outputs
+	DDRC = 0xFF;                // Make all outputs
   fa:	8f ef       	ldi	r24, 0xFF	; 255
   fc:	84 bb       	out	0x14, r24	; 20
-	DDRD = 0xFF;                //! Make all outputs
+	DDRD = 0xFF;                // Make all outputs
   fe:	81 bb       	out	0x11, r24	; 17
 	
-	cur_ADC = 0;     //! This is for ADC0    
- 100:	10 92 66 00 	sts	0x0066, r1	; 0x800066 <cur_ADC>
-	opMode = 0;     //! This sets the function mode to heating mode
- 104:	10 92 61 00 	sts	0x0061, r1	; 0x800061 <opMode>
+	opMode = 0;     // This sets the function mode to heating mode
+ 100:	10 92 61 00 	sts	0x0061, r1	; 0x800061 <opMode>
 	desired_temp = 0;
- 108:	10 92 63 00 	sts	0x0063, r1	; 0x800063 <desired_temp>
-	duty_cycle = (pump_m*fuelFlow + pump_b) / pump_tot_V;    //! This is the initial guess for the fuel pump
- 10c:	89 e1       	ldi	r24, 0x19	; 25
- 10e:	9a e6       	ldi	r25, 0x6A	; 106
- 110:	ad ea       	ldi	r26, 0xAD	; 173
- 112:	be e3       	ldi	r27, 0x3E	; 62
- 114:	80 93 67 00 	sts	0x0067, r24	; 0x800067 <duty_cycle>
- 118:	90 93 68 00 	sts	0x0068, r25	; 0x800068 <duty_cycle+0x1>
- 11c:	a0 93 69 00 	sts	0x0069, r26	; 0x800069 <duty_cycle+0x2>
- 120:	b0 93 6a 00 	sts	0x006A, r27	; 0x80006a <duty_cycle+0x3>
+ 104:	10 92 63 00 	sts	0x0063, r1	; 0x800063 <desired_temp>
+	duty_cycle = (pump_m*fuelFlow + pump_b) / pump_tot_V;    // This is the initial guess for the fuel pump
+ 108:	89 e1       	ldi	r24, 0x19	; 25
+ 10a:	9a e6       	ldi	r25, 0x6A	; 106
+ 10c:	ad ea       	ldi	r26, 0xAD	; 173
+ 10e:	be e3       	ldi	r27, 0x3E	; 62
+ 110:	80 93 66 00 	sts	0x0066, r24	; 0x800066 <duty_cycle>
+ 114:	90 93 67 00 	sts	0x0067, r25	; 0x800067 <duty_cycle+0x1>
+ 118:	a0 93 68 00 	sts	0x0068, r26	; 0x800068 <duty_cycle+0x2>
+ 11c:	b0 93 69 00 	sts	0x0069, r27	; 0x800069 <duty_cycle+0x3>
 	
 	// Now calculate the number of pulses I expect per 0.262144 seconds (max time for an 8 bit timer with prescalar of 1024)
 	float pulse_flow = (fuelFlow / density) * K_factor * max_time / 1000;
-	desired_pulses = (uint8_t) pulse_flow;     // round down and convert to an 8 bit number.  I expect it to be 170 so it will fit.
- 124:	8a ea       	ldi	r24, 0xAA	; 170
- 126:	80 93 65 00 	sts	0x0065, r24	; 0x800065 <desired_pulses>
-	pulse_error_allow = (uint8_t)(desired_pulses * (fuelError / fuelFlow));   //! This is the amount of pulses I can be off for it to still be considered a successes
- 12a:	84 e0       	ldi	r24, 0x04	; 4
- 12c:	80 93 60 00 	sts	0x0060, r24	; 0x800060 <_edata>
-	assign_bit(&MCUCSR,ISC2,1);      //! This will cause interrupts for INT2 to be caused on the rising edge
- 130:	41 e0       	ldi	r20, 0x01	; 1
- 132:	66 e0       	ldi	r22, 0x06	; 6
- 134:	84 e5       	ldi	r24, 0x54	; 84
- 136:	90 e0       	ldi	r25, 0x00	; 0
- 138:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
-	assign_bit(&GIFR, INTF2, 1);     //! Make sure the interrupt flag is cleared
- 13c:	41 e0       	ldi	r20, 0x01	; 1
- 13e:	65 e0       	ldi	r22, 0x05	; 5
- 140:	8a e5       	ldi	r24, 0x5A	; 90
- 142:	90 e0       	ldi	r25, 0x00	; 0
- 144:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
-	act_temp = 69;
- 148:	80 e0       	ldi	r24, 0x00	; 0
- 14a:	90 e0       	ldi	r25, 0x00	; 0
- 14c:	aa e8       	ldi	r26, 0x8A	; 138
- 14e:	b2 e4       	ldi	r27, 0x42	; 66
- 150:	80 93 83 00 	sts	0x0083, r24	; 0x800083 <act_temp>
- 154:	90 93 84 00 	sts	0x0084, r25	; 0x800084 <act_temp+0x1>
- 158:	a0 93 85 00 	sts	0x0085, r26	; 0x800085 <act_temp+0x2>
- 15c:	b0 93 86 00 	sts	0x0086, r27	; 0x800086 <act_temp+0x3>
+	desired_pulses = (uint8_t) pulse_flow;                                    // round down and convert to an 8 bit number.  I expect it to be 170 so it will fit.
+ 120:	8a ea       	ldi	r24, 0xAA	; 170
+ 122:	80 93 65 00 	sts	0x0065, r24	; 0x800065 <desired_pulses>
+	pulse_error_allow = (uint8_t)(desired_pulses * (fuelError / fuelFlow));   // This is the amount of pulses I can be off for it to still be considered a successes
+ 126:	84 e0       	ldi	r24, 0x04	; 4
+ 128:	80 93 60 00 	sts	0x0060, r24	; 0x800060 <_edata>
+	assign_bit(&MCUCSR,ISC2,1);                                               // This will cause interrupts for INT2 to be caused on the rising edge
+ 12c:	41 e0       	ldi	r20, 0x01	; 1
+ 12e:	66 e0       	ldi	r22, 0x06	; 6
+ 130:	84 e5       	ldi	r24, 0x54	; 84
+ 132:	90 e0       	ldi	r25, 0x00	; 0
+ 134:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+	assign_bit(&GIFR, INTF2, 1);                                              // Make sure the interrupt flag is cleared
+ 138:	41 e0       	ldi	r20, 0x01	; 1
+ 13a:	65 e0       	ldi	r22, 0x05	; 5
+ 13c:	8a e5       	ldi	r24, 0x5A	; 90
+ 13e:	90 e0       	ldi	r25, 0x00	; 0
+ 140:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
 	
 	
 	// Configure the ADC
-	ADCSRA |= 1 << ADPS2;   //! This is so there is a prescalar of 16.  ADC needs frequency between 50-200kHz so 1,000,000/16 puts it in this range.
- 160:	86 b1       	in	r24, 0x06	; 6
- 162:	84 60       	ori	r24, 0x04	; 4
- 164:	86 b9       	out	0x06, r24	; 6
-	ADCSRA |= 1 << ADEN;    //! Enable the ADC
- 166:	86 b1       	in	r24, 0x06	; 6
- 168:	80 68       	ori	r24, 0x80	; 128
- 16a:	86 b9       	out	0x06, r24	; 6
-	ADMUX |= 1 << REFS0;
- 16c:	87 b1       	in	r24, 0x07	; 7
- 16e:	80 64       	ori	r24, 0x40	; 64
- 170:	87 b9       	out	0x07, r24	; 7
+	ADCSRA |= 1 << ADPS2;   // This is so there is a prescalar of 16.  ADC needs frequency between 50-200kHz so 1,000,000/16 puts it in this range.
+ 144:	86 b1       	in	r24, 0x06	; 6
+ 146:	84 60       	ori	r24, 0x04	; 4
+ 148:	86 b9       	out	0x06, r24	; 6
+	ADCSRA |= 1 << ADEN;    // Enable the ADC
+ 14a:	86 b1       	in	r24, 0x06	; 6
+ 14c:	80 68       	ori	r24, 0x80	; 128
+ 14e:	86 b9       	out	0x06, r24	; 6
+	ADMUX |= 1 << REFS0;    // Make AVCC (5V) the reference voltage
+ 150:	87 b1       	in	r24, 0x07	; 7
+ 152:	80 64       	ori	r24, 0x40	; 64
+ 154:	87 b9       	out	0x07, r24	; 7
 
-	sei();       //! This sets the global interrupt flag to allow for hardware interrupts
- 172:	78 94       	sei
+	sei();       // This sets the global interrupt flag to allow for hardware interrupts
+ 156:	78 94       	sei
 	
 	// Now enable the timer1 for 0.5 sec
-	TIMSK |= 1 << TOIE1;   //! turn on overflow interrupts
- 174:	89 b7       	in	r24, 0x39	; 57
- 176:	84 60       	ori	r24, 0x04	; 4
- 178:	89 bf       	out	0x39, r24	; 57
-	TCCR1B |= (1<<CS11);    //! This has a prescalar of 8
- 17a:	8e b5       	in	r24, 0x2e	; 46
- 17c:	82 60       	ori	r24, 0x02	; 2
- 17e:	8e bd       	out	0x2e, r24	; 46
-	TCNT1 = 3036;   //! This will load the value so that when using a prescalar of 8, it will overflow after 500ms
- 180:	8c ed       	ldi	r24, 0xDC	; 220
- 182:	9b e0       	ldi	r25, 0x0B	; 11
- 184:	9d bd       	out	0x2d, r25	; 45
- 186:	8c bd       	out	0x2c, r24	; 44
+	TIMSK |= 1 << TOIE1;                 // turn on overflow interrupts
+ 158:	89 b7       	in	r24, 0x39	; 57
+ 15a:	84 60       	ori	r24, 0x04	; 4
+ 15c:	89 bf       	out	0x39, r24	; 57
+	TCCR1B |= (1<<CS11);                 // This has a prescalar of 8
+ 15e:	8e b5       	in	r24, 0x2e	; 46
+ 160:	82 60       	ori	r24, 0x02	; 2
+ 162:	8e bd       	out	0x2e, r24	; 46
+	TCNT1 = 3036;                        // This will load the value so that when using a prescalar of 8, it will overflow after 500ms
+ 164:	8c ed       	ldi	r24, 0xDC	; 220
+ 166:	9b e0       	ldi	r25, 0x0B	; 11
+ 168:	9d bd       	out	0x2d, r25	; 45
+ 16a:	8c bd       	out	0x2c, r24	; 44
 	
-	saveTemps[0] = -100.0;        //! Assign initial temperature values that for sure will be colder than the specified temps 
- 188:	eb e6       	ldi	r30, 0x6B	; 107
- 18a:	f0 e0       	ldi	r31, 0x00	; 0
- 18c:	80 e0       	ldi	r24, 0x00	; 0
- 18e:	90 e0       	ldi	r25, 0x00	; 0
- 190:	a8 ec       	ldi	r26, 0xC8	; 200
- 192:	b2 ec       	ldi	r27, 0xC2	; 194
- 194:	80 83       	st	Z, r24
- 196:	91 83       	std	Z+1, r25	; 0x01
- 198:	a2 83       	std	Z+2, r26	; 0x02
- 19a:	b3 83       	std	Z+3, r27	; 0x03
+	saveTemps[0] = -100.0;        // Assign initial temperature values that for sure will be colder than the specified temps 
+ 16c:	ea e6       	ldi	r30, 0x6A	; 106
+ 16e:	f0 e0       	ldi	r31, 0x00	; 0
+ 170:	80 e0       	ldi	r24, 0x00	; 0
+ 172:	90 e0       	ldi	r25, 0x00	; 0
+ 174:	a8 ec       	ldi	r26, 0xC8	; 200
+ 176:	b2 ec       	ldi	r27, 0xC2	; 194
+ 178:	80 83       	st	Z, r24
+ 17a:	91 83       	std	Z+1, r25	; 0x01
+ 17c:	a2 83       	std	Z+2, r26	; 0x02
+ 17e:	b3 83       	std	Z+3, r27	; 0x03
 	saveTemps[1] = -100.0;
- 19c:	84 83       	std	Z+4, r24	; 0x04
- 19e:	95 83       	std	Z+5, r25	; 0x05
- 1a0:	a6 83       	std	Z+6, r26	; 0x06
- 1a2:	b7 83       	std	Z+7, r27	; 0x07
+ 180:	84 83       	std	Z+4, r24	; 0x04
+ 182:	95 83       	std	Z+5, r25	; 0x05
+ 184:	a6 83       	std	Z+6, r26	; 0x06
+ 186:	b7 83       	std	Z+7, r27	; 0x07
 	saveTemps[2] = -100.0;
- 1a4:	80 87       	std	Z+8, r24	; 0x08
- 1a6:	91 87       	std	Z+9, r25	; 0x09
- 1a8:	a2 87       	std	Z+10, r26	; 0x0a
- 1aa:	b3 87       	std	Z+11, r27	; 0x0b
+ 188:	80 87       	std	Z+8, r24	; 0x08
+ 18a:	91 87       	std	Z+9, r25	; 0x09
+ 18c:	a2 87       	std	Z+10, r26	; 0x0a
+ 18e:	b3 87       	std	Z+11, r27	; 0x0b
 	saveTemps[3] = -100.0;
- 1ac:	84 87       	std	Z+12, r24	; 0x0c
- 1ae:	95 87       	std	Z+13, r25	; 0x0d
- 1b0:	a6 87       	std	Z+14, r26	; 0x0e
- 1b2:	b7 87       	std	Z+15, r27	; 0x0f
+ 190:	84 87       	std	Z+12, r24	; 0x0c
+ 192:	95 87       	std	Z+13, r25	; 0x0d
+ 194:	a6 87       	std	Z+14, r26	; 0x0e
+ 196:	b7 87       	std	Z+15, r27	; 0x0f
 	saveTemps[4] = -100.0;
- 1b4:	80 8b       	std	Z+16, r24	; 0x10
- 1b6:	91 8b       	std	Z+17, r25	; 0x11
- 1b8:	a2 8b       	std	Z+18, r26	; 0x12
- 1ba:	b3 8b       	std	Z+19, r27	; 0x13
+ 198:	80 8b       	std	Z+16, r24	; 0x10
+ 19a:	91 8b       	std	Z+17, r25	; 0x11
+ 19c:	a2 8b       	std	Z+18, r26	; 0x12
+ 19e:	b3 8b       	std	Z+19, r27	; 0x13
 	saveTemps[5] = -100.0;
- 1bc:	84 8b       	std	Z+20, r24	; 0x14
- 1be:	95 8b       	std	Z+21, r25	; 0x15
- 1c0:	a6 8b       	std	Z+22, r26	; 0x16
- 1c2:	b7 8b       	std	Z+23, r27	; 0x17
+ 1a0:	84 8b       	std	Z+20, r24	; 0x14
+ 1a2:	95 8b       	std	Z+21, r25	; 0x15
+ 1a4:	a6 8b       	std	Z+22, r26	; 0x16
+ 1a6:	b7 8b       	std	Z+23, r27	; 0x17
 	saveTemps[6] = -100.0; 
- 1c4:	80 8f       	std	Z+24, r24	; 0x18
- 1c6:	91 8f       	std	Z+25, r25	; 0x19
- 1c8:	a2 8f       	std	Z+26, r26	; 0x1a
- 1ca:	b3 8f       	std	Z+27, r27	; 0x1b
+ 1a8:	80 8f       	std	Z+24, r24	; 0x18
+ 1aa:	91 8f       	std	Z+25, r25	; 0x19
+ 1ac:	a2 8f       	std	Z+26, r26	; 0x1a
+ 1ae:	b3 8f       	std	Z+27, r27	; 0x1b
 	
 	// Now I need to turn on all of the heaters as well as set the duty cycles for the PWMs which will be on timers 0 and 2
 	// Start with the PWM for the ECU, this will be on timer0
-	TCNT0 = 0;      //! Clear the timer register to make sure I have the full range on the first cycle
- 1cc:	12 be       	out	0x32, r1	; 50
+	TCNT0 = 0;      // Clear the timer register to make sure I have the full range on the first cycle
+ 1b0:	12 be       	out	0x32, r1	; 50
 	assign_bit(&TCCR0, WGM01, 1);
- 1ce:	41 e0       	ldi	r20, 0x01	; 1
- 1d0:	63 e0       	ldi	r22, 0x03	; 3
- 1d2:	83 e5       	ldi	r24, 0x53	; 83
- 1d4:	90 e0       	ldi	r25, 0x00	; 0
- 1d6:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
-	assign_bit(&TCCR0, WGM00, 1);      //! These two set the PWM Mode to "Fast PWM"
- 1da:	41 e0       	ldi	r20, 0x01	; 1
- 1dc:	66 e0       	ldi	r22, 0x06	; 6
- 1de:	83 e5       	ldi	r24, 0x53	; 83
- 1e0:	90 e0       	ldi	r25, 0x00	; 0
- 1e2:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+ 1b2:	41 e0       	ldi	r20, 0x01	; 1
+ 1b4:	63 e0       	ldi	r22, 0x03	; 3
+ 1b6:	83 e5       	ldi	r24, 0x53	; 83
+ 1b8:	90 e0       	ldi	r25, 0x00	; 0
+ 1ba:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+	assign_bit(&TCCR0, WGM00, 1);      // These two set the PWM Mode to "Fast PWM"
+ 1be:	41 e0       	ldi	r20, 0x01	; 1
+ 1c0:	66 e0       	ldi	r22, 0x06	; 6
+ 1c2:	83 e5       	ldi	r24, 0x53	; 83
+ 1c4:	90 e0       	ldi	r25, 0x00	; 0
+ 1c6:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
 	assign_bit(&TCCR0, COM01, 1); 
- 1e6:	41 e0       	ldi	r20, 0x01	; 1
- 1e8:	65 e0       	ldi	r22, 0x05	; 5
- 1ea:	83 e5       	ldi	r24, 0x53	; 83
- 1ec:	90 e0       	ldi	r25, 0x00	; 0
- 1ee:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
-	assign_bit(&TCCR0, COM00, 1);      //! These two set the PWM type to inverting PWM
- 1f2:	41 e0       	ldi	r20, 0x01	; 1
- 1f4:	64 e0       	ldi	r22, 0x04	; 4
- 1f6:	83 e5       	ldi	r24, 0x53	; 83
- 1f8:	90 e0       	ldi	r25, 0x00	; 0
- 1fa:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+ 1ca:	41 e0       	ldi	r20, 0x01	; 1
+ 1cc:	65 e0       	ldi	r22, 0x05	; 5
+ 1ce:	83 e5       	ldi	r24, 0x53	; 83
+ 1d0:	90 e0       	ldi	r25, 0x00	; 0
+ 1d2:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+	assign_bit(&TCCR0, COM00, 1);      // These two set the PWM type to inverting PWM
+ 1d6:	41 e0       	ldi	r20, 0x01	; 1
+ 1d8:	64 e0       	ldi	r22, 0x04	; 4
+ 1da:	83 e5       	ldi	r24, 0x53	; 83
+ 1dc:	90 e0       	ldi	r25, 0x00	; 0
+ 1de:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
 	
-	OCR0 = 255 - (255*ECU_duty);       //! This will set it to the specified duty by the #define
- 1fe:	8f e7       	ldi	r24, 0x7F	; 127
- 200:	8c bf       	out	0x3c, r24	; 60
+	OCR0 = 255 - (255*ECU_duty);       // This will set it to the specified duty by the #define
+ 1e2:	8f e7       	ldi	r24, 0x7F	; 127
+ 1e4:	8c bf       	out	0x3c, r24	; 60
 	
-	TCCR0 |= (1 << CS02);              //! This will start the PWM with a duty cycle of 65.536 ms
- 202:	83 b7       	in	r24, 0x33	; 51
- 204:	84 60       	ori	r24, 0x04	; 4
- 206:	83 bf       	out	0x33, r24	; 51
+	TCCR0 |= (1 << CS02);              // This will start the PWM with a duty cycle of 65.536 ms
+ 1e6:	83 b7       	in	r24, 0x33	; 51
+ 1e8:	84 60       	ori	r24, 0x04	; 4
+ 1ea:	83 bf       	out	0x33, r24	; 51
 	
 	// Now do the PWM for the second fuel line which will use Timer 2,  this will look very similar to the last few lines of code
-	TCNT2 = 0;      //! Clear the timer register to make sure I have the full range on the first cycle
- 208:	14 bc       	out	0x24, r1	; 36
+	TCNT2 = 0;      // Clear the timer register to make sure I have the full range on the first cycle
+ 1ec:	14 bc       	out	0x24, r1	; 36
 	assign_bit(&TCCR2, WGM21, 1);
- 20a:	41 e0       	ldi	r20, 0x01	; 1
- 20c:	63 e0       	ldi	r22, 0x03	; 3
- 20e:	85 e4       	ldi	r24, 0x45	; 69
- 210:	90 e0       	ldi	r25, 0x00	; 0
- 212:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
-	assign_bit(&TCCR2, WGM20, 1);      //! These two set the PWM Mode to "Fast PWM"
- 216:	41 e0       	ldi	r20, 0x01	; 1
- 218:	66 e0       	ldi	r22, 0x06	; 6
- 21a:	85 e4       	ldi	r24, 0x45	; 69
- 21c:	90 e0       	ldi	r25, 0x00	; 0
- 21e:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+ 1ee:	41 e0       	ldi	r20, 0x01	; 1
+ 1f0:	63 e0       	ldi	r22, 0x03	; 3
+ 1f2:	85 e4       	ldi	r24, 0x45	; 69
+ 1f4:	90 e0       	ldi	r25, 0x00	; 0
+ 1f6:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+	assign_bit(&TCCR2, WGM20, 1);      // These two set the PWM Mode to "Fast PWM"
+ 1fa:	41 e0       	ldi	r20, 0x01	; 1
+ 1fc:	66 e0       	ldi	r22, 0x06	; 6
+ 1fe:	85 e4       	ldi	r24, 0x45	; 69
+ 200:	90 e0       	ldi	r25, 0x00	; 0
+ 202:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
 	assign_bit(&TCCR2, COM21, 1);
- 222:	41 e0       	ldi	r20, 0x01	; 1
- 224:	65 e0       	ldi	r22, 0x05	; 5
- 226:	85 e4       	ldi	r24, 0x45	; 69
- 228:	90 e0       	ldi	r25, 0x00	; 0
- 22a:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
-	assign_bit(&TCCR2, COM20, 1);      //! These two set the PWM type to inverting PWM
- 22e:	41 e0       	ldi	r20, 0x01	; 1
- 230:	64 e0       	ldi	r22, 0x04	; 4
- 232:	85 e4       	ldi	r24, 0x45	; 69
- 234:	90 e0       	ldi	r25, 0x00	; 0
- 236:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+ 206:	41 e0       	ldi	r20, 0x01	; 1
+ 208:	65 e0       	ldi	r22, 0x05	; 5
+ 20a:	85 e4       	ldi	r24, 0x45	; 69
+ 20c:	90 e0       	ldi	r25, 0x00	; 0
+ 20e:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+	assign_bit(&TCCR2, COM20, 1);      // These two set the PWM type to inverting PWM
+ 212:	41 e0       	ldi	r20, 0x01	; 1
+ 214:	64 e0       	ldi	r22, 0x04	; 4
+ 216:	85 e4       	ldi	r24, 0x45	; 69
+ 218:	90 e0       	ldi	r25, 0x00	; 0
+ 21a:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
 		
-	OCR2 = 255 - (255*F_line_duty);       //! This will set it to the specified duty by the #define
- 23a:	89 ec       	ldi	r24, 0xC9	; 201
- 23c:	83 bd       	out	0x23, r24	; 35
+	OCR2 = 255 - (255*F_line_duty);    // This will set it to the specified duty by the #define
+ 21e:	89 ec       	ldi	r24, 0xC9	; 201
+ 220:	83 bd       	out	0x23, r24	; 35
 		
-	TCCR2 |= (1 << CS22);              //! This will start the PWM with a duty cycle of 65.536 ms, just like before
- 23e:	85 b5       	in	r24, 0x25	; 37
- 240:	84 60       	ori	r24, 0x04	; 4
- 242:	85 bd       	out	0x25, r24	; 37
+	TCCR2 |= (1 << CS22);              // This will start the PWM with a duty cycle of 65.536 ms, just like before
+ 222:	85 b5       	in	r24, 0x25	; 37
+ 224:	84 60       	ori	r24, 0x04	; 4
+ 226:	85 bd       	out	0x25, r24	; 37
 	
 	// Now turn on all the other heaters
 	assign_bit(&PORTD, BatPin, 1);
- 244:	41 e0       	ldi	r20, 0x01	; 1
- 246:	60 e0       	ldi	r22, 0x00	; 0
- 248:	82 e3       	ldi	r24, 0x32	; 50
- 24a:	90 e0       	ldi	r25, 0x00	; 0
- 24c:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+ 228:	41 e0       	ldi	r20, 0x01	; 1
+ 22a:	60 e0       	ldi	r22, 0x00	; 0
+ 22c:	82 e3       	ldi	r24, 0x32	; 50
+ 22e:	90 e0       	ldi	r25, 0x00	; 0
+ 230:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
 	assign_bit(&PORTD, HopperPin, 1);
- 250:	41 e0       	ldi	r20, 0x01	; 1
- 252:	61 e0       	ldi	r22, 0x01	; 1
- 254:	82 e3       	ldi	r24, 0x32	; 50
- 256:	90 e0       	ldi	r25, 0x00	; 0
- 258:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+ 234:	41 e0       	ldi	r20, 0x01	; 1
+ 236:	61 e0       	ldi	r22, 0x01	; 1
+ 238:	82 e3       	ldi	r24, 0x32	; 50
+ 23a:	90 e0       	ldi	r25, 0x00	; 0
+ 23c:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
 	assign_bit(&PORTD, FLine1Pin, 1);
- 25c:	41 e0       	ldi	r20, 0x01	; 1
- 25e:	62 e0       	ldi	r22, 0x02	; 2
- 260:	82 e3       	ldi	r24, 0x32	; 50
- 262:	90 e0       	ldi	r25, 0x00	; 0
- 264:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+ 240:	41 e0       	ldi	r20, 0x01	; 1
+ 242:	62 e0       	ldi	r22, 0x02	; 2
+ 244:	82 e3       	ldi	r24, 0x32	; 50
+ 246:	90 e0       	ldi	r25, 0x00	; 0
+ 248:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
 	assign_bit(&PORTD, ESB_Pin, 1);     // I can omit doing this for the ECU and FuelLine1
- 268:	41 e0       	ldi	r20, 0x01	; 1
- 26a:	63 e0       	ldi	r22, 0x03	; 3
- 26c:	82 e3       	ldi	r24, 0x32	; 50
- 26e:	90 e0       	ldi	r25, 0x00	; 0
- 270:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
- 274:	08 95       	ret
+ 24c:	41 e0       	ldi	r20, 0x01	; 1
+ 24e:	63 e0       	ldi	r22, 0x03	; 3
+ 250:	82 e3       	ldi	r24, 0x32	; 50
+ 252:	90 e0       	ldi	r25, 0x00	; 0
+ 254:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+ 258:	08 95       	ret
 
-00000276 <flowMeter>:
- *
+0000025a <flowMeter>:
  *  @param void
  *  @return void
+ *  @note Need to do a pump test to ensure that the voltage to flow rate function is actually correct.
  */
 void flowMeter(void)
 {
- 276:	cf 92       	push	r12
- 278:	df 92       	push	r13
- 27a:	ef 92       	push	r14
- 27c:	ff 92       	push	r15
- 27e:	0f 93       	push	r16
- 280:	1f 93       	push	r17
- 282:	cf 93       	push	r28
- 284:	df 93       	push	r29
+ 25a:	cf 92       	push	r12
+ 25c:	df 92       	push	r13
+ 25e:	ef 92       	push	r14
+ 260:	ff 92       	push	r15
+ 262:	0f 93       	push	r16
+ 264:	1f 93       	push	r17
+ 266:	cf 93       	push	r28
+ 268:	df 93       	push	r29
 	// First I need to enable interrupt on INT2
-	pulse_count = 1;
- 286:	81 e0       	ldi	r24, 0x01	; 1
- 288:	80 93 64 00 	sts	0x0064, r24	; 0x800064 <pulse_count>
-	GICR |= (1 << INT2);     //! enable INT2 external interrupts
- 28c:	8b b7       	in	r24, 0x3b	; 59
- 28e:	80 62       	ori	r24, 0x20	; 32
- 290:	8b bf       	out	0x3b, r24	; 59
-	// Second I need to begin timer2
+	pulse_count = 0;
+ 26a:	10 92 64 00 	sts	0x0064, r1	; 0x800064 <pulse_count>
+	GICR |= (1 << INT2);     // enable INT2 external interrupts
+ 26e:	8b b7       	in	r24, 0x3b	; 59
+ 270:	80 62       	ori	r24, 0x20	; 32
+ 272:	8b bf       	out	0x3b, r24	; 59
 	
-	TCNT0 = 0;                     //! Make sure the timer/counter register is cleared so the full range can be used
- 292:	12 be       	out	0x32, r1	; 50
-	assign_bit(&TIFR,TOV1,1);     //! Make sure the overflow flag is set
- 294:	41 e0       	ldi	r20, 0x01	; 1
- 296:	62 e0       	ldi	r22, 0x02	; 2
- 298:	88 e5       	ldi	r24, 0x58	; 88
- 29a:	90 e0       	ldi	r25, 0x00	; 0
- 29c:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+	// Second I need to begin timer0
+	TCNT0 = 0;                                 // Make sure the timer/counter register is cleared so the full range can be used
+ 274:	12 be       	out	0x32, r1	; 50
+	assign_bit(&TIFR,TOV1,1);                  // Make sure the overflow flag is set
+ 276:	41 e0       	ldi	r20, 0x01	; 1
+ 278:	62 e0       	ldi	r22, 0x02	; 2
+ 27a:	88 e5       	ldi	r24, 0x58	; 88
+ 27c:	90 e0       	ldi	r25, 0x00	; 0
+ 27e:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
 	assign_bit(&TCCR0,CS02,1);
- 2a0:	41 e0       	ldi	r20, 0x01	; 1
- 2a2:	62 e0       	ldi	r22, 0x02	; 2
- 2a4:	83 e5       	ldi	r24, 0x53	; 83
- 2a6:	90 e0       	ldi	r25, 0x00	; 0
- 2a8:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+ 282:	41 e0       	ldi	r20, 0x01	; 1
+ 284:	62 e0       	ldi	r22, 0x02	; 2
+ 286:	83 e5       	ldi	r24, 0x53	; 83
+ 288:	90 e0       	ldi	r25, 0x00	; 0
+ 28a:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
 	assign_bit(&TCCR0,CS01,0);
+ 28e:	40 e0       	ldi	r20, 0x00	; 0
+ 290:	61 e0       	ldi	r22, 0x01	; 1
+ 292:	83 e5       	ldi	r24, 0x53	; 83
+ 294:	90 e0       	ldi	r25, 0x00	; 0
+ 296:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+	assign_bit(&TCCR0,CS00,1);                 // TThis will start the timer with a prescalar of 1024
+ 29a:	41 e0       	ldi	r20, 0x01	; 1
+ 29c:	60 e0       	ldi	r22, 0x00	; 0
+ 29e:	83 e5       	ldi	r24, 0x53	; 83
+ 2a0:	90 e0       	ldi	r25, 0x00	; 0
+ 2a2:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+	
+	while (!(TIFR & 0x01));                    // Hog the execution until the overflow flag is set
+ 2a6:	08 b6       	in	r0, 0x38	; 56
+ 2a8:	00 fe       	sbrs	r0, 0
+ 2aa:	fd cf       	rjmp	.-6      	; 0x2a6 <flowMeter+0x4c>
+	
+	assign_bit(&GICR, INT2, 0);                // disable external interrupts for INT2
  2ac:	40 e0       	ldi	r20, 0x00	; 0
- 2ae:	61 e0       	ldi	r22, 0x01	; 1
- 2b0:	83 e5       	ldi	r24, 0x53	; 83
+ 2ae:	65 e0       	ldi	r22, 0x05	; 5
+ 2b0:	8b e5       	ldi	r24, 0x5B	; 91
  2b2:	90 e0       	ldi	r25, 0x00	; 0
  2b4:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
-	assign_bit(&TCCR0,CS00,1);     //! TThis will start the timer with a prescalar of 1024
- 2b8:	41 e0       	ldi	r20, 0x01	; 1
- 2ba:	60 e0       	ldi	r22, 0x00	; 0
- 2bc:	83 e5       	ldi	r24, 0x53	; 83
- 2be:	90 e0       	ldi	r25, 0x00	; 0
- 2c0:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
-	
-	while (!(TIFR & 0x01));        //! Hog the execution until the overflow flag is set
- 2c4:	08 b6       	in	r0, 0x38	; 56
- 2c6:	00 fe       	sbrs	r0, 0
- 2c8:	fd cf       	rjmp	.-6      	; 0x2c4 <flowMeter+0x4e>
-	
-	assign_bit(&GICR, INT2, 0);   // disable external interrupts for INT2
- 2ca:	40 e0       	ldi	r20, 0x00	; 0
- 2cc:	65 e0       	ldi	r22, 0x05	; 5
- 2ce:	8b e5       	ldi	r24, 0x5B	; 91
- 2d0:	90 e0       	ldi	r25, 0x00	; 0
- 2d2:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
 		
-	if (!pulse_count)    //! There is either no more fuel or there is a stoppage.  This if statement might be the end of me...
- 2d6:	80 91 64 00 	lds	r24, 0x0064	; 0x800064 <pulse_count>
- 2da:	81 11       	cpse	r24, r1
- 2dc:	1c c0       	rjmp	.+56     	; 0x316 <flowMeter+0xa0>
+	if (!pulse_count)                          // There is either no more fuel or there is a stoppage.  This if statement might be the end of me...
+ 2b8:	80 91 64 00 	lds	r24, 0x0064	; 0x800064 <pulse_count>
+ 2bc:	81 11       	cpse	r24, r1
+ 2be:	1c c0       	rjmp	.+56     	; 0x2f8 <flowMeter+0x9e>
 	{
-		opMode = 2;    //!  This means that the pumping has concluded
- 2de:	82 e0       	ldi	r24, 0x02	; 2
- 2e0:	80 93 61 00 	sts	0x0061, r24	; 0x800061 <opMode>
-		assign_bit(&TCCR1B, CS10, 0);              //! This should stop the PWM for the pump
- 2e4:	40 e0       	ldi	r20, 0x00	; 0
- 2e6:	60 e0       	ldi	r22, 0x00	; 0
- 2e8:	8e e4       	ldi	r24, 0x4E	; 78
- 2ea:	90 e0       	ldi	r25, 0x00	; 0
- 2ec:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
-		assign_bit(&PORTD, Alive_LED, 1);
- 2f0:	41 e0       	ldi	r20, 0x01	; 1
- 2f2:	65 e0       	ldi	r22, 0x05	; 5
- 2f4:	82 e3       	ldi	r24, 0x32	; 50
- 2f6:	90 e0       	ldi	r25, 0x00	; 0
- 2f8:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+		opMode = 2;                            //  This means that the pumping has concluded
+ 2c0:	82 e0       	ldi	r24, 0x02	; 2
+ 2c2:	80 93 61 00 	sts	0x0061, r24	; 0x800061 <opMode>
+		assign_bit(&TCCR1B, CS10, 0);          // This should stop the PWM for the pump
+ 2c6:	40 e0       	ldi	r20, 0x00	; 0
+ 2c8:	60 e0       	ldi	r22, 0x00	; 0
+ 2ca:	8e e4       	ldi	r24, 0x4E	; 78
+ 2cc:	90 e0       	ldi	r25, 0x00	; 0
+ 2ce:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
 		assign_bit(&PORTD, Fuel_LED, 1);
- 2fc:	41 e0       	ldi	r20, 0x01	; 1
- 2fe:	66 e0       	ldi	r22, 0x06	; 6
- 300:	82 e3       	ldi	r24, 0x32	; 50
- 302:	90 e0       	ldi	r25, 0x00	; 0
- 304:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
-		assign_bit(&PORTB, Warm_LED, 1);    //! Make sure all of the LEDs are solid on to signify the end of the mission. (The warming will still continue until power is turned off)
- 308:	41 e0       	ldi	r20, 0x01	; 1
- 30a:	61 e0       	ldi	r22, 0x01	; 1
- 30c:	88 e3       	ldi	r24, 0x38	; 56
- 30e:	90 e0       	ldi	r25, 0x00	; 0
- 310:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
- 314:	46 c0       	rjmp	.+140    	; 0x3a2 <flowMeter+0x12c>
+ 2d2:	41 e0       	ldi	r20, 0x01	; 1
+ 2d4:	66 e0       	ldi	r22, 0x06	; 6
+ 2d6:	82 e3       	ldi	r24, 0x32	; 50
+ 2d8:	90 e0       	ldi	r25, 0x00	; 0
+ 2da:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+		TCNT2 = 60;                               // Value needed for the timer to run for 0.05 second
+ 2de:	8c e3       	ldi	r24, 0x3C	; 60
+ 2e0:	84 bd       	out	0x24, r24	; 36
+		assign_bit(&PORTD, Alive_LED, 1);         // Start with turning on the LED
+ 2e2:	41 e0       	ldi	r20, 0x01	; 1
+ 2e4:	65 e0       	ldi	r22, 0x05	; 5
+ 2e6:	82 e3       	ldi	r24, 0x32	; 50
+ 2e8:	90 e0       	ldi	r25, 0x00	; 0
+ 2ea:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+		alive_counter = 0;                        // reset the hand made prescalar
+ 2ee:	10 92 62 00 	sts	0x0062, r1	; 0x800062 <alive_counter>
+		TCCR2 = 0x06;                             // This will start the Timer with a prescalar of 256 and stop the PWM stuff
+ 2f2:	86 e0       	ldi	r24, 0x06	; 6
+ 2f4:	85 bd       	out	0x25, r24	; 37
+ 2f6:	42 c0       	rjmp	.+132    	; 0x37c <flowMeter+0x122>
 		
 	}
 	else
 	{
 		// Now I need to compare the number of pulses I got with what I should have received
-		int8_t pulse_error = desired_pulses - pulse_count;   //! This will be able to handle negative numbers
- 316:	c0 91 65 00 	lds	r28, 0x0065	; 0x800065 <desired_pulses>
- 31a:	c8 1b       	sub	r28, r24
- 31c:	dc 2f       	mov	r29, r28
-		float change = (float) pulse_error * V_per_pulse * ((float) ICR1) / pump_tot_V;   //! Check page 94 in notebook for correct derivation.
- 31e:	6c 2f       	mov	r22, r28
- 320:	0c 2e       	mov	r0, r28
- 322:	00 0c       	add	r0, r0
- 324:	77 0b       	sbc	r23, r23
- 326:	88 0b       	sbc	r24, r24
- 328:	99 0b       	sbc	r25, r25
- 32a:	0e 94 6a 05 	call	0xad4	; 0xad4 <__floatsisf>
- 32e:	24 ee       	ldi	r18, 0xE4	; 228
- 330:	33 ef       	ldi	r19, 0xF3	; 243
- 332:	4f e2       	ldi	r20, 0x2F	; 47
- 334:	5c e3       	ldi	r21, 0x3C	; 60
- 336:	0e 94 1f 06 	call	0xc3e	; 0xc3e <__mulsf3>
- 33a:	6b 01       	movw	r12, r22
- 33c:	7c 01       	movw	r14, r24
- 33e:	66 b5       	in	r22, 0x26	; 38
- 340:	77 b5       	in	r23, 0x27	; 39
- 342:	80 e0       	ldi	r24, 0x00	; 0
- 344:	90 e0       	ldi	r25, 0x00	; 0
- 346:	0e 94 68 05 	call	0xad0	; 0xad0 <__floatunsisf>
- 34a:	9b 01       	movw	r18, r22
- 34c:	ac 01       	movw	r20, r24
- 34e:	c7 01       	movw	r24, r14
- 350:	b6 01       	movw	r22, r12
- 352:	0e 94 1f 06 	call	0xc3e	; 0xc3e <__mulsf3>
- 356:	20 e0       	ldi	r18, 0x00	; 0
- 358:	30 e0       	ldi	r19, 0x00	; 0
- 35a:	40 ec       	ldi	r20, 0xC0	; 192
- 35c:	50 e4       	ldi	r21, 0x40	; 64
- 35e:	0e 94 c0 04 	call	0x980	; 0x980 <__divsf3>
+		int8_t pulse_error = desired_pulses - pulse_count;   // This will be able to handle negative numbers
+ 2f8:	c0 91 65 00 	lds	r28, 0x0065	; 0x800065 <desired_pulses>
+ 2fc:	c8 1b       	sub	r28, r24
+ 2fe:	dc 2f       	mov	r29, r28
+		float change = (float) pulse_error * V_per_pulse * ((float) ICR1) / pump_tot_V;   // Check page 94 in notebook for correct derivation.
+ 300:	6c 2f       	mov	r22, r28
+ 302:	0c 2e       	mov	r0, r28
+ 304:	00 0c       	add	r0, r0
+ 306:	77 0b       	sbc	r23, r23
+ 308:	88 0b       	sbc	r24, r24
+ 30a:	99 0b       	sbc	r25, r25
+ 30c:	0e 94 d0 05 	call	0xba0	; 0xba0 <__floatsisf>
+ 310:	24 ee       	ldi	r18, 0xE4	; 228
+ 312:	33 ef       	ldi	r19, 0xF3	; 243
+ 314:	4f e2       	ldi	r20, 0x2F	; 47
+ 316:	5c e3       	ldi	r21, 0x3C	; 60
+ 318:	0e 94 85 06 	call	0xd0a	; 0xd0a <__mulsf3>
+ 31c:	6b 01       	movw	r12, r22
+ 31e:	7c 01       	movw	r14, r24
+ 320:	66 b5       	in	r22, 0x26	; 38
+ 322:	77 b5       	in	r23, 0x27	; 39
+ 324:	80 e0       	ldi	r24, 0x00	; 0
+ 326:	90 e0       	ldi	r25, 0x00	; 0
+ 328:	0e 94 ce 05 	call	0xb9c	; 0xb9c <__floatunsisf>
+ 32c:	9b 01       	movw	r18, r22
+ 32e:	ac 01       	movw	r20, r24
+ 330:	c7 01       	movw	r24, r14
+ 332:	b6 01       	movw	r22, r12
+ 334:	0e 94 85 06 	call	0xd0a	; 0xd0a <__mulsf3>
+ 338:	20 e0       	ldi	r18, 0x00	; 0
+ 33a:	30 e0       	ldi	r19, 0x00	; 0
+ 33c:	40 ec       	ldi	r20, 0xC0	; 192
+ 33e:	50 e4       	ldi	r21, 0x40	; 64
+ 340:	0e 94 26 05 	call	0xa4c	; 0xa4c <__divsf3>
 		OCR1B -= (uint16_t) change;   
- 362:	08 b5       	in	r16, 0x28	; 40
- 364:	19 b5       	in	r17, 0x29	; 41
- 366:	0e 94 39 05 	call	0xa72	; 0xa72 <__fixunssfsi>
- 36a:	06 1b       	sub	r16, r22
- 36c:	17 0b       	sbc	r17, r23
- 36e:	19 bd       	out	0x29, r17	; 41
- 370:	08 bd       	out	0x28, r16	; 40
+ 344:	08 b5       	in	r16, 0x28	; 40
+ 346:	19 b5       	in	r17, 0x29	; 41
+ 348:	0e 94 9f 05 	call	0xb3e	; 0xb3e <__fixunssfsi>
+ 34c:	06 1b       	sub	r16, r22
+ 34e:	17 0b       	sbc	r17, r23
+ 350:	19 bd       	out	0x29, r17	; 41
+ 352:	08 bd       	out	0x28, r16	; 40
 		// The above line should immediately change the PWM as well
+		
 		if (pulse_error < 0)
- 372:	cc 23       	and	r28, r28
- 374:	0c f4       	brge	.+2      	; 0x378 <flowMeter+0x102>
-			pulse_error = -pulse_error;    //! Make it the absolute value 
- 376:	d1 95       	neg	r29
-		if (pulse_error <= pulse_error_allow) //! mission is a success
- 378:	8d 2f       	mov	r24, r29
- 37a:	dd 0f       	add	r29, r29
- 37c:	99 0b       	sbc	r25, r25
- 37e:	20 91 60 00 	lds	r18, 0x0060	; 0x800060 <_edata>
- 382:	30 e0       	ldi	r19, 0x00	; 0
- 384:	28 17       	cp	r18, r24
- 386:	39 07       	cpc	r19, r25
- 388:	24 f0       	brlt	.+8      	; 0x392 <flowMeter+0x11c>
-			PORTD |= (1 << Fuel_LED);        //! Make the fuel LED just stay on
- 38a:	82 b3       	in	r24, 0x12	; 18
- 38c:	80 64       	ori	r24, 0x40	; 64
- 38e:	82 bb       	out	0x12, r24	; 18
- 390:	04 c0       	rjmp	.+8      	; 0x39a <flowMeter+0x124>
+ 354:	cc 23       	and	r28, r28
+ 356:	0c f4       	brge	.+2      	; 0x35a <flowMeter+0x100>
+			pulse_error = -pulse_error;          // Make it the absolute value 
+ 358:	d1 95       	neg	r29
+		if (pulse_error <= pulse_error_allow)    // mission is a success
+ 35a:	8d 2f       	mov	r24, r29
+ 35c:	dd 0f       	add	r29, r29
+ 35e:	99 0b       	sbc	r25, r25
+ 360:	20 91 60 00 	lds	r18, 0x0060	; 0x800060 <_edata>
+ 364:	30 e0       	ldi	r19, 0x00	; 0
+ 366:	28 17       	cp	r18, r24
+ 368:	39 07       	cpc	r19, r25
+ 36a:	24 f0       	brlt	.+8      	; 0x374 <flowMeter+0x11a>
+			PORTD |= (1 << Fuel_LED);            // Make the fuel LED just stay on
+ 36c:	82 b3       	in	r24, 0x12	; 18
+ 36e:	80 64       	ori	r24, 0x40	; 64
+ 370:	82 bb       	out	0x12, r24	; 18
+ 372:	04 c0       	rjmp	.+8      	; 0x37c <flowMeter+0x122>
 		else
-			PORTD ^= (1 << Fuel_LED);       //! Make the fuel LED blink saying that it is not done yet.
- 392:	92 b3       	in	r25, 0x12	; 18
- 394:	80 e4       	ldi	r24, 0x40	; 64
- 396:	89 27       	eor	r24, r25
- 398:	82 bb       	out	0x12, r24	; 18
+			PORTD ^= (1 << Fuel_LED);            // Make the fuel LED blink saying that it is not done yet.
+ 374:	92 b3       	in	r25, 0x12	; 18
+ 376:	80 e4       	ldi	r24, 0x40	; 64
+ 378:	89 27       	eor	r24, r25
+ 37a:	82 bb       	out	0x12, r24	; 18
 	
-		// Now since some time has elapsed, toggle the Alive_LED
-		PORTD ^= (1 << Alive_LED);       //! So the Alive_LED should blink on ~0.25 sec off ~0.25 sec
- 39a:	92 b3       	in	r25, 0x12	; 18
- 39c:	80 e2       	ldi	r24, 0x20	; 32
- 39e:	89 27       	eor	r24, r25
- 3a0:	82 bb       	out	0x12, r24	; 18
 	}
 }
- 3a2:	df 91       	pop	r29
- 3a4:	cf 91       	pop	r28
- 3a6:	1f 91       	pop	r17
- 3a8:	0f 91       	pop	r16
- 3aa:	ff 90       	pop	r15
- 3ac:	ef 90       	pop	r14
- 3ae:	df 90       	pop	r13
- 3b0:	cf 90       	pop	r12
- 3b2:	08 95       	ret
+ 37c:	df 91       	pop	r29
+ 37e:	cf 91       	pop	r28
+ 380:	1f 91       	pop	r17
+ 382:	0f 91       	pop	r16
+ 384:	ff 90       	pop	r15
+ 386:	ef 90       	pop	r14
+ 388:	df 90       	pop	r13
+ 38a:	cf 90       	pop	r12
+ 38c:	08 95       	ret
 
-000003b4 <ECU_toggle>:
+0000038e <ECU_toggle>:
  *  @param[in] ECU_mode This variable denote which mode the system is configured in. 0 for dummy ECU, 1 for operational ECU
  *  @return void
  */
 void ECU_toggle(uint8_t ECU_mode)
 {
-	assign_bit(&PORTA, ECUon_Pin, ECU_mode);   //! make sure the ECU has its power circuit closed if it is an operational ECU
- 3b4:	48 2f       	mov	r20, r24
- 3b6:	67 e0       	ldi	r22, 0x07	; 7
- 3b8:	8b e3       	ldi	r24, 0x3B	; 59
- 3ba:	90 e0       	ldi	r25, 0x00	; 0
- 3bc:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
- 3c0:	08 95       	ret
+	assign_bit(&PORTA, ECUon_Pin, ECU_mode);   // make sure the ECU has its power circuit closed if it is an operational ECU
+ 38e:	48 2f       	mov	r20, r24
+ 390:	67 e0       	ldi	r22, 0x07	; 7
+ 392:	8b e3       	ldi	r24, 0x3B	; 59
+ 394:	90 e0       	ldi	r25, 0x00	; 0
+ 396:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+ 39a:	08 95       	ret
 
-000003c2 <change_timers>:
- *
+0000039c <change_timers>:
  *  @param void
  *  @return void
+ *  @see flowMeter
  */
 void change_timers(void)
 {
- 3c2:	cf 93       	push	r28
- 3c4:	df 93       	push	r29
-	opMode = 1;                          //! Change the operational mode
- 3c6:	81 e0       	ldi	r24, 0x01	; 1
- 3c8:	80 93 61 00 	sts	0x0061, r24	; 0x800061 <opMode>
-	assign_bit(&PORTB,Warm_LED,1);    //! Turn on the LED to signal the heating sequence is complete
- 3cc:	41 e0       	ldi	r20, 0x01	; 1
- 3ce:	61 e0       	ldi	r22, 0x01	; 1
- 3d0:	88 e3       	ldi	r24, 0x38	; 56
- 3d2:	90 e0       	ldi	r25, 0x00	; 0
- 3d4:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+ 39c:	cf 93       	push	r28
+ 39e:	df 93       	push	r29
+	opMode = 1;                          // Change the operational mode
+ 3a0:	81 e0       	ldi	r24, 0x01	; 1
+ 3a2:	80 93 61 00 	sts	0x0061, r24	; 0x800061 <opMode>
+	assign_bit(&PORTB,Warm_LED,1);    // Turn on the LED to signal the heating sequence is complete
+ 3a6:	41 e0       	ldi	r20, 0x01	; 1
+ 3a8:	61 e0       	ldi	r22, 0x01	; 1
+ 3aa:	88 e3       	ldi	r24, 0x38	; 56
+ 3ac:	90 e0       	ldi	r25, 0x00	; 0
+ 3ae:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
 	ECU_toggle(ECU_present);
- 3d8:	80 e0       	ldi	r24, 0x00	; 0
- 3da:	0e 94 da 01 	call	0x3b4	; 0x3b4 <ECU_toggle>
+ 3b2:	80 e0       	ldi	r24, 0x00	; 0
+ 3b4:	0e 94 c7 01 	call	0x38e	; 0x38e <ECU_toggle>
+	// Now need to assign timer 2 to the alive LED
 	
 	if (!ECU_present)
 	{
 		// First change Timer 1 to serve as the PWM output port for the pump
-		assign_bit(&TIMSK,TOIE1,0);    //! remove overflow interrupts for timer 1
- 3de:	40 e0       	ldi	r20, 0x00	; 0
- 3e0:	62 e0       	ldi	r22, 0x02	; 2
- 3e2:	89 e5       	ldi	r24, 0x59	; 89
- 3e4:	90 e0       	ldi	r25, 0x00	; 0
- 3e6:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
-		TCCR1A |= (1 << WGM11);     //! The sets one of the bits for the mode 14 waveform
- 3ea:	8f b5       	in	r24, 0x2f	; 47
- 3ec:	82 60       	ori	r24, 0x02	; 2
- 3ee:	8f bd       	out	0x2f, r24	; 47
-		TCCR1B |= (1 << WGM12) | (1 << WGM13);   //! This sets the other two bits for the waveform generation
- 3f0:	8e b5       	in	r24, 0x2e	; 46
- 3f2:	88 61       	ori	r24, 0x18	; 24
- 3f4:	8e bd       	out	0x2e, r24	; 46
-		TCCR1A |= (1 << COM1B1) | (1 << COM1B0);   //! These set the output mode
- 3f6:	8f b5       	in	r24, 0x2f	; 47
- 3f8:	80 63       	ori	r24, 0x30	; 48
- 3fa:	8f bd       	out	0x2f, r24	; 47
-		ICR1 = 20000;     //! this will set the period of oscillation to 20ms
- 3fc:	80 e2       	ldi	r24, 0x20	; 32
- 3fe:	9e e4       	ldi	r25, 0x4E	; 78
- 400:	97 bd       	out	0x27, r25	; 39
- 402:	86 bd       	out	0x26, r24	; 38
+		assign_bit(&TIMSK,TOIE1,0);    // remove overflow interrupts for timer 1
+ 3b8:	40 e0       	ldi	r20, 0x00	; 0
+ 3ba:	62 e0       	ldi	r22, 0x02	; 2
+ 3bc:	89 e5       	ldi	r24, 0x59	; 89
+ 3be:	90 e0       	ldi	r25, 0x00	; 0
+ 3c0:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+		TCCR1A |= (1 << WGM11);     // The sets one of the bits for the mode 14 waveform
+ 3c4:	8f b5       	in	r24, 0x2f	; 47
+ 3c6:	82 60       	ori	r24, 0x02	; 2
+ 3c8:	8f bd       	out	0x2f, r24	; 47
+		TCCR1B |= (1 << WGM12) | (1 << WGM13);   // This sets the other two bits for the waveform generation
+ 3ca:	8e b5       	in	r24, 0x2e	; 46
+ 3cc:	88 61       	ori	r24, 0x18	; 24
+ 3ce:	8e bd       	out	0x2e, r24	; 46
+		TCCR1A |= (1 << COM1B1) | (1 << COM1B0);   // These set the output mode
+ 3d0:	8f b5       	in	r24, 0x2f	; 47
+ 3d2:	80 63       	ori	r24, 0x30	; 48
+ 3d4:	8f bd       	out	0x2f, r24	; 47
+		ICR1 = 20000;     // this will set the period of oscillation to 20ms
+ 3d6:	80 e2       	ldi	r24, 0x20	; 32
+ 3d8:	9e e4       	ldi	r25, 0x4E	; 78
+ 3da:	97 bd       	out	0x27, r25	; 39
+ 3dc:	86 bd       	out	0x26, r24	; 38
 			
-		OCR1B = ICR1 - (int)(ICR1*duty_cycle);     //! This will set the count at which the PWM will change to on. Also make sure to round down to int
- 404:	c6 b5       	in	r28, 0x26	; 38
- 406:	d7 b5       	in	r29, 0x27	; 39
- 408:	66 b5       	in	r22, 0x26	; 38
- 40a:	77 b5       	in	r23, 0x27	; 39
- 40c:	80 e0       	ldi	r24, 0x00	; 0
- 40e:	90 e0       	ldi	r25, 0x00	; 0
- 410:	0e 94 68 05 	call	0xad0	; 0xad0 <__floatunsisf>
- 414:	20 91 67 00 	lds	r18, 0x0067	; 0x800067 <duty_cycle>
- 418:	30 91 68 00 	lds	r19, 0x0068	; 0x800068 <duty_cycle+0x1>
- 41c:	40 91 69 00 	lds	r20, 0x0069	; 0x800069 <duty_cycle+0x2>
- 420:	50 91 6a 00 	lds	r21, 0x006A	; 0x80006a <duty_cycle+0x3>
- 424:	0e 94 1f 06 	call	0xc3e	; 0xc3e <__mulsf3>
- 428:	0e 94 32 05 	call	0xa64	; 0xa64 <__fixsfsi>
- 42c:	c6 1b       	sub	r28, r22
- 42e:	d7 0b       	sbc	r29, r23
- 430:	d9 bd       	out	0x29, r29	; 41
- 432:	c8 bd       	out	0x28, r28	; 40
-		assign_bit(&TCCR1B, CS10, 1);              //! This should start the PWM with a prescalar of 1
- 434:	41 e0       	ldi	r20, 0x01	; 1
- 436:	60 e0       	ldi	r22, 0x00	; 0
- 438:	8e e4       	ldi	r24, 0x4E	; 78
- 43a:	90 e0       	ldi	r25, 0x00	; 0
- 43c:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+		OCR1B = ICR1 - (int)(ICR1*duty_cycle);     // This will set the count at which the PWM will change to on. Also make sure to round down to int
+ 3de:	c6 b5       	in	r28, 0x26	; 38
+ 3e0:	d7 b5       	in	r29, 0x27	; 39
+ 3e2:	66 b5       	in	r22, 0x26	; 38
+ 3e4:	77 b5       	in	r23, 0x27	; 39
+ 3e6:	80 e0       	ldi	r24, 0x00	; 0
+ 3e8:	90 e0       	ldi	r25, 0x00	; 0
+ 3ea:	0e 94 ce 05 	call	0xb9c	; 0xb9c <__floatunsisf>
+ 3ee:	20 91 66 00 	lds	r18, 0x0066	; 0x800066 <duty_cycle>
+ 3f2:	30 91 67 00 	lds	r19, 0x0067	; 0x800067 <duty_cycle+0x1>
+ 3f6:	40 91 68 00 	lds	r20, 0x0068	; 0x800068 <duty_cycle+0x2>
+ 3fa:	50 91 69 00 	lds	r21, 0x0069	; 0x800069 <duty_cycle+0x3>
+ 3fe:	0e 94 85 06 	call	0xd0a	; 0xd0a <__mulsf3>
+ 402:	0e 94 98 05 	call	0xb30	; 0xb30 <__fixsfsi>
+ 406:	c6 1b       	sub	r28, r22
+ 408:	d7 0b       	sbc	r29, r23
+ 40a:	d9 bd       	out	0x29, r29	; 41
+ 40c:	c8 bd       	out	0x28, r28	; 40
+		assign_bit(&TCCR1B, CS10, 1);              // This should start the PWM with a prescalar of 1
+ 40e:	41 e0       	ldi	r20, 0x01	; 1
+ 410:	60 e0       	ldi	r22, 0x00	; 0
+ 412:	8e e4       	ldi	r24, 0x4E	; 78
+ 414:	90 e0       	ldi	r25, 0x00	; 0
+ 416:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
 		// Now the PWM should be running
 			
-		// Second change Timer 2 to serve as the counter for the pulse train from the flow meter
+		// Second change Timer0 to serve as the counter for the pulse train from the flow meter
+		TCCR0 = 0;                                 // Turn off the PWM so the ECU stops being warmed
+ 41a:	13 be       	out	0x33, r1	; 51
 		assign_bit(&TCCR0,CS02,0);
- 440:	40 e0       	ldi	r20, 0x00	; 0
- 442:	62 e0       	ldi	r22, 0x02	; 2
- 444:	83 e5       	ldi	r24, 0x53	; 83
- 446:	90 e0       	ldi	r25, 0x00	; 0
- 448:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+ 41c:	40 e0       	ldi	r20, 0x00	; 0
+ 41e:	62 e0       	ldi	r22, 0x02	; 2
+ 420:	83 e5       	ldi	r24, 0x53	; 83
+ 422:	90 e0       	ldi	r25, 0x00	; 0
+ 424:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
 		assign_bit(&TCCR0,CS01,0);
- 44c:	40 e0       	ldi	r20, 0x00	; 0
- 44e:	61 e0       	ldi	r22, 0x01	; 1
- 450:	83 e5       	ldi	r24, 0x53	; 83
- 452:	90 e0       	ldi	r25, 0x00	; 0
- 454:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
-		assign_bit(&TCCR0,CS00,0);     //! TThis will make sure that the timer is stopped for now	
- 458:	40 e0       	ldi	r20, 0x00	; 0
- 45a:	60 e0       	ldi	r22, 0x00	; 0
- 45c:	83 e5       	ldi	r24, 0x53	; 83
- 45e:	90 e0       	ldi	r25, 0x00	; 0
- 460:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+ 428:	40 e0       	ldi	r20, 0x00	; 0
+ 42a:	61 e0       	ldi	r22, 0x01	; 1
+ 42c:	83 e5       	ldi	r24, 0x53	; 83
+ 42e:	90 e0       	ldi	r25, 0x00	; 0
+ 430:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+		assign_bit(&TCCR0,CS00,0);                 // TThis will make sure that the timer is stopped for now	
+ 434:	40 e0       	ldi	r20, 0x00	; 0
+ 436:	60 e0       	ldi	r22, 0x00	; 0
+ 438:	83 e5       	ldi	r24, 0x53	; 83
+ 43a:	90 e0       	ldi	r25, 0x00	; 0
+ 43c:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
 		
 		// Third set the MCU Control and Status Register for the Interrupt Sense Control 2
-		MCUCSR |= (1 << ISC2);         //! This will make interrupts occur on the rising edge, so the beginning of the pulse
- 464:	84 b7       	in	r24, 0x34	; 52
- 466:	80 64       	ori	r24, 0x40	; 64
- 468:	84 bf       	out	0x34, r24	; 52
-
+		MCUCSR |= (1 << ISC2);                    // This will make interrupts occur on the rising edge, so the beginning of the pulse
+ 440:	84 b7       	in	r24, 0x34	; 52
+ 442:	80 64       	ori	r24, 0x40	; 64
+ 444:	84 bf       	out	0x34, r24	; 52
+		
+		// Fourth set Timer2 for the 0.75/0.25 second blink of the Alive LED
+		assign_bit(&PORTD, Alive_LED, 1);         // Start with turning on the LED
+ 446:	41 e0       	ldi	r20, 0x01	; 1
+ 448:	65 e0       	ldi	r22, 0x05	; 5
+ 44a:	82 e3       	ldi	r24, 0x32	; 50
+ 44c:	90 e0       	ldi	r25, 0x00	; 0
+ 44e:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+		TIMSK |= (1 << TOIE2);                    // Enable overflow interrupts on the timer
+ 452:	89 b7       	in	r24, 0x39	; 57
+ 454:	80 64       	ori	r24, 0x40	; 64
+ 456:	89 bf       	out	0x39, r24	; 57
+		TCNT2 = 11;                               // This is the value needed for the timer to run for 0.25 seconds
+ 458:	8b e0       	ldi	r24, 0x0B	; 11
+ 45a:	84 bd       	out	0x24, r24	; 36
+		alive_counter = 0;                        // Reset the hand made prescalar
+ 45c:	10 92 62 00 	sts	0x0062, r1	; 0x800062 <alive_counter>
+		TCCR2 = 0x07;                             // Start the timer with a prescalar of 1024
+ 460:	87 e0       	ldi	r24, 0x07	; 7
+ 462:	85 bd       	out	0x25, r24	; 37
+		TCCR1B = 0;         // This set is to prevent any unexpected triggering of the heating circuits
+		TCCR1A = 0;
+		
+		
 	}
 }
- 46a:	df 91       	pop	r29
- 46c:	cf 91       	pop	r28
- 46e:	08 95       	ret
+ 464:	df 91       	pop	r29
+ 466:	cf 91       	pop	r28
+ 468:	08 95       	ret
 
-00000470 <tempHeaterHelper>:
- *
- *  @param void
+0000046a <tempHeaterHelper>:
  *  @return void
+ *  @note Need to confirm that heater operation is still sufficient for phase 1 and 2.
+ *  @see tempConversion
  */
 void tempHeaterHelper(void)
 {
- 470:	cf 92       	push	r12
- 472:	df 92       	push	r13
- 474:	ef 92       	push	r14
- 476:	ff 92       	push	r15
- 478:	cf 93       	push	r28
+ 46a:	cf 92       	push	r12
+ 46c:	df 92       	push	r13
+ 46e:	ef 92       	push	r14
+ 470:	ff 92       	push	r15
+ 472:	cf 93       	push	r28
 	for (uint8_t i = 0; i < 6; i++)
- 47a:	c0 e0       	ldi	r28, 0x00	; 0
- 47c:	61 c1       	rjmp	.+706    	; 0x740 <tempHeaterHelper+0x2d0>
+ 474:	c0 e0       	ldi	r28, 0x00	; 0
+ 476:	5d c1       	rjmp	.+698    	; 0x732 <tempHeaterHelper+0x2c8>
 	{
 		switch(i){
- 47e:	c2 30       	cpi	r28, 0x02	; 2
- 480:	09 f4       	brne	.+2      	; 0x484 <tempHeaterHelper+0x14>
- 482:	6f c0       	rjmp	.+222    	; 0x562 <tempHeaterHelper+0xf2>
- 484:	28 f4       	brcc	.+10     	; 0x490 <tempHeaterHelper+0x20>
- 486:	cc 23       	and	r28, r28
- 488:	61 f0       	breq	.+24     	; 0x4a2 <tempHeaterHelper+0x32>
- 48a:	c1 30       	cpi	r28, 0x01	; 1
- 48c:	d1 f1       	breq	.+116    	; 0x502 <tempHeaterHelper+0x92>
- 48e:	57 c1       	rjmp	.+686    	; 0x73e <tempHeaterHelper+0x2ce>
- 490:	c4 30       	cpi	r28, 0x04	; 4
- 492:	09 f4       	brne	.+2      	; 0x496 <tempHeaterHelper+0x26>
- 494:	dc c0       	rjmp	.+440    	; 0x64e <tempHeaterHelper+0x1de>
- 496:	08 f4       	brcc	.+2      	; 0x49a <tempHeaterHelper+0x2a>
- 498:	aa c0       	rjmp	.+340    	; 0x5ee <tempHeaterHelper+0x17e>
- 49a:	c5 30       	cpi	r28, 0x05	; 5
- 49c:	09 f4       	brne	.+2      	; 0x4a0 <tempHeaterHelper+0x30>
- 49e:	1d c1       	rjmp	.+570    	; 0x6da <tempHeaterHelper+0x26a>
- 4a0:	4e c1       	rjmp	.+668    	; 0x73e <tempHeaterHelper+0x2ce>
-			case 0:       //! This is the case for the Lipo batteries might need to incorporate ranges for this to actually work   /////////
-				if (saveTemps[0] > TempBat )    //! safety first so make sure that the temperature always turns off if one of the batteries is getting too hot
- 4a2:	c0 90 6b 00 	lds	r12, 0x006B	; 0x80006b <saveTemps>
- 4a6:	d0 90 6c 00 	lds	r13, 0x006C	; 0x80006c <saveTemps+0x1>
- 4aa:	e0 90 6d 00 	lds	r14, 0x006D	; 0x80006d <saveTemps+0x2>
- 4ae:	f0 90 6e 00 	lds	r15, 0x006E	; 0x80006e <saveTemps+0x3>
- 4b2:	20 e0       	ldi	r18, 0x00	; 0
- 4b4:	30 e0       	ldi	r19, 0x00	; 0
- 4b6:	40 e2       	ldi	r20, 0x20	; 32
- 4b8:	51 e4       	ldi	r21, 0x41	; 65
- 4ba:	c7 01       	movw	r24, r14
- 4bc:	b6 01       	movw	r22, r12
- 4be:	0e 94 1a 06 	call	0xc34	; 0xc34 <__gesf2>
- 4c2:	18 16       	cp	r1, r24
- 4c4:	64 f4       	brge	.+24     	; 0x4de <tempHeaterHelper+0x6e>
+ 478:	c2 30       	cpi	r28, 0x02	; 2
+ 47a:	09 f4       	brne	.+2      	; 0x47e <tempHeaterHelper+0x14>
+ 47c:	6f c0       	rjmp	.+222    	; 0x55c <tempHeaterHelper+0xf2>
+ 47e:	28 f4       	brcc	.+10     	; 0x48a <tempHeaterHelper+0x20>
+ 480:	cc 23       	and	r28, r28
+ 482:	61 f0       	breq	.+24     	; 0x49c <tempHeaterHelper+0x32>
+ 484:	c1 30       	cpi	r28, 0x01	; 1
+ 486:	d1 f1       	breq	.+116    	; 0x4fc <tempHeaterHelper+0x92>
+ 488:	53 c1       	rjmp	.+678    	; 0x730 <tempHeaterHelper+0x2c6>
+ 48a:	c4 30       	cpi	r28, 0x04	; 4
+ 48c:	09 f4       	brne	.+2      	; 0x490 <tempHeaterHelper+0x26>
+ 48e:	dc c0       	rjmp	.+440    	; 0x648 <tempHeaterHelper+0x1de>
+ 490:	08 f4       	brcc	.+2      	; 0x494 <tempHeaterHelper+0x2a>
+ 492:	aa c0       	rjmp	.+340    	; 0x5e8 <tempHeaterHelper+0x17e>
+ 494:	c5 30       	cpi	r28, 0x05	; 5
+ 496:	09 f4       	brne	.+2      	; 0x49a <tempHeaterHelper+0x30>
+ 498:	1d c1       	rjmp	.+570    	; 0x6d4 <tempHeaterHelper+0x26a>
+ 49a:	4a c1       	rjmp	.+660    	; 0x730 <tempHeaterHelper+0x2c6>
+			case 0:                             // This is the case for the Lipo batteries   //////////////////////////////////////////////
+				if (saveTemps[0] > TempBat )    // safety first so make sure that the temperature always turns off if one of the batteries is getting too hot
+ 49c:	c0 90 6a 00 	lds	r12, 0x006A	; 0x80006a <saveTemps>
+ 4a0:	d0 90 6b 00 	lds	r13, 0x006B	; 0x80006b <saveTemps+0x1>
+ 4a4:	e0 90 6c 00 	lds	r14, 0x006C	; 0x80006c <saveTemps+0x2>
+ 4a8:	f0 90 6d 00 	lds	r15, 0x006D	; 0x80006d <saveTemps+0x3>
+ 4ac:	20 e0       	ldi	r18, 0x00	; 0
+ 4ae:	30 e0       	ldi	r19, 0x00	; 0
+ 4b0:	40 e2       	ldi	r20, 0x20	; 32
+ 4b2:	51 e4       	ldi	r21, 0x41	; 65
+ 4b4:	c7 01       	movw	r24, r14
+ 4b6:	b6 01       	movw	r22, r12
+ 4b8:	0e 94 80 06 	call	0xd00	; 0xd00 <__gesf2>
+ 4bc:	18 16       	cp	r1, r24
+ 4be:	64 f4       	brge	.+24     	; 0x4d8 <tempHeaterHelper+0x6e>
 				{
 					desired_temp |= 0x01;
- 4c6:	80 91 63 00 	lds	r24, 0x0063	; 0x800063 <desired_temp>
- 4ca:	81 60       	ori	r24, 0x01	; 1
- 4cc:	80 93 63 00 	sts	0x0063, r24	; 0x800063 <desired_temp>
-					assign_bit(&PORTD, BatPin, 0);       //! Turn the heater off if either of these get too high
- 4d0:	40 e0       	ldi	r20, 0x00	; 0
- 4d2:	60 e0       	ldi	r22, 0x00	; 0
- 4d4:	82 e3       	ldi	r24, 0x32	; 50
- 4d6:	90 e0       	ldi	r25, 0x00	; 0
- 4d8:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
- 4dc:	30 c1       	rjmp	.+608    	; 0x73e <tempHeaterHelper+0x2ce>
+ 4c0:	80 91 63 00 	lds	r24, 0x0063	; 0x800063 <desired_temp>
+ 4c4:	81 60       	ori	r24, 0x01	; 1
+ 4c6:	80 93 63 00 	sts	0x0063, r24	; 0x800063 <desired_temp>
+					assign_bit(&PORTD, BatPin, 0);       // Turn the heater off if either of these get too high
+ 4ca:	40 e0       	ldi	r20, 0x00	; 0
+ 4cc:	60 e0       	ldi	r22, 0x00	; 0
+ 4ce:	82 e3       	ldi	r24, 0x32	; 50
+ 4d0:	90 e0       	ldi	r25, 0x00	; 0
+ 4d2:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+ 4d6:	2c c1       	rjmp	.+600    	; 0x730 <tempHeaterHelper+0x2c6>
 				}
 				else if(saveTemps[0] < TempBat)
- 4de:	20 e0       	ldi	r18, 0x00	; 0
- 4e0:	30 e0       	ldi	r19, 0x00	; 0
- 4e2:	40 e2       	ldi	r20, 0x20	; 32
- 4e4:	51 e4       	ldi	r21, 0x41	; 65
- 4e6:	c7 01       	movw	r24, r14
- 4e8:	b6 01       	movw	r22, r12
- 4ea:	0e 94 bb 04 	call	0x976	; 0x976 <__cmpsf2>
- 4ee:	88 23       	and	r24, r24
- 4f0:	0c f0       	brlt	.+2      	; 0x4f4 <tempHeaterHelper+0x84>
- 4f2:	25 c1       	rjmp	.+586    	; 0x73e <tempHeaterHelper+0x2ce>
+ 4d8:	20 e0       	ldi	r18, 0x00	; 0
+ 4da:	30 e0       	ldi	r19, 0x00	; 0
+ 4dc:	40 e2       	ldi	r20, 0x20	; 32
+ 4de:	51 e4       	ldi	r21, 0x41	; 65
+ 4e0:	c7 01       	movw	r24, r14
+ 4e2:	b6 01       	movw	r22, r12
+ 4e4:	0e 94 21 05 	call	0xa42	; 0xa42 <__cmpsf2>
+ 4e8:	88 23       	and	r24, r24
+ 4ea:	0c f0       	brlt	.+2      	; 0x4ee <tempHeaterHelper+0x84>
+ 4ec:	21 c1       	rjmp	.+578    	; 0x730 <tempHeaterHelper+0x2c6>
 				{
 					assign_bit(&PORTD, BatPin, 1);    // Turn the heater back on to warm them up
- 4f4:	41 e0       	ldi	r20, 0x01	; 1
- 4f6:	60 e0       	ldi	r22, 0x00	; 0
- 4f8:	82 e3       	ldi	r24, 0x32	; 50
- 4fa:	90 e0       	ldi	r25, 0x00	; 0
- 4fc:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
- 500:	1e c1       	rjmp	.+572    	; 0x73e <tempHeaterHelper+0x2ce>
+ 4ee:	41 e0       	ldi	r20, 0x01	; 1
+ 4f0:	60 e0       	ldi	r22, 0x00	; 0
+ 4f2:	82 e3       	ldi	r24, 0x32	; 50
+ 4f4:	90 e0       	ldi	r25, 0x00	; 0
+ 4f6:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+ 4fa:	1a c1       	rjmp	.+564    	; 0x730 <tempHeaterHelper+0x2c6>
 				}
 				break;
 				
-			case 1:       //! This is the case for the Hopper    /////////////////////////////////////////////////
-				if (saveTemps[2] < TempHopper)   //! Temp is too low so turn on the heater
- 502:	c0 90 73 00 	lds	r12, 0x0073	; 0x800073 <saveTemps+0x8>
- 506:	d0 90 74 00 	lds	r13, 0x0074	; 0x800074 <saveTemps+0x9>
- 50a:	e0 90 75 00 	lds	r14, 0x0075	; 0x800075 <saveTemps+0xa>
- 50e:	f0 90 76 00 	lds	r15, 0x0076	; 0x800076 <saveTemps+0xb>
- 512:	20 e0       	ldi	r18, 0x00	; 0
- 514:	30 e0       	ldi	r19, 0x00	; 0
- 516:	40 e2       	ldi	r20, 0x20	; 32
- 518:	51 e4       	ldi	r21, 0x41	; 65
- 51a:	c7 01       	movw	r24, r14
- 51c:	b6 01       	movw	r22, r12
- 51e:	0e 94 bb 04 	call	0x976	; 0x976 <__cmpsf2>
- 522:	88 23       	and	r24, r24
- 524:	3c f4       	brge	.+14     	; 0x534 <tempHeaterHelper+0xc4>
+			case 1:       // This is the case for the Hopper    /////////////////////////////////////////////////
+				if (saveTemps[2] < TempHopper)           // Temp is too low so turn on the heater
+ 4fc:	c0 90 72 00 	lds	r12, 0x0072	; 0x800072 <saveTemps+0x8>
+ 500:	d0 90 73 00 	lds	r13, 0x0073	; 0x800073 <saveTemps+0x9>
+ 504:	e0 90 74 00 	lds	r14, 0x0074	; 0x800074 <saveTemps+0xa>
+ 508:	f0 90 75 00 	lds	r15, 0x0075	; 0x800075 <saveTemps+0xb>
+ 50c:	20 e0       	ldi	r18, 0x00	; 0
+ 50e:	30 e0       	ldi	r19, 0x00	; 0
+ 510:	40 e2       	ldi	r20, 0x20	; 32
+ 512:	51 e4       	ldi	r21, 0x41	; 65
+ 514:	c7 01       	movw	r24, r14
+ 516:	b6 01       	movw	r22, r12
+ 518:	0e 94 21 05 	call	0xa42	; 0xa42 <__cmpsf2>
+ 51c:	88 23       	and	r24, r24
+ 51e:	3c f4       	brge	.+14     	; 0x52e <tempHeaterHelper+0xc4>
 					assign_bit(&PORTD, HopperPin, 1);
- 526:	41 e0       	ldi	r20, 0x01	; 1
- 528:	61 e0       	ldi	r22, 0x01	; 1
- 52a:	82 e3       	ldi	r24, 0x32	; 50
- 52c:	90 e0       	ldi	r25, 0x00	; 0
- 52e:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
- 532:	05 c1       	rjmp	.+522    	; 0x73e <tempHeaterHelper+0x2ce>
+ 520:	41 e0       	ldi	r20, 0x01	; 1
+ 522:	61 e0       	ldi	r22, 0x01	; 1
+ 524:	82 e3       	ldi	r24, 0x32	; 50
+ 526:	90 e0       	ldi	r25, 0x00	; 0
+ 528:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+ 52c:	01 c1       	rjmp	.+514    	; 0x730 <tempHeaterHelper+0x2c6>
 				else if(saveTemps[2] > TempHopper)
- 534:	20 e0       	ldi	r18, 0x00	; 0
- 536:	30 e0       	ldi	r19, 0x00	; 0
- 538:	40 e2       	ldi	r20, 0x20	; 32
- 53a:	51 e4       	ldi	r21, 0x41	; 65
- 53c:	c7 01       	movw	r24, r14
- 53e:	b6 01       	movw	r22, r12
- 540:	0e 94 1a 06 	call	0xc34	; 0xc34 <__gesf2>
- 544:	18 16       	cp	r1, r24
- 546:	0c f0       	brlt	.+2      	; 0x54a <tempHeaterHelper+0xda>
- 548:	fa c0       	rjmp	.+500    	; 0x73e <tempHeaterHelper+0x2ce>
+ 52e:	20 e0       	ldi	r18, 0x00	; 0
+ 530:	30 e0       	ldi	r19, 0x00	; 0
+ 532:	40 e2       	ldi	r20, 0x20	; 32
+ 534:	51 e4       	ldi	r21, 0x41	; 65
+ 536:	c7 01       	movw	r24, r14
+ 538:	b6 01       	movw	r22, r12
+ 53a:	0e 94 80 06 	call	0xd00	; 0xd00 <__gesf2>
+ 53e:	18 16       	cp	r1, r24
+ 540:	0c f0       	brlt	.+2      	; 0x544 <tempHeaterHelper+0xda>
+ 542:	f6 c0       	rjmp	.+492    	; 0x730 <tempHeaterHelper+0x2c6>
 				{
-					assign_bit(&PORTD, HopperPin, 0);   //! Too hot so turn off
- 54a:	40 e0       	ldi	r20, 0x00	; 0
- 54c:	61 e0       	ldi	r22, 0x01	; 1
- 54e:	82 e3       	ldi	r24, 0x32	; 50
- 550:	90 e0       	ldi	r25, 0x00	; 0
- 552:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+					assign_bit(&PORTD, HopperPin, 0);    // Too hot so turn off
+ 544:	40 e0       	ldi	r20, 0x00	; 0
+ 546:	61 e0       	ldi	r22, 0x01	; 1
+ 548:	82 e3       	ldi	r24, 0x32	; 50
+ 54a:	90 e0       	ldi	r25, 0x00	; 0
+ 54c:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
 					desired_temp |= 0x02;				
- 556:	80 91 63 00 	lds	r24, 0x0063	; 0x800063 <desired_temp>
- 55a:	82 60       	ori	r24, 0x02	; 2
- 55c:	80 93 63 00 	sts	0x0063, r24	; 0x800063 <desired_temp>
- 560:	ee c0       	rjmp	.+476    	; 0x73e <tempHeaterHelper+0x2ce>
+ 550:	80 91 63 00 	lds	r24, 0x0063	; 0x800063 <desired_temp>
+ 554:	82 60       	ori	r24, 0x02	; 2
+ 556:	80 93 63 00 	sts	0x0063, r24	; 0x800063 <desired_temp>
+ 55a:	ea c0       	rjmp	.+468    	; 0x730 <tempHeaterHelper+0x2c6>
 				}
 				break;
 				
-			case 2:       //! This is the case for the ECU  /////////////////////////////////////////////////
+			case 2:       // This is the case for the ECU  /////////////////////////////////////////////////
 				if (saveTemps[3] < TempECU)
- 562:	c0 90 77 00 	lds	r12, 0x0077	; 0x800077 <saveTemps+0xc>
- 566:	d0 90 78 00 	lds	r13, 0x0078	; 0x800078 <saveTemps+0xd>
- 56a:	e0 90 79 00 	lds	r14, 0x0079	; 0x800079 <saveTemps+0xe>
- 56e:	f0 90 7a 00 	lds	r15, 0x007A	; 0x80007a <saveTemps+0xf>
- 572:	20 e0       	ldi	r18, 0x00	; 0
- 574:	30 e0       	ldi	r19, 0x00	; 0
- 576:	40 e2       	ldi	r20, 0x20	; 32
- 578:	51 e4       	ldi	r21, 0x41	; 65
- 57a:	c7 01       	movw	r24, r14
- 57c:	b6 01       	movw	r22, r12
- 57e:	0e 94 bb 04 	call	0x976	; 0x976 <__cmpsf2>
- 582:	88 23       	and	r24, r24
- 584:	94 f4       	brge	.+36     	; 0x5aa <tempHeaterHelper+0x13a>
+ 55c:	c0 90 76 00 	lds	r12, 0x0076	; 0x800076 <saveTemps+0xc>
+ 560:	d0 90 77 00 	lds	r13, 0x0077	; 0x800077 <saveTemps+0xd>
+ 564:	e0 90 78 00 	lds	r14, 0x0078	; 0x800078 <saveTemps+0xe>
+ 568:	f0 90 79 00 	lds	r15, 0x0079	; 0x800079 <saveTemps+0xf>
+ 56c:	20 e0       	ldi	r18, 0x00	; 0
+ 56e:	30 e0       	ldi	r19, 0x00	; 0
+ 570:	40 e2       	ldi	r20, 0x20	; 32
+ 572:	51 e4       	ldi	r21, 0x41	; 65
+ 574:	c7 01       	movw	r24, r14
+ 576:	b6 01       	movw	r22, r12
+ 578:	0e 94 21 05 	call	0xa42	; 0xa42 <__cmpsf2>
+ 57c:	88 23       	and	r24, r24
+ 57e:	94 f4       	brge	.+36     	; 0x5a4 <tempHeaterHelper+0x13a>
 					if (!opMode)
- 586:	80 91 61 00 	lds	r24, 0x0061	; 0x800061 <opMode>
- 58a:	81 11       	cpse	r24, r1
- 58c:	07 c0       	rjmp	.+14     	; 0x59c <tempHeaterHelper+0x12c>
-						assign_bit(&TCCR0, CS02, 1);      //! This will turn the PWM back on
- 58e:	41 e0       	ldi	r20, 0x01	; 1
- 590:	62 e0       	ldi	r22, 0x02	; 2
- 592:	83 e5       	ldi	r24, 0x53	; 83
- 594:	90 e0       	ldi	r25, 0x00	; 0
- 596:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
- 59a:	d1 c0       	rjmp	.+418    	; 0x73e <tempHeaterHelper+0x2ce>
+ 580:	80 91 61 00 	lds	r24, 0x0061	; 0x800061 <opMode>
+ 584:	81 11       	cpse	r24, r1
+ 586:	07 c0       	rjmp	.+14     	; 0x596 <tempHeaterHelper+0x12c>
+						assign_bit(&TCCR0, CS02, 1);      // This will turn the PWM back on
+ 588:	41 e0       	ldi	r20, 0x01	; 1
+ 58a:	62 e0       	ldi	r22, 0x02	; 2
+ 58c:	83 e5       	ldi	r24, 0x53	; 83
+ 58e:	90 e0       	ldi	r25, 0x00	; 0
+ 590:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+ 594:	cd c0       	rjmp	.+410    	; 0x730 <tempHeaterHelper+0x2c6>
 					else
-						assign_bit(&PORTB, ECU_pin, 1);   //! Turn the heater on manually
- 59c:	41 e0       	ldi	r20, 0x01	; 1
- 59e:	63 e0       	ldi	r22, 0x03	; 3
- 5a0:	88 e3       	ldi	r24, 0x38	; 56
- 5a2:	90 e0       	ldi	r25, 0x00	; 0
- 5a4:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
- 5a8:	ca c0       	rjmp	.+404    	; 0x73e <tempHeaterHelper+0x2ce>
+						assign_bit(&PORTB, ECU_pin, 1);   // Turn the heater on manually
+ 596:	41 e0       	ldi	r20, 0x01	; 1
+ 598:	63 e0       	ldi	r22, 0x03	; 3
+ 59a:	88 e3       	ldi	r24, 0x38	; 56
+ 59c:	90 e0       	ldi	r25, 0x00	; 0
+ 59e:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+ 5a2:	c6 c0       	rjmp	.+396    	; 0x730 <tempHeaterHelper+0x2c6>
 				else if (saveTemps[3] > TempECU)
- 5aa:	20 e0       	ldi	r18, 0x00	; 0
- 5ac:	30 e0       	ldi	r19, 0x00	; 0
- 5ae:	40 e2       	ldi	r20, 0x20	; 32
- 5b0:	51 e4       	ldi	r21, 0x41	; 65
- 5b2:	c7 01       	movw	r24, r14
- 5b4:	b6 01       	movw	r22, r12
- 5b6:	0e 94 1a 06 	call	0xc34	; 0xc34 <__gesf2>
- 5ba:	18 16       	cp	r1, r24
- 5bc:	0c f0       	brlt	.+2      	; 0x5c0 <tempHeaterHelper+0x150>
- 5be:	bf c0       	rjmp	.+382    	; 0x73e <tempHeaterHelper+0x2ce>
+ 5a4:	20 e0       	ldi	r18, 0x00	; 0
+ 5a6:	30 e0       	ldi	r19, 0x00	; 0
+ 5a8:	40 e2       	ldi	r20, 0x20	; 32
+ 5aa:	51 e4       	ldi	r21, 0x41	; 65
+ 5ac:	c7 01       	movw	r24, r14
+ 5ae:	b6 01       	movw	r22, r12
+ 5b0:	0e 94 80 06 	call	0xd00	; 0xd00 <__gesf2>
+ 5b4:	18 16       	cp	r1, r24
+ 5b6:	0c f0       	brlt	.+2      	; 0x5ba <tempHeaterHelper+0x150>
+ 5b8:	bb c0       	rjmp	.+374    	; 0x730 <tempHeaterHelper+0x2c6>
 				{
 					if (!opMode)
- 5c0:	80 91 61 00 	lds	r24, 0x0061	; 0x800061 <opMode>
- 5c4:	81 11       	cpse	r24, r1
- 5c6:	0c c0       	rjmp	.+24     	; 0x5e0 <tempHeaterHelper+0x170>
+ 5ba:	80 91 61 00 	lds	r24, 0x0061	; 0x800061 <opMode>
+ 5be:	81 11       	cpse	r24, r1
+ 5c0:	0c c0       	rjmp	.+24     	; 0x5da <tempHeaterHelper+0x170>
 					{
-						assign_bit(&TCCR0, CS02, 0);      //! This will turn the PWM off
- 5c8:	40 e0       	ldi	r20, 0x00	; 0
- 5ca:	62 e0       	ldi	r22, 0x02	; 2
- 5cc:	83 e5       	ldi	r24, 0x53	; 83
- 5ce:	90 e0       	ldi	r25, 0x00	; 0
- 5d0:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+						assign_bit(&TCCR0, CS02, 0);      // This will turn the PWM off
+ 5c2:	40 e0       	ldi	r20, 0x00	; 0
+ 5c4:	62 e0       	ldi	r22, 0x02	; 2
+ 5c6:	83 e5       	ldi	r24, 0x53	; 83
+ 5c8:	90 e0       	ldi	r25, 0x00	; 0
+ 5ca:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
 						desired_temp |= 0x04;
- 5d4:	80 91 63 00 	lds	r24, 0x0063	; 0x800063 <desired_temp>
- 5d8:	84 60       	ori	r24, 0x04	; 4
- 5da:	80 93 63 00 	sts	0x0063, r24	; 0x800063 <desired_temp>
- 5de:	af c0       	rjmp	.+350    	; 0x73e <tempHeaterHelper+0x2ce>
+ 5ce:	80 91 63 00 	lds	r24, 0x0063	; 0x800063 <desired_temp>
+ 5d2:	84 60       	ori	r24, 0x04	; 4
+ 5d4:	80 93 63 00 	sts	0x0063, r24	; 0x800063 <desired_temp>
+ 5d8:	ab c0       	rjmp	.+342    	; 0x730 <tempHeaterHelper+0x2c6>
 					}
 					else
-						assign_bit(&PORTB, ECU_pin, 0);   //! Turn the heater off manually.  Don't do the same thing with desired_temp for the manual mode
- 5e0:	40 e0       	ldi	r20, 0x00	; 0
- 5e2:	63 e0       	ldi	r22, 0x03	; 3
- 5e4:	88 e3       	ldi	r24, 0x38	; 56
- 5e6:	90 e0       	ldi	r25, 0x00	; 0
- 5e8:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
- 5ec:	a8 c0       	rjmp	.+336    	; 0x73e <tempHeaterHelper+0x2ce>
+						assign_bit(&PORTB, ECU_pin, 0);   // Turn the heater off manually.  Don't do the same thing with desired_temp for the manual mode
+ 5da:	40 e0       	ldi	r20, 0x00	; 0
+ 5dc:	63 e0       	ldi	r22, 0x03	; 3
+ 5de:	88 e3       	ldi	r24, 0x38	; 56
+ 5e0:	90 e0       	ldi	r25, 0x00	; 0
+ 5e2:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+ 5e6:	a4 c0       	rjmp	.+328    	; 0x730 <tempHeaterHelper+0x2c6>
 				}
 				break;
 				
-			case 3:       //! This is the case for Fuel Line 1  /////////////////////////////////////////////////
+			case 3:       // This is the case for Fuel Line 1  /////////////////////////////////////////////////
 				if (saveTemps[4] < TempFLine1)
- 5ee:	c0 90 7b 00 	lds	r12, 0x007B	; 0x80007b <saveTemps+0x10>
- 5f2:	d0 90 7c 00 	lds	r13, 0x007C	; 0x80007c <saveTemps+0x11>
- 5f6:	e0 90 7d 00 	lds	r14, 0x007D	; 0x80007d <saveTemps+0x12>
- 5fa:	f0 90 7e 00 	lds	r15, 0x007E	; 0x80007e <saveTemps+0x13>
- 5fe:	20 e0       	ldi	r18, 0x00	; 0
- 600:	30 e0       	ldi	r19, 0x00	; 0
- 602:	40 e2       	ldi	r20, 0x20	; 32
- 604:	51 e4       	ldi	r21, 0x41	; 65
- 606:	c7 01       	movw	r24, r14
- 608:	b6 01       	movw	r22, r12
- 60a:	0e 94 bb 04 	call	0x976	; 0x976 <__cmpsf2>
- 60e:	88 23       	and	r24, r24
- 610:	3c f4       	brge	.+14     	; 0x620 <tempHeaterHelper+0x1b0>
+ 5e8:	c0 90 7a 00 	lds	r12, 0x007A	; 0x80007a <saveTemps+0x10>
+ 5ec:	d0 90 7b 00 	lds	r13, 0x007B	; 0x80007b <saveTemps+0x11>
+ 5f0:	e0 90 7c 00 	lds	r14, 0x007C	; 0x80007c <saveTemps+0x12>
+ 5f4:	f0 90 7d 00 	lds	r15, 0x007D	; 0x80007d <saveTemps+0x13>
+ 5f8:	20 e0       	ldi	r18, 0x00	; 0
+ 5fa:	30 e0       	ldi	r19, 0x00	; 0
+ 5fc:	40 e2       	ldi	r20, 0x20	; 32
+ 5fe:	51 e4       	ldi	r21, 0x41	; 65
+ 600:	c7 01       	movw	r24, r14
+ 602:	b6 01       	movw	r22, r12
+ 604:	0e 94 21 05 	call	0xa42	; 0xa42 <__cmpsf2>
+ 608:	88 23       	and	r24, r24
+ 60a:	3c f4       	brge	.+14     	; 0x61a <tempHeaterHelper+0x1b0>
 					assign_bit(&PORTD, FLine1Pin, 1);
- 612:	41 e0       	ldi	r20, 0x01	; 1
- 614:	62 e0       	ldi	r22, 0x02	; 2
- 616:	82 e3       	ldi	r24, 0x32	; 50
- 618:	90 e0       	ldi	r25, 0x00	; 0
- 61a:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
- 61e:	8f c0       	rjmp	.+286    	; 0x73e <tempHeaterHelper+0x2ce>
+ 60c:	41 e0       	ldi	r20, 0x01	; 1
+ 60e:	62 e0       	ldi	r22, 0x02	; 2
+ 610:	82 e3       	ldi	r24, 0x32	; 50
+ 612:	90 e0       	ldi	r25, 0x00	; 0
+ 614:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+ 618:	8b c0       	rjmp	.+278    	; 0x730 <tempHeaterHelper+0x2c6>
 				else if(saveTemps[4] > TempFLine1)
- 620:	20 e0       	ldi	r18, 0x00	; 0
- 622:	30 e0       	ldi	r19, 0x00	; 0
- 624:	40 e2       	ldi	r20, 0x20	; 32
- 626:	51 e4       	ldi	r21, 0x41	; 65
- 628:	c7 01       	movw	r24, r14
- 62a:	b6 01       	movw	r22, r12
- 62c:	0e 94 1a 06 	call	0xc34	; 0xc34 <__gesf2>
- 630:	18 16       	cp	r1, r24
- 632:	0c f0       	brlt	.+2      	; 0x636 <tempHeaterHelper+0x1c6>
- 634:	84 c0       	rjmp	.+264    	; 0x73e <tempHeaterHelper+0x2ce>
+ 61a:	20 e0       	ldi	r18, 0x00	; 0
+ 61c:	30 e0       	ldi	r19, 0x00	; 0
+ 61e:	40 e2       	ldi	r20, 0x20	; 32
+ 620:	51 e4       	ldi	r21, 0x41	; 65
+ 622:	c7 01       	movw	r24, r14
+ 624:	b6 01       	movw	r22, r12
+ 626:	0e 94 80 06 	call	0xd00	; 0xd00 <__gesf2>
+ 62a:	18 16       	cp	r1, r24
+ 62c:	0c f0       	brlt	.+2      	; 0x630 <tempHeaterHelper+0x1c6>
+ 62e:	80 c0       	rjmp	.+256    	; 0x730 <tempHeaterHelper+0x2c6>
 				{
 					assign_bit(&PORTD, FLine1Pin, 0);
- 636:	40 e0       	ldi	r20, 0x00	; 0
- 638:	62 e0       	ldi	r22, 0x02	; 2
- 63a:	82 e3       	ldi	r24, 0x32	; 50
- 63c:	90 e0       	ldi	r25, 0x00	; 0
- 63e:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+ 630:	40 e0       	ldi	r20, 0x00	; 0
+ 632:	62 e0       	ldi	r22, 0x02	; 2
+ 634:	82 e3       	ldi	r24, 0x32	; 50
+ 636:	90 e0       	ldi	r25, 0x00	; 0
+ 638:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
 					desired_temp |= 0x08;
- 642:	80 91 63 00 	lds	r24, 0x0063	; 0x800063 <desired_temp>
- 646:	88 60       	ori	r24, 0x08	; 8
- 648:	80 93 63 00 	sts	0x0063, r24	; 0x800063 <desired_temp>
- 64c:	78 c0       	rjmp	.+240    	; 0x73e <tempHeaterHelper+0x2ce>
+ 63c:	80 91 63 00 	lds	r24, 0x0063	; 0x800063 <desired_temp>
+ 640:	88 60       	ori	r24, 0x08	; 8
+ 642:	80 93 63 00 	sts	0x0063, r24	; 0x800063 <desired_temp>
+ 646:	74 c0       	rjmp	.+232    	; 0x730 <tempHeaterHelper+0x2c6>
 				}
 				break;
 				
-			case 4:       //! This is the case for Fuel Line 2 /////////////////////////////////////////////////
+			case 4:       // This is the case for Fuel Line 2 /////////////////////////////////////////////////
 				if (saveTemps[5] < TempFLine2){
- 64e:	c0 90 7f 00 	lds	r12, 0x007F	; 0x80007f <saveTemps+0x14>
- 652:	d0 90 80 00 	lds	r13, 0x0080	; 0x800080 <saveTemps+0x15>
- 656:	e0 90 81 00 	lds	r14, 0x0081	; 0x800081 <saveTemps+0x16>
- 65a:	f0 90 82 00 	lds	r15, 0x0082	; 0x800082 <saveTemps+0x17>
- 65e:	20 e0       	ldi	r18, 0x00	; 0
- 660:	30 e0       	ldi	r19, 0x00	; 0
- 662:	40 e2       	ldi	r20, 0x20	; 32
- 664:	51 e4       	ldi	r21, 0x41	; 65
- 666:	c7 01       	movw	r24, r14
- 668:	b6 01       	movw	r22, r12
- 66a:	0e 94 bb 04 	call	0x976	; 0x976 <__cmpsf2>
- 66e:	88 23       	and	r24, r24
- 670:	94 f4       	brge	.+36     	; 0x696 <tempHeaterHelper+0x226>
-					if (!opMode)      //! We are in the warming mode so this can use the PWM
- 672:	80 91 61 00 	lds	r24, 0x0061	; 0x800061 <opMode>
- 676:	81 11       	cpse	r24, r1
- 678:	07 c0       	rjmp	.+14     	; 0x688 <tempHeaterHelper+0x218>
-						assign_bit(&TCCR2, CS22, 1);       //! Turn the PWM back on 
- 67a:	41 e0       	ldi	r20, 0x01	; 1
- 67c:	62 e0       	ldi	r22, 0x02	; 2
- 67e:	85 e4       	ldi	r24, 0x45	; 69
- 680:	90 e0       	ldi	r25, 0x00	; 0
- 682:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
- 686:	5b c0       	rjmp	.+182    	; 0x73e <tempHeaterHelper+0x2ce>
+ 648:	c0 90 7e 00 	lds	r12, 0x007E	; 0x80007e <saveTemps+0x14>
+ 64c:	d0 90 7f 00 	lds	r13, 0x007F	; 0x80007f <saveTemps+0x15>
+ 650:	e0 90 80 00 	lds	r14, 0x0080	; 0x800080 <saveTemps+0x16>
+ 654:	f0 90 81 00 	lds	r15, 0x0081	; 0x800081 <saveTemps+0x17>
+ 658:	20 e0       	ldi	r18, 0x00	; 0
+ 65a:	30 e0       	ldi	r19, 0x00	; 0
+ 65c:	40 e2       	ldi	r20, 0x20	; 32
+ 65e:	51 e4       	ldi	r21, 0x41	; 65
+ 660:	c7 01       	movw	r24, r14
+ 662:	b6 01       	movw	r22, r12
+ 664:	0e 94 21 05 	call	0xa42	; 0xa42 <__cmpsf2>
+ 668:	88 23       	and	r24, r24
+ 66a:	94 f4       	brge	.+36     	; 0x690 <tempHeaterHelper+0x226>
+					if (!opMode)      // We are in the warming mode so this can use the PWM
+ 66c:	80 91 61 00 	lds	r24, 0x0061	; 0x800061 <opMode>
+ 670:	81 11       	cpse	r24, r1
+ 672:	07 c0       	rjmp	.+14     	; 0x682 <tempHeaterHelper+0x218>
+						assign_bit(&TCCR2, CS22, 1);          // Turn the PWM back on 
+ 674:	41 e0       	ldi	r20, 0x01	; 1
+ 676:	62 e0       	ldi	r22, 0x02	; 2
+ 678:	85 e4       	ldi	r24, 0x45	; 69
+ 67a:	90 e0       	ldi	r25, 0x00	; 0
+ 67c:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+ 680:	57 c0       	rjmp	.+174    	; 0x730 <tempHeaterHelper+0x2c6>
 					else
-						assign_bit(&PORTD,Fline2Pin,1);       //! Turn the heater on manually
- 688:	41 e0       	ldi	r20, 0x01	; 1
- 68a:	67 e0       	ldi	r22, 0x07	; 7
- 68c:	82 e3       	ldi	r24, 0x32	; 50
- 68e:	90 e0       	ldi	r25, 0x00	; 0
- 690:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
- 694:	54 c0       	rjmp	.+168    	; 0x73e <tempHeaterHelper+0x2ce>
+						assign_bit(&PORTD,Fline2Pin,1);       // Turn the heater on manually
+ 682:	41 e0       	ldi	r20, 0x01	; 1
+ 684:	67 e0       	ldi	r22, 0x07	; 7
+ 686:	82 e3       	ldi	r24, 0x32	; 50
+ 688:	90 e0       	ldi	r25, 0x00	; 0
+ 68a:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+ 68e:	50 c0       	rjmp	.+160    	; 0x730 <tempHeaterHelper+0x2c6>
 				}
 				else if (saveTemps[5] > TempFLine2)
- 696:	20 e0       	ldi	r18, 0x00	; 0
- 698:	30 e0       	ldi	r19, 0x00	; 0
- 69a:	40 e2       	ldi	r20, 0x20	; 32
- 69c:	51 e4       	ldi	r21, 0x41	; 65
- 69e:	c7 01       	movw	r24, r14
- 6a0:	b6 01       	movw	r22, r12
- 6a2:	0e 94 1a 06 	call	0xc34	; 0xc34 <__gesf2>
- 6a6:	18 16       	cp	r1, r24
- 6a8:	0c f0       	brlt	.+2      	; 0x6ac <tempHeaterHelper+0x23c>
- 6aa:	49 c0       	rjmp	.+146    	; 0x73e <tempHeaterHelper+0x2ce>
+ 690:	20 e0       	ldi	r18, 0x00	; 0
+ 692:	30 e0       	ldi	r19, 0x00	; 0
+ 694:	40 e2       	ldi	r20, 0x20	; 32
+ 696:	51 e4       	ldi	r21, 0x41	; 65
+ 698:	c7 01       	movw	r24, r14
+ 69a:	b6 01       	movw	r22, r12
+ 69c:	0e 94 80 06 	call	0xd00	; 0xd00 <__gesf2>
+ 6a0:	18 16       	cp	r1, r24
+ 6a2:	0c f0       	brlt	.+2      	; 0x6a6 <tempHeaterHelper+0x23c>
+ 6a4:	45 c0       	rjmp	.+138    	; 0x730 <tempHeaterHelper+0x2c6>
 				{
-					if (!opMode)           //! We are in warming mode so this can use the PWM
- 6ac:	80 91 61 00 	lds	r24, 0x0061	; 0x800061 <opMode>
- 6b0:	81 11       	cpse	r24, r1
- 6b2:	0c c0       	rjmp	.+24     	; 0x6cc <tempHeaterHelper+0x25c>
+					if (!opMode)           // We are in warming mode so this can use the PWM
+ 6a6:	80 91 61 00 	lds	r24, 0x0061	; 0x800061 <opMode>
+ 6aa:	81 11       	cpse	r24, r1
+ 6ac:	0c c0       	rjmp	.+24     	; 0x6c6 <tempHeaterHelper+0x25c>
 					{
-						assign_bit(&TCCR2, CS22, 0);       //! Turn the PWM off
- 6b4:	40 e0       	ldi	r20, 0x00	; 0
- 6b6:	62 e0       	ldi	r22, 0x02	; 2
- 6b8:	85 e4       	ldi	r24, 0x45	; 69
- 6ba:	90 e0       	ldi	r25, 0x00	; 0
- 6bc:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+						assign_bit(&TCCR2, CS22, 0);       // Turn the PWM off
+ 6ae:	40 e0       	ldi	r20, 0x00	; 0
+ 6b0:	62 e0       	ldi	r22, 0x02	; 2
+ 6b2:	85 e4       	ldi	r24, 0x45	; 69
+ 6b4:	90 e0       	ldi	r25, 0x00	; 0
+ 6b6:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
 						desired_temp |= 0x10;
- 6c0:	80 91 63 00 	lds	r24, 0x0063	; 0x800063 <desired_temp>
- 6c4:	80 61       	ori	r24, 0x10	; 16
- 6c6:	80 93 63 00 	sts	0x0063, r24	; 0x800063 <desired_temp>
- 6ca:	39 c0       	rjmp	.+114    	; 0x73e <tempHeaterHelper+0x2ce>
+ 6ba:	80 91 63 00 	lds	r24, 0x0063	; 0x800063 <desired_temp>
+ 6be:	80 61       	ori	r24, 0x10	; 16
+ 6c0:	80 93 63 00 	sts	0x0063, r24	; 0x800063 <desired_temp>
+ 6c4:	35 c0       	rjmp	.+106    	; 0x730 <tempHeaterHelper+0x2c6>
 					}
 					else
-						assign_bit(&PORTD, Fline2Pin, 0);    //! Turn the heater off manually
- 6cc:	40 e0       	ldi	r20, 0x00	; 0
- 6ce:	67 e0       	ldi	r22, 0x07	; 7
- 6d0:	82 e3       	ldi	r24, 0x32	; 50
- 6d2:	90 e0       	ldi	r25, 0x00	; 0
- 6d4:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
- 6d8:	32 c0       	rjmp	.+100    	; 0x73e <tempHeaterHelper+0x2ce>
+						assign_bit(&PORTD, Fline2Pin, 0);    // Turn the heater off manually
+ 6c6:	40 e0       	ldi	r20, 0x00	; 0
+ 6c8:	67 e0       	ldi	r22, 0x07	; 7
+ 6ca:	82 e3       	ldi	r24, 0x32	; 50
+ 6cc:	90 e0       	ldi	r25, 0x00	; 0
+ 6ce:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+ 6d2:	2e c0       	rjmp	.+92     	; 0x730 <tempHeaterHelper+0x2c6>
 				}
 				break;
 				
-			case 5:       //! This is the case for the ESB    /////////////////////////////////////////////////
+			case 5:       // This is the case for the ESB    /////////////////////////////////////////////////
 				if (saveTemps[5] < TempESB)
- 6da:	60 91 7f 00 	lds	r22, 0x007F	; 0x80007f <saveTemps+0x14>
- 6de:	70 91 80 00 	lds	r23, 0x0080	; 0x800080 <saveTemps+0x15>
- 6e2:	80 91 81 00 	lds	r24, 0x0081	; 0x800081 <saveTemps+0x16>
- 6e6:	90 91 82 00 	lds	r25, 0x0082	; 0x800082 <saveTemps+0x17>
- 6ea:	20 e0       	ldi	r18, 0x00	; 0
- 6ec:	30 e0       	ldi	r19, 0x00	; 0
- 6ee:	40 e2       	ldi	r20, 0x20	; 32
- 6f0:	51 e4       	ldi	r21, 0x41	; 65
- 6f2:	0e 94 bb 04 	call	0x976	; 0x976 <__cmpsf2>
- 6f6:	88 23       	and	r24, r24
- 6f8:	3c f4       	brge	.+14     	; 0x708 <tempHeaterHelper+0x298>
+ 6d4:	c0 90 7e 00 	lds	r12, 0x007E	; 0x80007e <saveTemps+0x14>
+ 6d8:	d0 90 7f 00 	lds	r13, 0x007F	; 0x80007f <saveTemps+0x15>
+ 6dc:	e0 90 80 00 	lds	r14, 0x0080	; 0x800080 <saveTemps+0x16>
+ 6e0:	f0 90 81 00 	lds	r15, 0x0081	; 0x800081 <saveTemps+0x17>
+ 6e4:	20 e0       	ldi	r18, 0x00	; 0
+ 6e6:	30 e0       	ldi	r19, 0x00	; 0
+ 6e8:	40 e2       	ldi	r20, 0x20	; 32
+ 6ea:	51 e4       	ldi	r21, 0x41	; 65
+ 6ec:	c7 01       	movw	r24, r14
+ 6ee:	b6 01       	movw	r22, r12
+ 6f0:	0e 94 21 05 	call	0xa42	; 0xa42 <__cmpsf2>
+ 6f4:	88 23       	and	r24, r24
+ 6f6:	3c f4       	brge	.+14     	; 0x706 <tempHeaterHelper+0x29c>
 					assign_bit(&PORTD, ESB_Pin, 1);
- 6fa:	41 e0       	ldi	r20, 0x01	; 1
- 6fc:	63 e0       	ldi	r22, 0x03	; 3
- 6fe:	82 e3       	ldi	r24, 0x32	; 50
- 700:	90 e0       	ldi	r25, 0x00	; 0
- 702:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
- 706:	1b c0       	rjmp	.+54     	; 0x73e <tempHeaterHelper+0x2ce>
-				else if(saveTemps[6] > TempESB)
- 708:	60 91 83 00 	lds	r22, 0x0083	; 0x800083 <act_temp>
- 70c:	70 91 84 00 	lds	r23, 0x0084	; 0x800084 <act_temp+0x1>
- 710:	80 91 85 00 	lds	r24, 0x0085	; 0x800085 <act_temp+0x2>
- 714:	90 91 86 00 	lds	r25, 0x0086	; 0x800086 <act_temp+0x3>
- 718:	20 e0       	ldi	r18, 0x00	; 0
- 71a:	30 e0       	ldi	r19, 0x00	; 0
- 71c:	40 e2       	ldi	r20, 0x20	; 32
- 71e:	51 e4       	ldi	r21, 0x41	; 65
- 720:	0e 94 1a 06 	call	0xc34	; 0xc34 <__gesf2>
- 724:	18 16       	cp	r1, r24
- 726:	5c f4       	brge	.+22     	; 0x73e <tempHeaterHelper+0x2ce>
+ 6f8:	41 e0       	ldi	r20, 0x01	; 1
+ 6fa:	63 e0       	ldi	r22, 0x03	; 3
+ 6fc:	82 e3       	ldi	r24, 0x32	; 50
+ 6fe:	90 e0       	ldi	r25, 0x00	; 0
+ 700:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+ 704:	15 c0       	rjmp	.+42     	; 0x730 <tempHeaterHelper+0x2c6>
+				else if(saveTemps[5] > TempESB)
+ 706:	20 e0       	ldi	r18, 0x00	; 0
+ 708:	30 e0       	ldi	r19, 0x00	; 0
+ 70a:	40 e2       	ldi	r20, 0x20	; 32
+ 70c:	51 e4       	ldi	r21, 0x41	; 65
+ 70e:	c7 01       	movw	r24, r14
+ 710:	b6 01       	movw	r22, r12
+ 712:	0e 94 80 06 	call	0xd00	; 0xd00 <__gesf2>
+ 716:	18 16       	cp	r1, r24
+ 718:	5c f4       	brge	.+22     	; 0x730 <tempHeaterHelper+0x2c6>
 				{
 					assign_bit(&PORTD, ESB_Pin, 0);
- 728:	40 e0       	ldi	r20, 0x00	; 0
- 72a:	63 e0       	ldi	r22, 0x03	; 3
- 72c:	82 e3       	ldi	r24, 0x32	; 50
- 72e:	90 e0       	ldi	r25, 0x00	; 0
- 730:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+ 71a:	40 e0       	ldi	r20, 0x00	; 0
+ 71c:	63 e0       	ldi	r22, 0x03	; 3
+ 71e:	82 e3       	ldi	r24, 0x32	; 50
+ 720:	90 e0       	ldi	r25, 0x00	; 0
+ 722:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
 					desired_temp |= 0x20;
- 734:	80 91 63 00 	lds	r24, 0x0063	; 0x800063 <desired_temp>
- 738:	80 62       	ori	r24, 0x20	; 32
- 73a:	80 93 63 00 	sts	0x0063, r24	; 0x800063 <desired_temp>
- *  @param void
- *  @return void
+ 726:	80 91 63 00 	lds	r24, 0x0063	; 0x800063 <desired_temp>
+ 72a:	80 62       	ori	r24, 0x20	; 32
+ 72c:	80 93 63 00 	sts	0x0063, r24	; 0x800063 <desired_temp>
+ *  @note Need to confirm that heater operation is still sufficient for phase 1 and 2.
+ *  @see tempConversion
  */
 void tempHeaterHelper(void)
 {
 	for (uint8_t i = 0; i < 6; i++)
- 73e:	cf 5f       	subi	r28, 0xFF	; 255
- 740:	c6 30       	cpi	r28, 0x06	; 6
- 742:	08 f4       	brcc	.+2      	; 0x746 <tempHeaterHelper+0x2d6>
- 744:	9c ce       	rjmp	.-712    	; 0x47e <tempHeaterHelper+0xe>
+ 730:	cf 5f       	subi	r28, 0xFF	; 255
+ 732:	c6 30       	cpi	r28, 0x06	; 6
+ 734:	08 f4       	brcc	.+2      	; 0x738 <tempHeaterHelper+0x2ce>
+ 736:	a0 ce       	rjmp	.-704    	; 0x478 <tempHeaterHelper+0xe>
 				break;
 		}
 		
 	}
 	
-	if (desired_temp == 0x3F)      //! Will go in here every time after it stops being mode 0
- 746:	80 91 63 00 	lds	r24, 0x0063	; 0x800063 <desired_temp>
- 74a:	8f 33       	cpi	r24, 0x3F	; 63
- 74c:	31 f4       	brne	.+12     	; 0x75a <tempHeaterHelper+0x2ea>
-		/** If desired_temp was 0111 1111, it would go to 1111 1111 with the or.
+	if (desired_temp == 0x3F)      // Will go in here every time after it stops being mode 0
+ 738:	80 91 63 00 	lds	r24, 0x0063	; 0x800063 <desired_temp>
+ 73c:	8f 33       	cpi	r24, 0x3F	; 63
+ 73e:	31 f4       	brne	.+12     	; 0x74c <tempHeaterHelper+0x2e2>
+		/* If desired_temp was 0111 1111, it would go to 1111 1111 with the or.
 		*   Then the bitwise not (~) would make it 0000 0000.  And finally,
 		*   the logical not (!) would make it 0000 0001 and it would go into the if statement.
 		*   If desired_temp is anything but this, it will not go in here 
 		*/
-		if (!opMode)    //! only do this if it has never gone in here before
- 74e:	80 91 61 00 	lds	r24, 0x0061	; 0x800061 <opMode>
- 752:	81 11       	cpse	r24, r1
- 754:	02 c0       	rjmp	.+4      	; 0x75a <tempHeaterHelper+0x2ea>
-			change_timers();                     //! New initialization routine which will change the prescalars and such for the timers which will be serving different purposes
- 756:	0e 94 e1 01 	call	0x3c2	; 0x3c2 <change_timers>
+		if (!opMode)    // only do this if it has never gone in here before
+ 740:	80 91 61 00 	lds	r24, 0x0061	; 0x800061 <opMode>
+ 744:	81 11       	cpse	r24, r1
+ 746:	02 c0       	rjmp	.+4      	; 0x74c <tempHeaterHelper+0x2e2>
+			change_timers();                     // New initialization routine which will change the prescalars and such for the timers which will be serving different purposes
+ 748:	0e 94 ce 01 	call	0x39c	; 0x39c <change_timers>
 	}
 }
- 75a:	cf 91       	pop	r28
- 75c:	ff 90       	pop	r15
- 75e:	ef 90       	pop	r14
- 760:	df 90       	pop	r13
- 762:	cf 90       	pop	r12
- 764:	08 95       	ret
+ 74c:	cf 91       	pop	r28
+ 74e:	ff 90       	pop	r15
+ 750:	ef 90       	pop	r14
+ 752:	df 90       	pop	r13
+ 754:	cf 90       	pop	r12
+ 756:	08 95       	ret
 
-00000766 <tempConversion>:
- *
+00000758 <tempConversion>:
  *  @param void
  *  @return void
+ *  @see tempHeaterHelper
  */
 void tempConversion(void)
 {
- 766:	1f 93       	push	r17
- 768:	cf 93       	push	r28
- 76a:	df 93       	push	r29
+ 758:	1f 93       	push	r17
+ 75a:	cf 93       	push	r28
+ 75c:	df 93       	push	r29
 	// First check if the ADC is done converting
-	assign_bit(&ADMUX,MUX0,0);    //! Assign channel to 0
- 76c:	40 e0       	ldi	r20, 0x00	; 0
- 76e:	60 e0       	ldi	r22, 0x00	; 0
- 770:	87 e2       	ldi	r24, 0x27	; 39
- 772:	90 e0       	ldi	r25, 0x00	; 0
- 774:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
-	assign_bit(&ADMUX,MUX1,0);    //! Assign bit 1
- 778:	40 e0       	ldi	r20, 0x00	; 0
- 77a:	61 e0       	ldi	r22, 0x01	; 1
- 77c:	87 e2       	ldi	r24, 0x27	; 39
- 77e:	90 e0       	ldi	r25, 0x00	; 0
- 780:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
-	assign_bit(&ADMUX,MUX2,0);    //! Assign bit 2
- 784:	40 e0       	ldi	r20, 0x00	; 0
- 786:	62 e0       	ldi	r22, 0x02	; 2
- 788:	87 e2       	ldi	r24, 0x27	; 39
- 78a:	90 e0       	ldi	r25, 0x00	; 0
- 78c:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+	assign_bit(&ADMUX,MUX0,0);    // Assign channel to 0
+ 75e:	40 e0       	ldi	r20, 0x00	; 0
+ 760:	60 e0       	ldi	r22, 0x00	; 0
+ 762:	87 e2       	ldi	r24, 0x27	; 39
+ 764:	90 e0       	ldi	r25, 0x00	; 0
+ 766:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+	assign_bit(&ADMUX,MUX1,0);
+ 76a:	40 e0       	ldi	r20, 0x00	; 0
+ 76c:	61 e0       	ldi	r22, 0x01	; 1
+ 76e:	87 e2       	ldi	r24, 0x27	; 39
+ 770:	90 e0       	ldi	r25, 0x00	; 0
+ 772:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+	assign_bit(&ADMUX,MUX2,0);
+ 776:	40 e0       	ldi	r20, 0x00	; 0
+ 778:	62 e0       	ldi	r22, 0x02	; 2
+ 77a:	87 e2       	ldi	r24, 0x27	; 39
+ 77c:	90 e0       	ldi	r25, 0x00	; 0
+ 77e:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+	
 	for (unsigned char i = 0; i < 6; i++)
- 790:	10 e0       	ldi	r17, 0x00	; 0
- 792:	59 c0       	rjmp	.+178    	; 0x846 <tempConversion+0xe0>
+ 782:	10 e0       	ldi	r17, 0x00	; 0
+ 784:	53 c0       	rjmp	.+166    	; 0x82c <tempConversion+0xd4>
 	{
-		ADCSRA |= 1 << ADSC;   //! Start the conversion
- 794:	86 b1       	in	r24, 0x06	; 6
- 796:	80 64       	ori	r24, 0x40	; 64
- 798:	86 b9       	out	0x06, r24	; 6
+		ADCSRA |= 1 << ADSC;                             // Start the conversion
+ 786:	86 b1       	in	r24, 0x06	; 6
+ 788:	80 64       	ori	r24, 0x40	; 64
+ 78a:	86 b9       	out	0x06, r24	; 6
 		while (!((1 << ADIF) & ADCSRA));
- 79a:	34 9b       	sbis	0x06, 4	; 6
- 79c:	fe cf       	rjmp	.-4      	; 0x79a <tempConversion+0x34>
+ 78c:	34 9b       	sbis	0x06, 4	; 6
+ 78e:	fe cf       	rjmp	.-4      	; 0x78c <tempConversion+0x34>
 		
-		//while (bit_is_clear(ADCSRA, ADIF));   //! Hog execution until the ADC is done converting
+		while (bit_is_clear(ADCSRA, ADIF));				 // Hog execution until the ADC is done converting
+ 790:	34 9b       	sbis	0x06, 4	; 6
+ 792:	fe cf       	rjmp	.-4      	; 0x790 <tempConversion+0x38>
 
 		// Save this as a float for the respective variable
 		uint8_t low_bits = ADCL;
- 79e:	84 b1       	in	r24, 0x04	; 4
-		uint8_t high_bits = ADCH;   //! Do the shifting so that there is room made inside of the 16 bit register
- 7a0:	65 b1       	in	r22, 0x05	; 5
+ 794:	84 b1       	in	r24, 0x04	; 4
+		uint8_t high_bits = ADCH;						 // Do the shifting so that there is room made inside of the 16 bit register
+ 796:	65 b1       	in	r22, 0x05	; 5
 		uint16_t result = (high_bits << 8) | low_bits;
- 7a2:	70 e0       	ldi	r23, 0x00	; 0
- 7a4:	76 2f       	mov	r23, r22
- 7a6:	66 27       	eor	r22, r22
- 7a8:	68 2b       	or	r22, r24
+ 798:	70 e0       	ldi	r23, 0x00	; 0
+ 79a:	76 2f       	mov	r23, r22
+ 79c:	66 27       	eor	r22, r22
+ 79e:	68 2b       	or	r22, r24
+		
 		// Now I need to convert this 16 bit number into an actual temperature
-		act_temp = (float)(0.0048828125*result);     //! This dumb thing converts it to a voltage
- 7aa:	80 e0       	ldi	r24, 0x00	; 0
- 7ac:	90 e0       	ldi	r25, 0x00	; 0
- 7ae:	0e 94 68 05 	call	0xad0	; 0xad0 <__floatunsisf>
- 7b2:	20 e0       	ldi	r18, 0x00	; 0
- 7b4:	30 e0       	ldi	r19, 0x00	; 0
- 7b6:	40 ea       	ldi	r20, 0xA0	; 160
- 7b8:	5b e3       	ldi	r21, 0x3B	; 59
- 7ba:	0e 94 1f 06 	call	0xc3e	; 0xc3e <__mulsf3>
+		
+		float act_temp = (float)(0.0048828125*result);   // This dumb thing converts it to a voltage
+ 7a0:	80 e0       	ldi	r24, 0x00	; 0
+ 7a2:	90 e0       	ldi	r25, 0x00	; 0
+ 7a4:	0e 94 ce 05 	call	0xb9c	; 0xb9c <__floatunsisf>
+ 7a8:	20 e0       	ldi	r18, 0x00	; 0
+ 7aa:	30 e0       	ldi	r19, 0x00	; 0
+ 7ac:	40 ea       	ldi	r20, 0xA0	; 160
+ 7ae:	5b e3       	ldi	r21, 0x3B	; 59
+ 7b0:	0e 94 85 06 	call	0xd0a	; 0xd0a <__mulsf3>
 		act_temp = act_temp*208.8 - 79.6;
- 7be:	2d ec       	ldi	r18, 0xCD	; 205
- 7c0:	3c ec       	ldi	r19, 0xCC	; 204
- 7c2:	40 e5       	ldi	r20, 0x50	; 80
- 7c4:	53 e4       	ldi	r21, 0x43	; 67
- 7c6:	0e 94 1f 06 	call	0xc3e	; 0xc3e <__mulsf3>
- 7ca:	23 e3       	ldi	r18, 0x33	; 51
- 7cc:	33 e3       	ldi	r19, 0x33	; 51
- 7ce:	4f e9       	ldi	r20, 0x9F	; 159
- 7d0:	52 e4       	ldi	r21, 0x42	; 66
- 7d2:	0e 94 4e 04 	call	0x89c	; 0x89c <__subsf3>
- 7d6:	60 93 83 00 	sts	0x0083, r22	; 0x800083 <act_temp>
- 7da:	70 93 84 00 	sts	0x0084, r23	; 0x800084 <act_temp+0x1>
- 7de:	80 93 85 00 	sts	0x0085, r24	; 0x800085 <act_temp+0x2>
- 7e2:	90 93 86 00 	sts	0x0086, r25	; 0x800086 <act_temp+0x3>
+ 7b4:	2d ec       	ldi	r18, 0xCD	; 205
+ 7b6:	3c ec       	ldi	r19, 0xCC	; 204
+ 7b8:	40 e5       	ldi	r20, 0x50	; 80
+ 7ba:	53 e4       	ldi	r21, 0x43	; 67
+ 7bc:	0e 94 85 06 	call	0xd0a	; 0xd0a <__mulsf3>
+ 7c0:	23 e3       	ldi	r18, 0x33	; 51
+ 7c2:	33 e3       	ldi	r19, 0x33	; 51
+ 7c4:	4f e9       	ldi	r20, 0x9F	; 159
+ 7c6:	52 e4       	ldi	r21, 0x42	; 66
+ 7c8:	0e 94 b4 04 	call	0x968	; 0x968 <__subsf3>
 		saveTemps[i] = act_temp;
- 7e6:	c1 2f       	mov	r28, r17
- 7e8:	d0 e0       	ldi	r29, 0x00	; 0
- 7ea:	fe 01       	movw	r30, r28
- 7ec:	ee 0f       	add	r30, r30
- 7ee:	ff 1f       	adc	r31, r31
- 7f0:	ee 0f       	add	r30, r30
- 7f2:	ff 1f       	adc	r31, r31
- 7f4:	e5 59       	subi	r30, 0x95	; 149
- 7f6:	ff 4f       	sbci	r31, 0xFF	; 255
- 7f8:	60 83       	st	Z, r22
- 7fa:	71 83       	std	Z+1, r23	; 0x01
- 7fc:	82 83       	std	Z+2, r24	; 0x02
- 7fe:	93 83       	std	Z+3, r25	; 0x03
+ 7cc:	c1 2f       	mov	r28, r17
+ 7ce:	d0 e0       	ldi	r29, 0x00	; 0
+ 7d0:	fe 01       	movw	r30, r28
+ 7d2:	ee 0f       	add	r30, r30
+ 7d4:	ff 1f       	adc	r31, r31
+ 7d6:	ee 0f       	add	r30, r30
+ 7d8:	ff 1f       	adc	r31, r31
+ 7da:	e6 59       	subi	r30, 0x96	; 150
+ 7dc:	ff 4f       	sbci	r31, 0xFF	; 255
+ 7de:	60 83       	st	Z, r22
+ 7e0:	71 83       	std	Z+1, r23	; 0x01
+ 7e2:	82 83       	std	Z+2, r24	; 0x02
+ 7e4:	93 83       	std	Z+3, r25	; 0x03
 		
 		// Now update the channel the ADC is using
-		assign_bit(&ADMUX,MUX0,(i + 1) & 0x01);    //! Assign bit 0
- 800:	1f 5f       	subi	r17, 0xFF	; 255
- 802:	41 2f       	mov	r20, r17
- 804:	41 70       	andi	r20, 0x01	; 1
- 806:	60 e0       	ldi	r22, 0x00	; 0
- 808:	87 e2       	ldi	r24, 0x27	; 39
- 80a:	90 e0       	ldi	r25, 0x00	; 0
- 80c:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
-		assign_bit(&ADMUX,MUX1,((i + 1) >> 1) & 0x01);    //! Assign bit 1
- 810:	21 96       	adiw	r28, 0x01	; 1
- 812:	ae 01       	movw	r20, r28
- 814:	55 95       	asr	r21
- 816:	47 95       	ror	r20
- 818:	41 70       	andi	r20, 0x01	; 1
- 81a:	61 e0       	ldi	r22, 0x01	; 1
- 81c:	87 e2       	ldi	r24, 0x27	; 39
- 81e:	90 e0       	ldi	r25, 0x00	; 0
- 820:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
-		assign_bit(&ADMUX,MUX2,((i + 1) >> 2) & 0x01);    //! Assign bit 2
- 824:	d5 95       	asr	r29
- 826:	c7 95       	ror	r28
- 828:	d5 95       	asr	r29
- 82a:	c7 95       	ror	r28
- 82c:	4c 2f       	mov	r20, r28
- 82e:	41 70       	andi	r20, 0x01	; 1
- 830:	62 e0       	ldi	r22, 0x02	; 2
- 832:	87 e2       	ldi	r24, 0x27	; 39
- 834:	90 e0       	ldi	r25, 0x00	; 0
- 836:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+		assign_bit(&ADMUX,MUX0,(i + 1) & 0x01);           // Assign bit 0
+ 7e6:	1f 5f       	subi	r17, 0xFF	; 255
+ 7e8:	41 2f       	mov	r20, r17
+ 7ea:	41 70       	andi	r20, 0x01	; 1
+ 7ec:	60 e0       	ldi	r22, 0x00	; 0
+ 7ee:	87 e2       	ldi	r24, 0x27	; 39
+ 7f0:	90 e0       	ldi	r25, 0x00	; 0
+ 7f2:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+		assign_bit(&ADMUX,MUX1,((i + 1) >> 1) & 0x01);    // Assign bit 1
+ 7f6:	21 96       	adiw	r28, 0x01	; 1
+ 7f8:	ae 01       	movw	r20, r28
+ 7fa:	55 95       	asr	r21
+ 7fc:	47 95       	ror	r20
+ 7fe:	41 70       	andi	r20, 0x01	; 1
+ 800:	61 e0       	ldi	r22, 0x01	; 1
+ 802:	87 e2       	ldi	r24, 0x27	; 39
+ 804:	90 e0       	ldi	r25, 0x00	; 0
+ 806:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+		assign_bit(&ADMUX,MUX2,((i + 1) >> 2) & 0x01);    // Assign bit 2
+ 80a:	d5 95       	asr	r29
+ 80c:	c7 95       	ror	r28
+ 80e:	d5 95       	asr	r29
+ 810:	c7 95       	ror	r28
+ 812:	4c 2f       	mov	r20, r28
+ 814:	41 70       	andi	r20, 0x01	; 1
+ 816:	62 e0       	ldi	r22, 0x02	; 2
+ 818:	87 e2       	ldi	r24, 0x27	; 39
+ 81a:	90 e0       	ldi	r25, 0x00	; 0
+ 81c:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
 		
-		assign_bit(&ADCSRA, ADIF, 1);     //! write a logical 1 to clear the flag, page 216 in the data sheet
- 83a:	41 e0       	ldi	r20, 0x01	; 1
- 83c:	64 e0       	ldi	r22, 0x04	; 4
- 83e:	86 e2       	ldi	r24, 0x26	; 38
- 840:	90 e0       	ldi	r25, 0x00	; 0
- 842:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
-{
+		assign_bit(&ADCSRA, ADIF, 1);     // write a logical 1 to clear the flag, page 216 in the data sheet
+ 820:	41 e0       	ldi	r20, 0x01	; 1
+ 822:	64 e0       	ldi	r22, 0x04	; 4
+ 824:	86 e2       	ldi	r24, 0x26	; 38
+ 826:	90 e0       	ldi	r25, 0x00	; 0
+ 828:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
 	// First check if the ADC is done converting
-	assign_bit(&ADMUX,MUX0,0);    //! Assign channel to 0
-	assign_bit(&ADMUX,MUX1,0);    //! Assign bit 1
-	assign_bit(&ADMUX,MUX2,0);    //! Assign bit 2
+	assign_bit(&ADMUX,MUX0,0);    // Assign channel to 0
+	assign_bit(&ADMUX,MUX1,0);
+	assign_bit(&ADMUX,MUX2,0);
+	
 	for (unsigned char i = 0; i < 6; i++)
- 846:	16 30       	cpi	r17, 0x06	; 6
- 848:	08 f4       	brcc	.+2      	; 0x84c <tempConversion+0xe6>
- 84a:	a4 cf       	rjmp	.-184    	; 0x794 <tempConversion+0x2e>
-		assign_bit(&ADMUX,MUX2,((i + 1) >> 2) & 0x01);    //! Assign bit 2
+ 82c:	16 30       	cpi	r17, 0x06	; 6
+ 82e:	08 f4       	brcc	.+2      	; 0x832 <tempConversion+0xda>
+ 830:	aa cf       	rjmp	.-172    	; 0x786 <tempConversion+0x2e>
+		assign_bit(&ADMUX,MUX2,((i + 1) >> 2) & 0x01);    // Assign bit 2
 		
-		assign_bit(&ADCSRA, ADIF, 1);     //! write a logical 1 to clear the flag, page 216 in the data sheet
+		assign_bit(&ADCSRA, ADIF, 1);     // write a logical 1 to clear the flag, page 216 in the data sheet
 
 	}
-	tempHeaterHelper();             //! Call the helper function.  This will serve the added bonus of killing some time so that if capacitors need to charge for the next conversion, it has the time here.  Data sheet didn't say that it needed this though.
- 84c:	0e 94 38 02 	call	0x470	; 0x470 <tempHeaterHelper>
+	tempHeaterHelper();             // Call the helper function.  This will serve the added bonus of killing some time so that if capacitors need to charge for the next conversion, it has the time here.  Data sheet didn't say that it needed this though.
+ 832:	0e 94 35 02 	call	0x46a	; 0x46a <tempHeaterHelper>
+	if (opMode != 1)
+ 836:	80 91 61 00 	lds	r24, 0x0061	; 0x800061 <opMode>
+ 83a:	81 30       	cpi	r24, 0x01	; 1
+ 83c:	31 f0       	breq	.+12     	; 0x84a <tempConversion+0xf2>
 	#else
 		//round up by default
 		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
 	#endif
 
 	__builtin_avr_delay_cycles(__ticks_dc);
- 850:	83 e2       	ldi	r24, 0x23	; 35
- 852:	94 ef       	ldi	r25, 0xF4	; 244
- 854:	01 97       	sbiw	r24, 0x01	; 1
- 856:	f1 f7       	brne	.-4      	; 0x854 <tempConversion+0xee>
- 858:	00 c0       	rjmp	.+0      	; 0x85a <tempConversion+0xf4>
- 85a:	00 00       	nop
-	_delay_ms(250);                 //! Delay for 1/4 of a second.   Need to check that the Alive LED will still interrupt properly
+ 83e:	83 e2       	ldi	r24, 0x23	; 35
+ 840:	94 ef       	ldi	r25, 0xF4	; 244
+ 842:	01 97       	sbiw	r24, 0x01	; 1
+ 844:	f1 f7       	brne	.-4      	; 0x842 <tempConversion+0xea>
+ 846:	00 c0       	rjmp	.+0      	; 0x848 <tempConversion+0xf0>
+ 848:	00 00       	nop
+		_delay_ms(250);                 // Delay for 1/4 of a second.   This will only impact modes 0 and 2
 	
 }
- 85c:	df 91       	pop	r29
- 85e:	cf 91       	pop	r28
- 860:	1f 91       	pop	r17
- 862:	08 95       	ret
+ 84a:	df 91       	pop	r29
+ 84c:	cf 91       	pop	r28
+ 84e:	1f 91       	pop	r17
+ 850:	08 95       	ret
 
-00000864 <__vector_3>:
- *
- *  @param[in] pulse_count This is the number which describes how many pulses have been received for the sampling period.
+00000852 <__vector_3>:
+ *  @param[in] pulse_count This is the number which describes how many pulses have been received for the sampling period.  It is an implicit argument as it is a global variable which is not explicitly passed in.
  *  @return void
+ *  @see flowMeter
  */
 ISR(INT2_vect)
 {
- 864:	1f 92       	push	r1
- 866:	0f 92       	push	r0
- 868:	0f b6       	in	r0, 0x3f	; 63
- 86a:	0f 92       	push	r0
- 86c:	11 24       	eor	r1, r1
- 86e:	8f 93       	push	r24
+ 852:	1f 92       	push	r1
+ 854:	0f 92       	push	r0
+ 856:	0f b6       	in	r0, 0x3f	; 63
+ 858:	0f 92       	push	r0
+ 85a:	11 24       	eor	r1, r1
+ 85c:	8f 93       	push	r24
 	pulse_count++;  // The interrupt flag will automatically be cleared by hardware
- 870:	80 91 64 00 	lds	r24, 0x0064	; 0x800064 <pulse_count>
- 874:	8f 5f       	subi	r24, 0xFF	; 255
- 876:	80 93 64 00 	sts	0x0064, r24	; 0x800064 <pulse_count>
+ 85e:	80 91 64 00 	lds	r24, 0x0064	; 0x800064 <pulse_count>
+ 862:	8f 5f       	subi	r24, 0xFF	; 255
+ 864:	80 93 64 00 	sts	0x0064, r24	; 0x800064 <pulse_count>
 }
- 87a:	8f 91       	pop	r24
- 87c:	0f 90       	pop	r0
- 87e:	0f be       	out	0x3f, r0	; 63
- 880:	0f 90       	pop	r0
- 882:	1f 90       	pop	r1
- 884:	18 95       	reti
+ 868:	8f 91       	pop	r24
+ 86a:	0f 90       	pop	r0
+ 86c:	0f be       	out	0x3f, r0	; 63
+ 86e:	0f 90       	pop	r0
+ 870:	1f 90       	pop	r1
+ 872:	18 95       	reti
 
-00000886 <main>:
+00000874 <__vector_5>:
+ *
+ *  @param[in] alive_counter Variable to act as a custom prescalar for the timer
+ *  @return void
+ */
+ISR(TIMER2_OVF_vect)
+{
+ 874:	1f 92       	push	r1
+ 876:	0f 92       	push	r0
+ 878:	0f b6       	in	r0, 0x3f	; 63
+ 87a:	0f 92       	push	r0
+ 87c:	11 24       	eor	r1, r1
+ 87e:	2f 93       	push	r18
+ 880:	3f 93       	push	r19
+ 882:	4f 93       	push	r20
+ 884:	5f 93       	push	r21
+ 886:	6f 93       	push	r22
+ 888:	7f 93       	push	r23
+ 88a:	8f 93       	push	r24
+ 88c:	9f 93       	push	r25
+ 88e:	af 93       	push	r26
+ 890:	bf 93       	push	r27
+ 892:	ef 93       	push	r30
+ 894:	ff 93       	push	r31
+	if (opMode == 1)     // Operation mode 1 so do 0.75 sec on and 0.25 sec off
+ 896:	80 91 61 00 	lds	r24, 0x0061	; 0x800061 <opMode>
+ 89a:	81 30       	cpi	r24, 0x01	; 1
+ 89c:	29 f5       	brne	.+74     	; 0x8e8 <__vector_5+0x74>
+	{
+		if (alive_counter == 2)
+ 89e:	80 91 62 00 	lds	r24, 0x0062	; 0x800062 <alive_counter>
+ 8a2:	82 30       	cpi	r24, 0x02	; 2
+ 8a4:	71 f4       	brne	.+28     	; 0x8c2 <__vector_5+0x4e>
+		{
+			assign_bit(&PORTD, Alive_LED, 0);        // Turn the LED off since it is at the end of the 0.75 sec portion
+ 8a6:	40 e0       	ldi	r20, 0x00	; 0
+ 8a8:	65 e0       	ldi	r22, 0x05	; 5
+ 8aa:	82 e3       	ldi	r24, 0x32	; 50
+ 8ac:	90 e0       	ldi	r25, 0x00	; 0
+ 8ae:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+			alive_counter++;
+ 8b2:	80 91 62 00 	lds	r24, 0x0062	; 0x800062 <alive_counter>
+ 8b6:	8f 5f       	subi	r24, 0xFF	; 255
+ 8b8:	80 93 62 00 	sts	0x0062, r24	; 0x800062 <alive_counter>
+			TCNT2 = 11;
+ 8bc:	8b e0       	ldi	r24, 0x0B	; 11
+ 8be:	84 bd       	out	0x24, r24	; 36
+ 8c0:	37 c0       	rjmp	.+110    	; 0x930 <__vector_5+0xbc>
+		}
+		else if (alive_counter == 3)
+ 8c2:	83 30       	cpi	r24, 0x03	; 3
+ 8c4:	59 f4       	brne	.+22     	; 0x8dc <__vector_5+0x68>
+		{
+			assign_bit(&PORTD, Alive_LED, 1);        // Turn the LED back on since it is about to begin the 0.75 second portion
+ 8c6:	41 e0       	ldi	r20, 0x01	; 1
+ 8c8:	65 e0       	ldi	r22, 0x05	; 5
+ 8ca:	82 e3       	ldi	r24, 0x32	; 50
+ 8cc:	90 e0       	ldi	r25, 0x00	; 0
+ 8ce:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+			alive_counter = 0;
+ 8d2:	10 92 62 00 	sts	0x0062, r1	; 0x800062 <alive_counter>
+			TCNT2 = 11;                              // Assign the correct value into the Timer register so that it goes for 0.25 sec
+ 8d6:	8b e0       	ldi	r24, 0x0B	; 11
+ 8d8:	84 bd       	out	0x24, r24	; 36
+ 8da:	2a c0       	rjmp	.+84     	; 0x930 <__vector_5+0xbc>
+		}
+		else                                         // This section is for if it is in the middle of the 0.75 sec portion
+		{
+			alive_counter++;
+ 8dc:	8f 5f       	subi	r24, 0xFF	; 255
+ 8de:	80 93 62 00 	sts	0x0062, r24	; 0x800062 <alive_counter>
+			TCNT2 = 11;
+ 8e2:	8b e0       	ldi	r24, 0x0B	; 11
+ 8e4:	84 bd       	out	0x24, r24	; 36
+ 8e6:	24 c0       	rjmp	.+72     	; 0x930 <__vector_5+0xbc>
+		}
+	}
+	else   // I am in operation mode 2 so I need to do 0.1 sec on 0.9 sec off
+	{
+		if (alive_counter == 1)
+ 8e8:	80 91 62 00 	lds	r24, 0x0062	; 0x800062 <alive_counter>
+ 8ec:	81 30       	cpi	r24, 0x01	; 1
+ 8ee:	71 f4       	brne	.+28     	; 0x90c <__vector_5+0x98>
+		{
+			assign_bit(&PORTD, Alive_LED, 0);            // Turn off the LED since we are at the end of the 0.1 sec period
+ 8f0:	40 e0       	ldi	r20, 0x00	; 0
+ 8f2:	65 e0       	ldi	r22, 0x05	; 5
+ 8f4:	82 e3       	ldi	r24, 0x32	; 50
+ 8f6:	90 e0       	ldi	r25, 0x00	; 0
+ 8f8:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+			alive_counter++;
+ 8fc:	80 91 62 00 	lds	r24, 0x0062	; 0x800062 <alive_counter>
+ 900:	8f 5f       	subi	r24, 0xFF	; 255
+ 902:	80 93 62 00 	sts	0x0062, r24	; 0x800062 <alive_counter>
+			TCNT2 = 60;
+ 906:	8c e3       	ldi	r24, 0x3C	; 60
+ 908:	84 bd       	out	0x24, r24	; 36
+ 90a:	12 c0       	rjmp	.+36     	; 0x930 <__vector_5+0xbc>
+		}
+		else if (alive_counter == 19)
+ 90c:	83 31       	cpi	r24, 0x13	; 19
+ 90e:	59 f4       	brne	.+22     	; 0x926 <__vector_5+0xb2>
+		{
+			assign_bit(&PORTD, Alive_LED, 1);            // Turn on the LED since we are at the end of the 0.9 sec period
+ 910:	41 e0       	ldi	r20, 0x01	; 1
+ 912:	65 e0       	ldi	r22, 0x05	; 5
+ 914:	82 e3       	ldi	r24, 0x32	; 50
+ 916:	90 e0       	ldi	r25, 0x00	; 0
+ 918:	0e 94 5f 00 	call	0xbe	; 0xbe <assign_bit>
+			alive_counter = 0;
+ 91c:	10 92 62 00 	sts	0x0062, r1	; 0x800062 <alive_counter>
+			TCNT2 = 60;
+ 920:	8c e3       	ldi	r24, 0x3C	; 60
+ 922:	84 bd       	out	0x24, r24	; 36
+ 924:	05 c0       	rjmp	.+10     	; 0x930 <__vector_5+0xbc>
 
+		}
+		else
+		{
+			alive_counter++;                             // At one of the intermediate points so just keep the LED how it is
+ 926:	8f 5f       	subi	r24, 0xFF	; 255
+ 928:	80 93 62 00 	sts	0x0062, r24	; 0x800062 <alive_counter>
+			TCNT2 = 60; 
+ 92c:	8c e3       	ldi	r24, 0x3C	; 60
+ 92e:	84 bd       	out	0x24, r24	; 36
+		}
+	}
+}
+ 930:	ff 91       	pop	r31
+ 932:	ef 91       	pop	r30
+ 934:	bf 91       	pop	r27
+ 936:	af 91       	pop	r26
+ 938:	9f 91       	pop	r25
+ 93a:	8f 91       	pop	r24
+ 93c:	7f 91       	pop	r23
+ 93e:	6f 91       	pop	r22
+ 940:	5f 91       	pop	r21
+ 942:	4f 91       	pop	r20
+ 944:	3f 91       	pop	r19
+ 946:	2f 91       	pop	r18
+ 948:	0f 90       	pop	r0
+ 94a:	0f be       	out	0x3f, r0	; 63
+ 94c:	0f 90       	pop	r0
+ 94e:	1f 90       	pop	r1
+ 950:	18 95       	reti
+
+00000952 <main>:
+ */ 
 #include "HCU_Funcs.h"
 
-int main(void)  // This is for Nick Moore
+int main(void)
 {
     Initial();
- 886:	0e 94 79 00 	call	0xf2	; 0xf2 <Initial>
+ 952:	0e 94 79 00 	call	0xf2	; 0xf2 <Initial>
     while (1) 
     {
 		tempConversion();
- 88a:	0e 94 b3 03 	call	0x766	; 0x766 <tempConversion>
-		if (!ECU_present && (opMode == 1))    //! Will only go in here if the ECU is not present and in pumping mode
- 88e:	80 91 61 00 	lds	r24, 0x0061	; 0x800061 <opMode>
- 892:	81 30       	cpi	r24, 0x01	; 1
- 894:	d1 f7       	brne	.-12     	; 0x88a <main+0x4>
+ 956:	0e 94 ac 03 	call	0x758	; 0x758 <tempConversion>
+		if (!ECU_present && (opMode == 1))    // Will only go in here if the ECU is not present and in pumping mode
+ 95a:	80 91 61 00 	lds	r24, 0x0061	; 0x800061 <opMode>
+ 95e:	81 30       	cpi	r24, 0x01	; 1
+ 960:	d1 f7       	brne	.-12     	; 0x956 <main+0x4>
 			flowMeter();
- 896:	0e 94 3b 01 	call	0x276	; 0x276 <flowMeter>
- 89a:	f7 cf       	rjmp	.-18     	; 0x88a <main+0x4>
+ 962:	0e 94 2d 01 	call	0x25a	; 0x25a <flowMeter>
+ 966:	f7 cf       	rjmp	.-18     	; 0x956 <main+0x4>
 
-0000089c <__subsf3>:
- 89c:	50 58       	subi	r21, 0x80	; 128
+00000968 <__subsf3>:
+ 968:	50 58       	subi	r21, 0x80	; 128
 
-0000089e <__addsf3>:
- 89e:	bb 27       	eor	r27, r27
- 8a0:	aa 27       	eor	r26, r26
- 8a2:	0e 94 66 04 	call	0x8cc	; 0x8cc <__addsf3x>
- 8a6:	0c 94 e0 05 	jmp	0xbc0	; 0xbc0 <__fp_round>
- 8aa:	0e 94 d2 05 	call	0xba4	; 0xba4 <__fp_pscA>
- 8ae:	38 f0       	brcs	.+14     	; 0x8be <__addsf3+0x20>
- 8b0:	0e 94 d9 05 	call	0xbb2	; 0xbb2 <__fp_pscB>
- 8b4:	20 f0       	brcs	.+8      	; 0x8be <__addsf3+0x20>
- 8b6:	39 f4       	brne	.+14     	; 0x8c6 <__addsf3+0x28>
- 8b8:	9f 3f       	cpi	r25, 0xFF	; 255
- 8ba:	19 f4       	brne	.+6      	; 0x8c2 <__addsf3+0x24>
- 8bc:	26 f4       	brtc	.+8      	; 0x8c6 <__addsf3+0x28>
- 8be:	0c 94 cf 05 	jmp	0xb9e	; 0xb9e <__fp_nan>
- 8c2:	0e f4       	brtc	.+2      	; 0x8c6 <__addsf3+0x28>
- 8c4:	e0 95       	com	r30
- 8c6:	e7 fb       	bst	r30, 7
- 8c8:	0c 94 c9 05 	jmp	0xb92	; 0xb92 <__fp_inf>
+0000096a <__addsf3>:
+ 96a:	bb 27       	eor	r27, r27
+ 96c:	aa 27       	eor	r26, r26
+ 96e:	0e 94 cc 04 	call	0x998	; 0x998 <__addsf3x>
+ 972:	0c 94 46 06 	jmp	0xc8c	; 0xc8c <__fp_round>
+ 976:	0e 94 38 06 	call	0xc70	; 0xc70 <__fp_pscA>
+ 97a:	38 f0       	brcs	.+14     	; 0x98a <__addsf3+0x20>
+ 97c:	0e 94 3f 06 	call	0xc7e	; 0xc7e <__fp_pscB>
+ 980:	20 f0       	brcs	.+8      	; 0x98a <__addsf3+0x20>
+ 982:	39 f4       	brne	.+14     	; 0x992 <__addsf3+0x28>
+ 984:	9f 3f       	cpi	r25, 0xFF	; 255
+ 986:	19 f4       	brne	.+6      	; 0x98e <__addsf3+0x24>
+ 988:	26 f4       	brtc	.+8      	; 0x992 <__addsf3+0x28>
+ 98a:	0c 94 35 06 	jmp	0xc6a	; 0xc6a <__fp_nan>
+ 98e:	0e f4       	brtc	.+2      	; 0x992 <__addsf3+0x28>
+ 990:	e0 95       	com	r30
+ 992:	e7 fb       	bst	r30, 7
+ 994:	0c 94 2f 06 	jmp	0xc5e	; 0xc5e <__fp_inf>
 
-000008cc <__addsf3x>:
- 8cc:	e9 2f       	mov	r30, r25
- 8ce:	0e 94 f1 05 	call	0xbe2	; 0xbe2 <__fp_split3>
- 8d2:	58 f3       	brcs	.-42     	; 0x8aa <__addsf3+0xc>
- 8d4:	ba 17       	cp	r27, r26
- 8d6:	62 07       	cpc	r22, r18
- 8d8:	73 07       	cpc	r23, r19
- 8da:	84 07       	cpc	r24, r20
- 8dc:	95 07       	cpc	r25, r21
- 8de:	20 f0       	brcs	.+8      	; 0x8e8 <__addsf3x+0x1c>
- 8e0:	79 f4       	brne	.+30     	; 0x900 <__addsf3x+0x34>
- 8e2:	a6 f5       	brtc	.+104    	; 0x94c <__addsf3x+0x80>
- 8e4:	0c 94 13 06 	jmp	0xc26	; 0xc26 <__fp_zero>
- 8e8:	0e f4       	brtc	.+2      	; 0x8ec <__addsf3x+0x20>
- 8ea:	e0 95       	com	r30
- 8ec:	0b 2e       	mov	r0, r27
- 8ee:	ba 2f       	mov	r27, r26
- 8f0:	a0 2d       	mov	r26, r0
- 8f2:	0b 01       	movw	r0, r22
- 8f4:	b9 01       	movw	r22, r18
- 8f6:	90 01       	movw	r18, r0
- 8f8:	0c 01       	movw	r0, r24
- 8fa:	ca 01       	movw	r24, r20
- 8fc:	a0 01       	movw	r20, r0
- 8fe:	11 24       	eor	r1, r1
- 900:	ff 27       	eor	r31, r31
- 902:	59 1b       	sub	r21, r25
- 904:	99 f0       	breq	.+38     	; 0x92c <__addsf3x+0x60>
- 906:	59 3f       	cpi	r21, 0xF9	; 249
- 908:	50 f4       	brcc	.+20     	; 0x91e <__addsf3x+0x52>
- 90a:	50 3e       	cpi	r21, 0xE0	; 224
- 90c:	68 f1       	brcs	.+90     	; 0x968 <__addsf3x+0x9c>
- 90e:	1a 16       	cp	r1, r26
- 910:	f0 40       	sbci	r31, 0x00	; 0
- 912:	a2 2f       	mov	r26, r18
- 914:	23 2f       	mov	r18, r19
- 916:	34 2f       	mov	r19, r20
- 918:	44 27       	eor	r20, r20
- 91a:	58 5f       	subi	r21, 0xF8	; 248
- 91c:	f3 cf       	rjmp	.-26     	; 0x904 <__addsf3x+0x38>
- 91e:	46 95       	lsr	r20
- 920:	37 95       	ror	r19
- 922:	27 95       	ror	r18
- 924:	a7 95       	ror	r26
- 926:	f0 40       	sbci	r31, 0x00	; 0
- 928:	53 95       	inc	r21
- 92a:	c9 f7       	brne	.-14     	; 0x91e <__addsf3x+0x52>
- 92c:	7e f4       	brtc	.+30     	; 0x94c <__addsf3x+0x80>
- 92e:	1f 16       	cp	r1, r31
- 930:	ba 0b       	sbc	r27, r26
- 932:	62 0b       	sbc	r22, r18
- 934:	73 0b       	sbc	r23, r19
- 936:	84 0b       	sbc	r24, r20
- 938:	ba f0       	brmi	.+46     	; 0x968 <__addsf3x+0x9c>
- 93a:	91 50       	subi	r25, 0x01	; 1
- 93c:	a1 f0       	breq	.+40     	; 0x966 <__addsf3x+0x9a>
- 93e:	ff 0f       	add	r31, r31
- 940:	bb 1f       	adc	r27, r27
- 942:	66 1f       	adc	r22, r22
- 944:	77 1f       	adc	r23, r23
- 946:	88 1f       	adc	r24, r24
- 948:	c2 f7       	brpl	.-16     	; 0x93a <__addsf3x+0x6e>
- 94a:	0e c0       	rjmp	.+28     	; 0x968 <__addsf3x+0x9c>
- 94c:	ba 0f       	add	r27, r26
- 94e:	62 1f       	adc	r22, r18
- 950:	73 1f       	adc	r23, r19
- 952:	84 1f       	adc	r24, r20
- 954:	48 f4       	brcc	.+18     	; 0x968 <__addsf3x+0x9c>
- 956:	87 95       	ror	r24
- 958:	77 95       	ror	r23
- 95a:	67 95       	ror	r22
- 95c:	b7 95       	ror	r27
- 95e:	f7 95       	ror	r31
- 960:	9e 3f       	cpi	r25, 0xFE	; 254
- 962:	08 f0       	brcs	.+2      	; 0x966 <__addsf3x+0x9a>
- 964:	b0 cf       	rjmp	.-160    	; 0x8c6 <__addsf3+0x28>
- 966:	93 95       	inc	r25
- 968:	88 0f       	add	r24, r24
- 96a:	08 f0       	brcs	.+2      	; 0x96e <__addsf3x+0xa2>
- 96c:	99 27       	eor	r25, r25
- 96e:	ee 0f       	add	r30, r30
- 970:	97 95       	ror	r25
- 972:	87 95       	ror	r24
- 974:	08 95       	ret
-
-00000976 <__cmpsf2>:
- 976:	0e 94 a5 05 	call	0xb4a	; 0xb4a <__fp_cmp>
- 97a:	08 f4       	brcc	.+2      	; 0x97e <__cmpsf2+0x8>
- 97c:	81 e0       	ldi	r24, 0x01	; 1
- 97e:	08 95       	ret
-
-00000980 <__divsf3>:
- 980:	0e 94 d4 04 	call	0x9a8	; 0x9a8 <__divsf3x>
- 984:	0c 94 e0 05 	jmp	0xbc0	; 0xbc0 <__fp_round>
- 988:	0e 94 d9 05 	call	0xbb2	; 0xbb2 <__fp_pscB>
- 98c:	58 f0       	brcs	.+22     	; 0x9a4 <__divsf3+0x24>
- 98e:	0e 94 d2 05 	call	0xba4	; 0xba4 <__fp_pscA>
- 992:	40 f0       	brcs	.+16     	; 0x9a4 <__divsf3+0x24>
- 994:	29 f4       	brne	.+10     	; 0x9a0 <__divsf3+0x20>
- 996:	5f 3f       	cpi	r21, 0xFF	; 255
- 998:	29 f0       	breq	.+10     	; 0x9a4 <__divsf3+0x24>
- 99a:	0c 94 c9 05 	jmp	0xb92	; 0xb92 <__fp_inf>
- 99e:	51 11       	cpse	r21, r1
- 9a0:	0c 94 14 06 	jmp	0xc28	; 0xc28 <__fp_szero>
- 9a4:	0c 94 cf 05 	jmp	0xb9e	; 0xb9e <__fp_nan>
-
-000009a8 <__divsf3x>:
- 9a8:	0e 94 f1 05 	call	0xbe2	; 0xbe2 <__fp_split3>
- 9ac:	68 f3       	brcs	.-38     	; 0x988 <__divsf3+0x8>
-
-000009ae <__divsf3_pse>:
- 9ae:	99 23       	and	r25, r25
- 9b0:	b1 f3       	breq	.-20     	; 0x99e <__divsf3+0x1e>
- 9b2:	55 23       	and	r21, r21
- 9b4:	91 f3       	breq	.-28     	; 0x99a <__divsf3+0x1a>
- 9b6:	95 1b       	sub	r25, r21
- 9b8:	55 0b       	sbc	r21, r21
- 9ba:	bb 27       	eor	r27, r27
- 9bc:	aa 27       	eor	r26, r26
- 9be:	62 17       	cp	r22, r18
- 9c0:	73 07       	cpc	r23, r19
- 9c2:	84 07       	cpc	r24, r20
- 9c4:	38 f0       	brcs	.+14     	; 0x9d4 <__divsf3_pse+0x26>
- 9c6:	9f 5f       	subi	r25, 0xFF	; 255
- 9c8:	5f 4f       	sbci	r21, 0xFF	; 255
- 9ca:	22 0f       	add	r18, r18
- 9cc:	33 1f       	adc	r19, r19
- 9ce:	44 1f       	adc	r20, r20
- 9d0:	aa 1f       	adc	r26, r26
- 9d2:	a9 f3       	breq	.-22     	; 0x9be <__divsf3_pse+0x10>
- 9d4:	35 d0       	rcall	.+106    	; 0xa40 <__divsf3_pse+0x92>
- 9d6:	0e 2e       	mov	r0, r30
- 9d8:	3a f0       	brmi	.+14     	; 0x9e8 <__divsf3_pse+0x3a>
- 9da:	e0 e8       	ldi	r30, 0x80	; 128
- 9dc:	32 d0       	rcall	.+100    	; 0xa42 <__divsf3_pse+0x94>
- 9de:	91 50       	subi	r25, 0x01	; 1
- 9e0:	50 40       	sbci	r21, 0x00	; 0
- 9e2:	e6 95       	lsr	r30
- 9e4:	00 1c       	adc	r0, r0
- 9e6:	ca f7       	brpl	.-14     	; 0x9da <__divsf3_pse+0x2c>
- 9e8:	2b d0       	rcall	.+86     	; 0xa40 <__divsf3_pse+0x92>
- 9ea:	fe 2f       	mov	r31, r30
- 9ec:	29 d0       	rcall	.+82     	; 0xa40 <__divsf3_pse+0x92>
- 9ee:	66 0f       	add	r22, r22
- 9f0:	77 1f       	adc	r23, r23
- 9f2:	88 1f       	adc	r24, r24
- 9f4:	bb 1f       	adc	r27, r27
- 9f6:	26 17       	cp	r18, r22
- 9f8:	37 07       	cpc	r19, r23
- 9fa:	48 07       	cpc	r20, r24
- 9fc:	ab 07       	cpc	r26, r27
- 9fe:	b0 e8       	ldi	r27, 0x80	; 128
- a00:	09 f0       	breq	.+2      	; 0xa04 <__divsf3_pse+0x56>
- a02:	bb 0b       	sbc	r27, r27
- a04:	80 2d       	mov	r24, r0
- a06:	bf 01       	movw	r22, r30
- a08:	ff 27       	eor	r31, r31
- a0a:	93 58       	subi	r25, 0x83	; 131
- a0c:	5f 4f       	sbci	r21, 0xFF	; 255
- a0e:	3a f0       	brmi	.+14     	; 0xa1e <__divsf3_pse+0x70>
- a10:	9e 3f       	cpi	r25, 0xFE	; 254
- a12:	51 05       	cpc	r21, r1
- a14:	78 f0       	brcs	.+30     	; 0xa34 <__divsf3_pse+0x86>
- a16:	0c 94 c9 05 	jmp	0xb92	; 0xb92 <__fp_inf>
- a1a:	0c 94 14 06 	jmp	0xc28	; 0xc28 <__fp_szero>
- a1e:	5f 3f       	cpi	r21, 0xFF	; 255
- a20:	e4 f3       	brlt	.-8      	; 0xa1a <__divsf3_pse+0x6c>
- a22:	98 3e       	cpi	r25, 0xE8	; 232
- a24:	d4 f3       	brlt	.-12     	; 0xa1a <__divsf3_pse+0x6c>
- a26:	86 95       	lsr	r24
- a28:	77 95       	ror	r23
- a2a:	67 95       	ror	r22
- a2c:	b7 95       	ror	r27
- a2e:	f7 95       	ror	r31
- a30:	9f 5f       	subi	r25, 0xFF	; 255
- a32:	c9 f7       	brne	.-14     	; 0xa26 <__divsf3_pse+0x78>
+00000998 <__addsf3x>:
+ 998:	e9 2f       	mov	r30, r25
+ 99a:	0e 94 57 06 	call	0xcae	; 0xcae <__fp_split3>
+ 99e:	58 f3       	brcs	.-42     	; 0x976 <__addsf3+0xc>
+ 9a0:	ba 17       	cp	r27, r26
+ 9a2:	62 07       	cpc	r22, r18
+ 9a4:	73 07       	cpc	r23, r19
+ 9a6:	84 07       	cpc	r24, r20
+ 9a8:	95 07       	cpc	r25, r21
+ 9aa:	20 f0       	brcs	.+8      	; 0x9b4 <__addsf3x+0x1c>
+ 9ac:	79 f4       	brne	.+30     	; 0x9cc <__addsf3x+0x34>
+ 9ae:	a6 f5       	brtc	.+104    	; 0xa18 <__addsf3x+0x80>
+ 9b0:	0c 94 79 06 	jmp	0xcf2	; 0xcf2 <__fp_zero>
+ 9b4:	0e f4       	brtc	.+2      	; 0x9b8 <__addsf3x+0x20>
+ 9b6:	e0 95       	com	r30
+ 9b8:	0b 2e       	mov	r0, r27
+ 9ba:	ba 2f       	mov	r27, r26
+ 9bc:	a0 2d       	mov	r26, r0
+ 9be:	0b 01       	movw	r0, r22
+ 9c0:	b9 01       	movw	r22, r18
+ 9c2:	90 01       	movw	r18, r0
+ 9c4:	0c 01       	movw	r0, r24
+ 9c6:	ca 01       	movw	r24, r20
+ 9c8:	a0 01       	movw	r20, r0
+ 9ca:	11 24       	eor	r1, r1
+ 9cc:	ff 27       	eor	r31, r31
+ 9ce:	59 1b       	sub	r21, r25
+ 9d0:	99 f0       	breq	.+38     	; 0x9f8 <__addsf3x+0x60>
+ 9d2:	59 3f       	cpi	r21, 0xF9	; 249
+ 9d4:	50 f4       	brcc	.+20     	; 0x9ea <__addsf3x+0x52>
+ 9d6:	50 3e       	cpi	r21, 0xE0	; 224
+ 9d8:	68 f1       	brcs	.+90     	; 0xa34 <__addsf3x+0x9c>
+ 9da:	1a 16       	cp	r1, r26
+ 9dc:	f0 40       	sbci	r31, 0x00	; 0
+ 9de:	a2 2f       	mov	r26, r18
+ 9e0:	23 2f       	mov	r18, r19
+ 9e2:	34 2f       	mov	r19, r20
+ 9e4:	44 27       	eor	r20, r20
+ 9e6:	58 5f       	subi	r21, 0xF8	; 248
+ 9e8:	f3 cf       	rjmp	.-26     	; 0x9d0 <__addsf3x+0x38>
+ 9ea:	46 95       	lsr	r20
+ 9ec:	37 95       	ror	r19
+ 9ee:	27 95       	ror	r18
+ 9f0:	a7 95       	ror	r26
+ 9f2:	f0 40       	sbci	r31, 0x00	; 0
+ 9f4:	53 95       	inc	r21
+ 9f6:	c9 f7       	brne	.-14     	; 0x9ea <__addsf3x+0x52>
+ 9f8:	7e f4       	brtc	.+30     	; 0xa18 <__addsf3x+0x80>
+ 9fa:	1f 16       	cp	r1, r31
+ 9fc:	ba 0b       	sbc	r27, r26
+ 9fe:	62 0b       	sbc	r22, r18
+ a00:	73 0b       	sbc	r23, r19
+ a02:	84 0b       	sbc	r24, r20
+ a04:	ba f0       	brmi	.+46     	; 0xa34 <__addsf3x+0x9c>
+ a06:	91 50       	subi	r25, 0x01	; 1
+ a08:	a1 f0       	breq	.+40     	; 0xa32 <__addsf3x+0x9a>
+ a0a:	ff 0f       	add	r31, r31
+ a0c:	bb 1f       	adc	r27, r27
+ a0e:	66 1f       	adc	r22, r22
+ a10:	77 1f       	adc	r23, r23
+ a12:	88 1f       	adc	r24, r24
+ a14:	c2 f7       	brpl	.-16     	; 0xa06 <__addsf3x+0x6e>
+ a16:	0e c0       	rjmp	.+28     	; 0xa34 <__addsf3x+0x9c>
+ a18:	ba 0f       	add	r27, r26
+ a1a:	62 1f       	adc	r22, r18
+ a1c:	73 1f       	adc	r23, r19
+ a1e:	84 1f       	adc	r24, r20
+ a20:	48 f4       	brcc	.+18     	; 0xa34 <__addsf3x+0x9c>
+ a22:	87 95       	ror	r24
+ a24:	77 95       	ror	r23
+ a26:	67 95       	ror	r22
+ a28:	b7 95       	ror	r27
+ a2a:	f7 95       	ror	r31
+ a2c:	9e 3f       	cpi	r25, 0xFE	; 254
+ a2e:	08 f0       	brcs	.+2      	; 0xa32 <__addsf3x+0x9a>
+ a30:	b0 cf       	rjmp	.-160    	; 0x992 <__addsf3+0x28>
+ a32:	93 95       	inc	r25
  a34:	88 0f       	add	r24, r24
- a36:	91 1d       	adc	r25, r1
- a38:	96 95       	lsr	r25
- a3a:	87 95       	ror	r24
- a3c:	97 f9       	bld	r25, 7
- a3e:	08 95       	ret
- a40:	e1 e0       	ldi	r30, 0x01	; 1
- a42:	66 0f       	add	r22, r22
- a44:	77 1f       	adc	r23, r23
- a46:	88 1f       	adc	r24, r24
- a48:	bb 1f       	adc	r27, r27
- a4a:	62 17       	cp	r22, r18
- a4c:	73 07       	cpc	r23, r19
- a4e:	84 07       	cpc	r24, r20
- a50:	ba 07       	cpc	r27, r26
- a52:	20 f0       	brcs	.+8      	; 0xa5c <__divsf3_pse+0xae>
- a54:	62 1b       	sub	r22, r18
- a56:	73 0b       	sbc	r23, r19
- a58:	84 0b       	sbc	r24, r20
- a5a:	ba 0b       	sbc	r27, r26
- a5c:	ee 1f       	adc	r30, r30
- a5e:	88 f7       	brcc	.-30     	; 0xa42 <__divsf3_pse+0x94>
- a60:	e0 95       	com	r30
- a62:	08 95       	ret
+ a36:	08 f0       	brcs	.+2      	; 0xa3a <__addsf3x+0xa2>
+ a38:	99 27       	eor	r25, r25
+ a3a:	ee 0f       	add	r30, r30
+ a3c:	97 95       	ror	r25
+ a3e:	87 95       	ror	r24
+ a40:	08 95       	ret
 
-00000a64 <__fixsfsi>:
- a64:	0e 94 39 05 	call	0xa72	; 0xa72 <__fixunssfsi>
- a68:	68 94       	set
- a6a:	b1 11       	cpse	r27, r1
- a6c:	0c 94 14 06 	jmp	0xc28	; 0xc28 <__fp_szero>
- a70:	08 95       	ret
+00000a42 <__cmpsf2>:
+ a42:	0e 94 0b 06 	call	0xc16	; 0xc16 <__fp_cmp>
+ a46:	08 f4       	brcc	.+2      	; 0xa4a <__cmpsf2+0x8>
+ a48:	81 e0       	ldi	r24, 0x01	; 1
+ a4a:	08 95       	ret
 
-00000a72 <__fixunssfsi>:
- a72:	0e 94 f9 05 	call	0xbf2	; 0xbf2 <__fp_splitA>
- a76:	88 f0       	brcs	.+34     	; 0xa9a <__fixunssfsi+0x28>
- a78:	9f 57       	subi	r25, 0x7F	; 127
- a7a:	98 f0       	brcs	.+38     	; 0xaa2 <__fixunssfsi+0x30>
- a7c:	b9 2f       	mov	r27, r25
- a7e:	99 27       	eor	r25, r25
- a80:	b7 51       	subi	r27, 0x17	; 23
- a82:	b0 f0       	brcs	.+44     	; 0xab0 <__fixunssfsi+0x3e>
- a84:	e1 f0       	breq	.+56     	; 0xabe <__fixunssfsi+0x4c>
- a86:	66 0f       	add	r22, r22
- a88:	77 1f       	adc	r23, r23
- a8a:	88 1f       	adc	r24, r24
- a8c:	99 1f       	adc	r25, r25
- a8e:	1a f0       	brmi	.+6      	; 0xa96 <__fixunssfsi+0x24>
- a90:	ba 95       	dec	r27
- a92:	c9 f7       	brne	.-14     	; 0xa86 <__fixunssfsi+0x14>
- a94:	14 c0       	rjmp	.+40     	; 0xabe <__fixunssfsi+0x4c>
- a96:	b1 30       	cpi	r27, 0x01	; 1
- a98:	91 f0       	breq	.+36     	; 0xabe <__fixunssfsi+0x4c>
- a9a:	0e 94 13 06 	call	0xc26	; 0xc26 <__fp_zero>
- a9e:	b1 e0       	ldi	r27, 0x01	; 1
- aa0:	08 95       	ret
- aa2:	0c 94 13 06 	jmp	0xc26	; 0xc26 <__fp_zero>
- aa6:	67 2f       	mov	r22, r23
- aa8:	78 2f       	mov	r23, r24
- aaa:	88 27       	eor	r24, r24
- aac:	b8 5f       	subi	r27, 0xF8	; 248
- aae:	39 f0       	breq	.+14     	; 0xabe <__fixunssfsi+0x4c>
- ab0:	b9 3f       	cpi	r27, 0xF9	; 249
- ab2:	cc f3       	brlt	.-14     	; 0xaa6 <__fixunssfsi+0x34>
- ab4:	86 95       	lsr	r24
- ab6:	77 95       	ror	r23
- ab8:	67 95       	ror	r22
- aba:	b3 95       	inc	r27
- abc:	d9 f7       	brne	.-10     	; 0xab4 <__fixunssfsi+0x42>
- abe:	3e f4       	brtc	.+14     	; 0xace <__fixunssfsi+0x5c>
- ac0:	90 95       	com	r25
- ac2:	80 95       	com	r24
- ac4:	70 95       	com	r23
- ac6:	61 95       	neg	r22
- ac8:	7f 4f       	sbci	r23, 0xFF	; 255
- aca:	8f 4f       	sbci	r24, 0xFF	; 255
- acc:	9f 4f       	sbci	r25, 0xFF	; 255
- ace:	08 95       	ret
+00000a4c <__divsf3>:
+ a4c:	0e 94 3a 05 	call	0xa74	; 0xa74 <__divsf3x>
+ a50:	0c 94 46 06 	jmp	0xc8c	; 0xc8c <__fp_round>
+ a54:	0e 94 3f 06 	call	0xc7e	; 0xc7e <__fp_pscB>
+ a58:	58 f0       	brcs	.+22     	; 0xa70 <__divsf3+0x24>
+ a5a:	0e 94 38 06 	call	0xc70	; 0xc70 <__fp_pscA>
+ a5e:	40 f0       	brcs	.+16     	; 0xa70 <__divsf3+0x24>
+ a60:	29 f4       	brne	.+10     	; 0xa6c <__divsf3+0x20>
+ a62:	5f 3f       	cpi	r21, 0xFF	; 255
+ a64:	29 f0       	breq	.+10     	; 0xa70 <__divsf3+0x24>
+ a66:	0c 94 2f 06 	jmp	0xc5e	; 0xc5e <__fp_inf>
+ a6a:	51 11       	cpse	r21, r1
+ a6c:	0c 94 7a 06 	jmp	0xcf4	; 0xcf4 <__fp_szero>
+ a70:	0c 94 35 06 	jmp	0xc6a	; 0xc6a <__fp_nan>
 
-00000ad0 <__floatunsisf>:
- ad0:	e8 94       	clt
- ad2:	09 c0       	rjmp	.+18     	; 0xae6 <__floatsisf+0x12>
+00000a74 <__divsf3x>:
+ a74:	0e 94 57 06 	call	0xcae	; 0xcae <__fp_split3>
+ a78:	68 f3       	brcs	.-38     	; 0xa54 <__divsf3+0x8>
 
-00000ad4 <__floatsisf>:
- ad4:	97 fb       	bst	r25, 7
- ad6:	3e f4       	brtc	.+14     	; 0xae6 <__floatsisf+0x12>
- ad8:	90 95       	com	r25
- ada:	80 95       	com	r24
- adc:	70 95       	com	r23
- ade:	61 95       	neg	r22
- ae0:	7f 4f       	sbci	r23, 0xFF	; 255
- ae2:	8f 4f       	sbci	r24, 0xFF	; 255
- ae4:	9f 4f       	sbci	r25, 0xFF	; 255
- ae6:	99 23       	and	r25, r25
- ae8:	a9 f0       	breq	.+42     	; 0xb14 <__floatsisf+0x40>
- aea:	f9 2f       	mov	r31, r25
- aec:	96 e9       	ldi	r25, 0x96	; 150
- aee:	bb 27       	eor	r27, r27
- af0:	93 95       	inc	r25
- af2:	f6 95       	lsr	r31
- af4:	87 95       	ror	r24
- af6:	77 95       	ror	r23
- af8:	67 95       	ror	r22
- afa:	b7 95       	ror	r27
- afc:	f1 11       	cpse	r31, r1
- afe:	f8 cf       	rjmp	.-16     	; 0xaf0 <__floatsisf+0x1c>
- b00:	fa f4       	brpl	.+62     	; 0xb40 <__floatsisf+0x6c>
- b02:	bb 0f       	add	r27, r27
- b04:	11 f4       	brne	.+4      	; 0xb0a <__floatsisf+0x36>
- b06:	60 ff       	sbrs	r22, 0
- b08:	1b c0       	rjmp	.+54     	; 0xb40 <__floatsisf+0x6c>
- b0a:	6f 5f       	subi	r22, 0xFF	; 255
- b0c:	7f 4f       	sbci	r23, 0xFF	; 255
- b0e:	8f 4f       	sbci	r24, 0xFF	; 255
- b10:	9f 4f       	sbci	r25, 0xFF	; 255
- b12:	16 c0       	rjmp	.+44     	; 0xb40 <__floatsisf+0x6c>
- b14:	88 23       	and	r24, r24
- b16:	11 f0       	breq	.+4      	; 0xb1c <__floatsisf+0x48>
- b18:	96 e9       	ldi	r25, 0x96	; 150
- b1a:	11 c0       	rjmp	.+34     	; 0xb3e <__floatsisf+0x6a>
- b1c:	77 23       	and	r23, r23
- b1e:	21 f0       	breq	.+8      	; 0xb28 <__floatsisf+0x54>
- b20:	9e e8       	ldi	r25, 0x8E	; 142
- b22:	87 2f       	mov	r24, r23
- b24:	76 2f       	mov	r23, r22
- b26:	05 c0       	rjmp	.+10     	; 0xb32 <__floatsisf+0x5e>
- b28:	66 23       	and	r22, r22
- b2a:	71 f0       	breq	.+28     	; 0xb48 <__floatsisf+0x74>
- b2c:	96 e8       	ldi	r25, 0x86	; 134
- b2e:	86 2f       	mov	r24, r22
- b30:	70 e0       	ldi	r23, 0x00	; 0
- b32:	60 e0       	ldi	r22, 0x00	; 0
- b34:	2a f0       	brmi	.+10     	; 0xb40 <__floatsisf+0x6c>
- b36:	9a 95       	dec	r25
- b38:	66 0f       	add	r22, r22
- b3a:	77 1f       	adc	r23, r23
- b3c:	88 1f       	adc	r24, r24
- b3e:	da f7       	brpl	.-10     	; 0xb36 <__floatsisf+0x62>
- b40:	88 0f       	add	r24, r24
- b42:	96 95       	lsr	r25
- b44:	87 95       	ror	r24
- b46:	97 f9       	bld	r25, 7
- b48:	08 95       	ret
+00000a7a <__divsf3_pse>:
+ a7a:	99 23       	and	r25, r25
+ a7c:	b1 f3       	breq	.-20     	; 0xa6a <__divsf3+0x1e>
+ a7e:	55 23       	and	r21, r21
+ a80:	91 f3       	breq	.-28     	; 0xa66 <__divsf3+0x1a>
+ a82:	95 1b       	sub	r25, r21
+ a84:	55 0b       	sbc	r21, r21
+ a86:	bb 27       	eor	r27, r27
+ a88:	aa 27       	eor	r26, r26
+ a8a:	62 17       	cp	r22, r18
+ a8c:	73 07       	cpc	r23, r19
+ a8e:	84 07       	cpc	r24, r20
+ a90:	38 f0       	brcs	.+14     	; 0xaa0 <__divsf3_pse+0x26>
+ a92:	9f 5f       	subi	r25, 0xFF	; 255
+ a94:	5f 4f       	sbci	r21, 0xFF	; 255
+ a96:	22 0f       	add	r18, r18
+ a98:	33 1f       	adc	r19, r19
+ a9a:	44 1f       	adc	r20, r20
+ a9c:	aa 1f       	adc	r26, r26
+ a9e:	a9 f3       	breq	.-22     	; 0xa8a <__divsf3_pse+0x10>
+ aa0:	35 d0       	rcall	.+106    	; 0xb0c <__divsf3_pse+0x92>
+ aa2:	0e 2e       	mov	r0, r30
+ aa4:	3a f0       	brmi	.+14     	; 0xab4 <__divsf3_pse+0x3a>
+ aa6:	e0 e8       	ldi	r30, 0x80	; 128
+ aa8:	32 d0       	rcall	.+100    	; 0xb0e <__divsf3_pse+0x94>
+ aaa:	91 50       	subi	r25, 0x01	; 1
+ aac:	50 40       	sbci	r21, 0x00	; 0
+ aae:	e6 95       	lsr	r30
+ ab0:	00 1c       	adc	r0, r0
+ ab2:	ca f7       	brpl	.-14     	; 0xaa6 <__divsf3_pse+0x2c>
+ ab4:	2b d0       	rcall	.+86     	; 0xb0c <__divsf3_pse+0x92>
+ ab6:	fe 2f       	mov	r31, r30
+ ab8:	29 d0       	rcall	.+82     	; 0xb0c <__divsf3_pse+0x92>
+ aba:	66 0f       	add	r22, r22
+ abc:	77 1f       	adc	r23, r23
+ abe:	88 1f       	adc	r24, r24
+ ac0:	bb 1f       	adc	r27, r27
+ ac2:	26 17       	cp	r18, r22
+ ac4:	37 07       	cpc	r19, r23
+ ac6:	48 07       	cpc	r20, r24
+ ac8:	ab 07       	cpc	r26, r27
+ aca:	b0 e8       	ldi	r27, 0x80	; 128
+ acc:	09 f0       	breq	.+2      	; 0xad0 <__divsf3_pse+0x56>
+ ace:	bb 0b       	sbc	r27, r27
+ ad0:	80 2d       	mov	r24, r0
+ ad2:	bf 01       	movw	r22, r30
+ ad4:	ff 27       	eor	r31, r31
+ ad6:	93 58       	subi	r25, 0x83	; 131
+ ad8:	5f 4f       	sbci	r21, 0xFF	; 255
+ ada:	3a f0       	brmi	.+14     	; 0xaea <__divsf3_pse+0x70>
+ adc:	9e 3f       	cpi	r25, 0xFE	; 254
+ ade:	51 05       	cpc	r21, r1
+ ae0:	78 f0       	brcs	.+30     	; 0xb00 <__divsf3_pse+0x86>
+ ae2:	0c 94 2f 06 	jmp	0xc5e	; 0xc5e <__fp_inf>
+ ae6:	0c 94 7a 06 	jmp	0xcf4	; 0xcf4 <__fp_szero>
+ aea:	5f 3f       	cpi	r21, 0xFF	; 255
+ aec:	e4 f3       	brlt	.-8      	; 0xae6 <__divsf3_pse+0x6c>
+ aee:	98 3e       	cpi	r25, 0xE8	; 232
+ af0:	d4 f3       	brlt	.-12     	; 0xae6 <__divsf3_pse+0x6c>
+ af2:	86 95       	lsr	r24
+ af4:	77 95       	ror	r23
+ af6:	67 95       	ror	r22
+ af8:	b7 95       	ror	r27
+ afa:	f7 95       	ror	r31
+ afc:	9f 5f       	subi	r25, 0xFF	; 255
+ afe:	c9 f7       	brne	.-14     	; 0xaf2 <__divsf3_pse+0x78>
+ b00:	88 0f       	add	r24, r24
+ b02:	91 1d       	adc	r25, r1
+ b04:	96 95       	lsr	r25
+ b06:	87 95       	ror	r24
+ b08:	97 f9       	bld	r25, 7
+ b0a:	08 95       	ret
+ b0c:	e1 e0       	ldi	r30, 0x01	; 1
+ b0e:	66 0f       	add	r22, r22
+ b10:	77 1f       	adc	r23, r23
+ b12:	88 1f       	adc	r24, r24
+ b14:	bb 1f       	adc	r27, r27
+ b16:	62 17       	cp	r22, r18
+ b18:	73 07       	cpc	r23, r19
+ b1a:	84 07       	cpc	r24, r20
+ b1c:	ba 07       	cpc	r27, r26
+ b1e:	20 f0       	brcs	.+8      	; 0xb28 <__divsf3_pse+0xae>
+ b20:	62 1b       	sub	r22, r18
+ b22:	73 0b       	sbc	r23, r19
+ b24:	84 0b       	sbc	r24, r20
+ b26:	ba 0b       	sbc	r27, r26
+ b28:	ee 1f       	adc	r30, r30
+ b2a:	88 f7       	brcc	.-30     	; 0xb0e <__divsf3_pse+0x94>
+ b2c:	e0 95       	com	r30
+ b2e:	08 95       	ret
 
-00000b4a <__fp_cmp>:
- b4a:	99 0f       	add	r25, r25
- b4c:	00 08       	sbc	r0, r0
- b4e:	55 0f       	add	r21, r21
- b50:	aa 0b       	sbc	r26, r26
- b52:	e0 e8       	ldi	r30, 0x80	; 128
- b54:	fe ef       	ldi	r31, 0xFE	; 254
- b56:	16 16       	cp	r1, r22
- b58:	17 06       	cpc	r1, r23
- b5a:	e8 07       	cpc	r30, r24
- b5c:	f9 07       	cpc	r31, r25
- b5e:	c0 f0       	brcs	.+48     	; 0xb90 <__fp_cmp+0x46>
- b60:	12 16       	cp	r1, r18
- b62:	13 06       	cpc	r1, r19
- b64:	e4 07       	cpc	r30, r20
- b66:	f5 07       	cpc	r31, r21
- b68:	98 f0       	brcs	.+38     	; 0xb90 <__fp_cmp+0x46>
- b6a:	62 1b       	sub	r22, r18
- b6c:	73 0b       	sbc	r23, r19
- b6e:	84 0b       	sbc	r24, r20
- b70:	95 0b       	sbc	r25, r21
- b72:	39 f4       	brne	.+14     	; 0xb82 <__fp_cmp+0x38>
- b74:	0a 26       	eor	r0, r26
- b76:	61 f0       	breq	.+24     	; 0xb90 <__fp_cmp+0x46>
- b78:	23 2b       	or	r18, r19
- b7a:	24 2b       	or	r18, r20
- b7c:	25 2b       	or	r18, r21
- b7e:	21 f4       	brne	.+8      	; 0xb88 <__fp_cmp+0x3e>
- b80:	08 95       	ret
- b82:	0a 26       	eor	r0, r26
- b84:	09 f4       	brne	.+2      	; 0xb88 <__fp_cmp+0x3e>
- b86:	a1 40       	sbci	r26, 0x01	; 1
- b88:	a6 95       	lsr	r26
- b8a:	8f ef       	ldi	r24, 0xFF	; 255
- b8c:	81 1d       	adc	r24, r1
- b8e:	81 1d       	adc	r24, r1
- b90:	08 95       	ret
+00000b30 <__fixsfsi>:
+ b30:	0e 94 9f 05 	call	0xb3e	; 0xb3e <__fixunssfsi>
+ b34:	68 94       	set
+ b36:	b1 11       	cpse	r27, r1
+ b38:	0c 94 7a 06 	jmp	0xcf4	; 0xcf4 <__fp_szero>
+ b3c:	08 95       	ret
 
-00000b92 <__fp_inf>:
- b92:	97 f9       	bld	r25, 7
- b94:	9f 67       	ori	r25, 0x7F	; 127
- b96:	80 e8       	ldi	r24, 0x80	; 128
- b98:	70 e0       	ldi	r23, 0x00	; 0
- b9a:	60 e0       	ldi	r22, 0x00	; 0
- b9c:	08 95       	ret
+00000b3e <__fixunssfsi>:
+ b3e:	0e 94 5f 06 	call	0xcbe	; 0xcbe <__fp_splitA>
+ b42:	88 f0       	brcs	.+34     	; 0xb66 <__fixunssfsi+0x28>
+ b44:	9f 57       	subi	r25, 0x7F	; 127
+ b46:	98 f0       	brcs	.+38     	; 0xb6e <__fixunssfsi+0x30>
+ b48:	b9 2f       	mov	r27, r25
+ b4a:	99 27       	eor	r25, r25
+ b4c:	b7 51       	subi	r27, 0x17	; 23
+ b4e:	b0 f0       	brcs	.+44     	; 0xb7c <__fixunssfsi+0x3e>
+ b50:	e1 f0       	breq	.+56     	; 0xb8a <__fixunssfsi+0x4c>
+ b52:	66 0f       	add	r22, r22
+ b54:	77 1f       	adc	r23, r23
+ b56:	88 1f       	adc	r24, r24
+ b58:	99 1f       	adc	r25, r25
+ b5a:	1a f0       	brmi	.+6      	; 0xb62 <__fixunssfsi+0x24>
+ b5c:	ba 95       	dec	r27
+ b5e:	c9 f7       	brne	.-14     	; 0xb52 <__fixunssfsi+0x14>
+ b60:	14 c0       	rjmp	.+40     	; 0xb8a <__fixunssfsi+0x4c>
+ b62:	b1 30       	cpi	r27, 0x01	; 1
+ b64:	91 f0       	breq	.+36     	; 0xb8a <__fixunssfsi+0x4c>
+ b66:	0e 94 79 06 	call	0xcf2	; 0xcf2 <__fp_zero>
+ b6a:	b1 e0       	ldi	r27, 0x01	; 1
+ b6c:	08 95       	ret
+ b6e:	0c 94 79 06 	jmp	0xcf2	; 0xcf2 <__fp_zero>
+ b72:	67 2f       	mov	r22, r23
+ b74:	78 2f       	mov	r23, r24
+ b76:	88 27       	eor	r24, r24
+ b78:	b8 5f       	subi	r27, 0xF8	; 248
+ b7a:	39 f0       	breq	.+14     	; 0xb8a <__fixunssfsi+0x4c>
+ b7c:	b9 3f       	cpi	r27, 0xF9	; 249
+ b7e:	cc f3       	brlt	.-14     	; 0xb72 <__fixunssfsi+0x34>
+ b80:	86 95       	lsr	r24
+ b82:	77 95       	ror	r23
+ b84:	67 95       	ror	r22
+ b86:	b3 95       	inc	r27
+ b88:	d9 f7       	brne	.-10     	; 0xb80 <__fixunssfsi+0x42>
+ b8a:	3e f4       	brtc	.+14     	; 0xb9a <__fixunssfsi+0x5c>
+ b8c:	90 95       	com	r25
+ b8e:	80 95       	com	r24
+ b90:	70 95       	com	r23
+ b92:	61 95       	neg	r22
+ b94:	7f 4f       	sbci	r23, 0xFF	; 255
+ b96:	8f 4f       	sbci	r24, 0xFF	; 255
+ b98:	9f 4f       	sbci	r25, 0xFF	; 255
+ b9a:	08 95       	ret
 
-00000b9e <__fp_nan>:
- b9e:	9f ef       	ldi	r25, 0xFF	; 255
- ba0:	80 ec       	ldi	r24, 0xC0	; 192
- ba2:	08 95       	ret
+00000b9c <__floatunsisf>:
+ b9c:	e8 94       	clt
+ b9e:	09 c0       	rjmp	.+18     	; 0xbb2 <__floatsisf+0x12>
 
-00000ba4 <__fp_pscA>:
- ba4:	00 24       	eor	r0, r0
- ba6:	0a 94       	dec	r0
- ba8:	16 16       	cp	r1, r22
- baa:	17 06       	cpc	r1, r23
- bac:	18 06       	cpc	r1, r24
- bae:	09 06       	cpc	r0, r25
- bb0:	08 95       	ret
+00000ba0 <__floatsisf>:
+ ba0:	97 fb       	bst	r25, 7
+ ba2:	3e f4       	brtc	.+14     	; 0xbb2 <__floatsisf+0x12>
+ ba4:	90 95       	com	r25
+ ba6:	80 95       	com	r24
+ ba8:	70 95       	com	r23
+ baa:	61 95       	neg	r22
+ bac:	7f 4f       	sbci	r23, 0xFF	; 255
+ bae:	8f 4f       	sbci	r24, 0xFF	; 255
+ bb0:	9f 4f       	sbci	r25, 0xFF	; 255
+ bb2:	99 23       	and	r25, r25
+ bb4:	a9 f0       	breq	.+42     	; 0xbe0 <__floatsisf+0x40>
+ bb6:	f9 2f       	mov	r31, r25
+ bb8:	96 e9       	ldi	r25, 0x96	; 150
+ bba:	bb 27       	eor	r27, r27
+ bbc:	93 95       	inc	r25
+ bbe:	f6 95       	lsr	r31
+ bc0:	87 95       	ror	r24
+ bc2:	77 95       	ror	r23
+ bc4:	67 95       	ror	r22
+ bc6:	b7 95       	ror	r27
+ bc8:	f1 11       	cpse	r31, r1
+ bca:	f8 cf       	rjmp	.-16     	; 0xbbc <__floatsisf+0x1c>
+ bcc:	fa f4       	brpl	.+62     	; 0xc0c <__floatsisf+0x6c>
+ bce:	bb 0f       	add	r27, r27
+ bd0:	11 f4       	brne	.+4      	; 0xbd6 <__floatsisf+0x36>
+ bd2:	60 ff       	sbrs	r22, 0
+ bd4:	1b c0       	rjmp	.+54     	; 0xc0c <__floatsisf+0x6c>
+ bd6:	6f 5f       	subi	r22, 0xFF	; 255
+ bd8:	7f 4f       	sbci	r23, 0xFF	; 255
+ bda:	8f 4f       	sbci	r24, 0xFF	; 255
+ bdc:	9f 4f       	sbci	r25, 0xFF	; 255
+ bde:	16 c0       	rjmp	.+44     	; 0xc0c <__floatsisf+0x6c>
+ be0:	88 23       	and	r24, r24
+ be2:	11 f0       	breq	.+4      	; 0xbe8 <__floatsisf+0x48>
+ be4:	96 e9       	ldi	r25, 0x96	; 150
+ be6:	11 c0       	rjmp	.+34     	; 0xc0a <__floatsisf+0x6a>
+ be8:	77 23       	and	r23, r23
+ bea:	21 f0       	breq	.+8      	; 0xbf4 <__floatsisf+0x54>
+ bec:	9e e8       	ldi	r25, 0x8E	; 142
+ bee:	87 2f       	mov	r24, r23
+ bf0:	76 2f       	mov	r23, r22
+ bf2:	05 c0       	rjmp	.+10     	; 0xbfe <__floatsisf+0x5e>
+ bf4:	66 23       	and	r22, r22
+ bf6:	71 f0       	breq	.+28     	; 0xc14 <__floatsisf+0x74>
+ bf8:	96 e8       	ldi	r25, 0x86	; 134
+ bfa:	86 2f       	mov	r24, r22
+ bfc:	70 e0       	ldi	r23, 0x00	; 0
+ bfe:	60 e0       	ldi	r22, 0x00	; 0
+ c00:	2a f0       	brmi	.+10     	; 0xc0c <__floatsisf+0x6c>
+ c02:	9a 95       	dec	r25
+ c04:	66 0f       	add	r22, r22
+ c06:	77 1f       	adc	r23, r23
+ c08:	88 1f       	adc	r24, r24
+ c0a:	da f7       	brpl	.-10     	; 0xc02 <__floatsisf+0x62>
+ c0c:	88 0f       	add	r24, r24
+ c0e:	96 95       	lsr	r25
+ c10:	87 95       	ror	r24
+ c12:	97 f9       	bld	r25, 7
+ c14:	08 95       	ret
 
-00000bb2 <__fp_pscB>:
- bb2:	00 24       	eor	r0, r0
- bb4:	0a 94       	dec	r0
- bb6:	12 16       	cp	r1, r18
- bb8:	13 06       	cpc	r1, r19
- bba:	14 06       	cpc	r1, r20
- bbc:	05 06       	cpc	r0, r21
- bbe:	08 95       	ret
+00000c16 <__fp_cmp>:
+ c16:	99 0f       	add	r25, r25
+ c18:	00 08       	sbc	r0, r0
+ c1a:	55 0f       	add	r21, r21
+ c1c:	aa 0b       	sbc	r26, r26
+ c1e:	e0 e8       	ldi	r30, 0x80	; 128
+ c20:	fe ef       	ldi	r31, 0xFE	; 254
+ c22:	16 16       	cp	r1, r22
+ c24:	17 06       	cpc	r1, r23
+ c26:	e8 07       	cpc	r30, r24
+ c28:	f9 07       	cpc	r31, r25
+ c2a:	c0 f0       	brcs	.+48     	; 0xc5c <__fp_cmp+0x46>
+ c2c:	12 16       	cp	r1, r18
+ c2e:	13 06       	cpc	r1, r19
+ c30:	e4 07       	cpc	r30, r20
+ c32:	f5 07       	cpc	r31, r21
+ c34:	98 f0       	brcs	.+38     	; 0xc5c <__fp_cmp+0x46>
+ c36:	62 1b       	sub	r22, r18
+ c38:	73 0b       	sbc	r23, r19
+ c3a:	84 0b       	sbc	r24, r20
+ c3c:	95 0b       	sbc	r25, r21
+ c3e:	39 f4       	brne	.+14     	; 0xc4e <__fp_cmp+0x38>
+ c40:	0a 26       	eor	r0, r26
+ c42:	61 f0       	breq	.+24     	; 0xc5c <__fp_cmp+0x46>
+ c44:	23 2b       	or	r18, r19
+ c46:	24 2b       	or	r18, r20
+ c48:	25 2b       	or	r18, r21
+ c4a:	21 f4       	brne	.+8      	; 0xc54 <__fp_cmp+0x3e>
+ c4c:	08 95       	ret
+ c4e:	0a 26       	eor	r0, r26
+ c50:	09 f4       	brne	.+2      	; 0xc54 <__fp_cmp+0x3e>
+ c52:	a1 40       	sbci	r26, 0x01	; 1
+ c54:	a6 95       	lsr	r26
+ c56:	8f ef       	ldi	r24, 0xFF	; 255
+ c58:	81 1d       	adc	r24, r1
+ c5a:	81 1d       	adc	r24, r1
+ c5c:	08 95       	ret
 
-00000bc0 <__fp_round>:
- bc0:	09 2e       	mov	r0, r25
- bc2:	03 94       	inc	r0
- bc4:	00 0c       	add	r0, r0
- bc6:	11 f4       	brne	.+4      	; 0xbcc <__fp_round+0xc>
- bc8:	88 23       	and	r24, r24
- bca:	52 f0       	brmi	.+20     	; 0xbe0 <__fp_round+0x20>
- bcc:	bb 0f       	add	r27, r27
- bce:	40 f4       	brcc	.+16     	; 0xbe0 <__fp_round+0x20>
- bd0:	bf 2b       	or	r27, r31
- bd2:	11 f4       	brne	.+4      	; 0xbd8 <__fp_round+0x18>
- bd4:	60 ff       	sbrs	r22, 0
- bd6:	04 c0       	rjmp	.+8      	; 0xbe0 <__fp_round+0x20>
- bd8:	6f 5f       	subi	r22, 0xFF	; 255
- bda:	7f 4f       	sbci	r23, 0xFF	; 255
- bdc:	8f 4f       	sbci	r24, 0xFF	; 255
- bde:	9f 4f       	sbci	r25, 0xFF	; 255
- be0:	08 95       	ret
+00000c5e <__fp_inf>:
+ c5e:	97 f9       	bld	r25, 7
+ c60:	9f 67       	ori	r25, 0x7F	; 127
+ c62:	80 e8       	ldi	r24, 0x80	; 128
+ c64:	70 e0       	ldi	r23, 0x00	; 0
+ c66:	60 e0       	ldi	r22, 0x00	; 0
+ c68:	08 95       	ret
 
-00000be2 <__fp_split3>:
- be2:	57 fd       	sbrc	r21, 7
- be4:	90 58       	subi	r25, 0x80	; 128
- be6:	44 0f       	add	r20, r20
- be8:	55 1f       	adc	r21, r21
- bea:	59 f0       	breq	.+22     	; 0xc02 <__fp_splitA+0x10>
- bec:	5f 3f       	cpi	r21, 0xFF	; 255
- bee:	71 f0       	breq	.+28     	; 0xc0c <__fp_splitA+0x1a>
- bf0:	47 95       	ror	r20
+00000c6a <__fp_nan>:
+ c6a:	9f ef       	ldi	r25, 0xFF	; 255
+ c6c:	80 ec       	ldi	r24, 0xC0	; 192
+ c6e:	08 95       	ret
 
-00000bf2 <__fp_splitA>:
- bf2:	88 0f       	add	r24, r24
- bf4:	97 fb       	bst	r25, 7
- bf6:	99 1f       	adc	r25, r25
- bf8:	61 f0       	breq	.+24     	; 0xc12 <__fp_splitA+0x20>
- bfa:	9f 3f       	cpi	r25, 0xFF	; 255
- bfc:	79 f0       	breq	.+30     	; 0xc1c <__fp_splitA+0x2a>
- bfe:	87 95       	ror	r24
- c00:	08 95       	ret
- c02:	12 16       	cp	r1, r18
- c04:	13 06       	cpc	r1, r19
- c06:	14 06       	cpc	r1, r20
- c08:	55 1f       	adc	r21, r21
- c0a:	f2 cf       	rjmp	.-28     	; 0xbf0 <__fp_split3+0xe>
- c0c:	46 95       	lsr	r20
- c0e:	f1 df       	rcall	.-30     	; 0xbf2 <__fp_splitA>
- c10:	08 c0       	rjmp	.+16     	; 0xc22 <__fp_splitA+0x30>
- c12:	16 16       	cp	r1, r22
- c14:	17 06       	cpc	r1, r23
- c16:	18 06       	cpc	r1, r24
- c18:	99 1f       	adc	r25, r25
- c1a:	f1 cf       	rjmp	.-30     	; 0xbfe <__fp_splitA+0xc>
- c1c:	86 95       	lsr	r24
- c1e:	71 05       	cpc	r23, r1
- c20:	61 05       	cpc	r22, r1
- c22:	08 94       	sec
- c24:	08 95       	ret
+00000c70 <__fp_pscA>:
+ c70:	00 24       	eor	r0, r0
+ c72:	0a 94       	dec	r0
+ c74:	16 16       	cp	r1, r22
+ c76:	17 06       	cpc	r1, r23
+ c78:	18 06       	cpc	r1, r24
+ c7a:	09 06       	cpc	r0, r25
+ c7c:	08 95       	ret
 
-00000c26 <__fp_zero>:
- c26:	e8 94       	clt
+00000c7e <__fp_pscB>:
+ c7e:	00 24       	eor	r0, r0
+ c80:	0a 94       	dec	r0
+ c82:	12 16       	cp	r1, r18
+ c84:	13 06       	cpc	r1, r19
+ c86:	14 06       	cpc	r1, r20
+ c88:	05 06       	cpc	r0, r21
+ c8a:	08 95       	ret
 
-00000c28 <__fp_szero>:
- c28:	bb 27       	eor	r27, r27
- c2a:	66 27       	eor	r22, r22
- c2c:	77 27       	eor	r23, r23
- c2e:	cb 01       	movw	r24, r22
- c30:	97 f9       	bld	r25, 7
- c32:	08 95       	ret
+00000c8c <__fp_round>:
+ c8c:	09 2e       	mov	r0, r25
+ c8e:	03 94       	inc	r0
+ c90:	00 0c       	add	r0, r0
+ c92:	11 f4       	brne	.+4      	; 0xc98 <__fp_round+0xc>
+ c94:	88 23       	and	r24, r24
+ c96:	52 f0       	brmi	.+20     	; 0xcac <__fp_round+0x20>
+ c98:	bb 0f       	add	r27, r27
+ c9a:	40 f4       	brcc	.+16     	; 0xcac <__fp_round+0x20>
+ c9c:	bf 2b       	or	r27, r31
+ c9e:	11 f4       	brne	.+4      	; 0xca4 <__fp_round+0x18>
+ ca0:	60 ff       	sbrs	r22, 0
+ ca2:	04 c0       	rjmp	.+8      	; 0xcac <__fp_round+0x20>
+ ca4:	6f 5f       	subi	r22, 0xFF	; 255
+ ca6:	7f 4f       	sbci	r23, 0xFF	; 255
+ ca8:	8f 4f       	sbci	r24, 0xFF	; 255
+ caa:	9f 4f       	sbci	r25, 0xFF	; 255
+ cac:	08 95       	ret
 
-00000c34 <__gesf2>:
- c34:	0e 94 a5 05 	call	0xb4a	; 0xb4a <__fp_cmp>
- c38:	08 f4       	brcc	.+2      	; 0xc3c <__gesf2+0x8>
- c3a:	8f ef       	ldi	r24, 0xFF	; 255
- c3c:	08 95       	ret
+00000cae <__fp_split3>:
+ cae:	57 fd       	sbrc	r21, 7
+ cb0:	90 58       	subi	r25, 0x80	; 128
+ cb2:	44 0f       	add	r20, r20
+ cb4:	55 1f       	adc	r21, r21
+ cb6:	59 f0       	breq	.+22     	; 0xcce <__fp_splitA+0x10>
+ cb8:	5f 3f       	cpi	r21, 0xFF	; 255
+ cba:	71 f0       	breq	.+28     	; 0xcd8 <__fp_splitA+0x1a>
+ cbc:	47 95       	ror	r20
 
-00000c3e <__mulsf3>:
- c3e:	0e 94 32 06 	call	0xc64	; 0xc64 <__mulsf3x>
- c42:	0c 94 e0 05 	jmp	0xbc0	; 0xbc0 <__fp_round>
- c46:	0e 94 d2 05 	call	0xba4	; 0xba4 <__fp_pscA>
- c4a:	38 f0       	brcs	.+14     	; 0xc5a <__mulsf3+0x1c>
- c4c:	0e 94 d9 05 	call	0xbb2	; 0xbb2 <__fp_pscB>
- c50:	20 f0       	brcs	.+8      	; 0xc5a <__mulsf3+0x1c>
- c52:	95 23       	and	r25, r21
- c54:	11 f0       	breq	.+4      	; 0xc5a <__mulsf3+0x1c>
- c56:	0c 94 c9 05 	jmp	0xb92	; 0xb92 <__fp_inf>
- c5a:	0c 94 cf 05 	jmp	0xb9e	; 0xb9e <__fp_nan>
- c5e:	11 24       	eor	r1, r1
- c60:	0c 94 14 06 	jmp	0xc28	; 0xc28 <__fp_szero>
+00000cbe <__fp_splitA>:
+ cbe:	88 0f       	add	r24, r24
+ cc0:	97 fb       	bst	r25, 7
+ cc2:	99 1f       	adc	r25, r25
+ cc4:	61 f0       	breq	.+24     	; 0xcde <__fp_splitA+0x20>
+ cc6:	9f 3f       	cpi	r25, 0xFF	; 255
+ cc8:	79 f0       	breq	.+30     	; 0xce8 <__fp_splitA+0x2a>
+ cca:	87 95       	ror	r24
+ ccc:	08 95       	ret
+ cce:	12 16       	cp	r1, r18
+ cd0:	13 06       	cpc	r1, r19
+ cd2:	14 06       	cpc	r1, r20
+ cd4:	55 1f       	adc	r21, r21
+ cd6:	f2 cf       	rjmp	.-28     	; 0xcbc <__fp_split3+0xe>
+ cd8:	46 95       	lsr	r20
+ cda:	f1 df       	rcall	.-30     	; 0xcbe <__fp_splitA>
+ cdc:	08 c0       	rjmp	.+16     	; 0xcee <__fp_splitA+0x30>
+ cde:	16 16       	cp	r1, r22
+ ce0:	17 06       	cpc	r1, r23
+ ce2:	18 06       	cpc	r1, r24
+ ce4:	99 1f       	adc	r25, r25
+ ce6:	f1 cf       	rjmp	.-30     	; 0xcca <__fp_splitA+0xc>
+ ce8:	86 95       	lsr	r24
+ cea:	71 05       	cpc	r23, r1
+ cec:	61 05       	cpc	r22, r1
+ cee:	08 94       	sec
+ cf0:	08 95       	ret
 
-00000c64 <__mulsf3x>:
- c64:	0e 94 f1 05 	call	0xbe2	; 0xbe2 <__fp_split3>
- c68:	70 f3       	brcs	.-36     	; 0xc46 <__mulsf3+0x8>
+00000cf2 <__fp_zero>:
+ cf2:	e8 94       	clt
 
-00000c6a <__mulsf3_pse>:
- c6a:	95 9f       	mul	r25, r21
- c6c:	c1 f3       	breq	.-16     	; 0xc5e <__mulsf3+0x20>
- c6e:	95 0f       	add	r25, r21
- c70:	50 e0       	ldi	r21, 0x00	; 0
- c72:	55 1f       	adc	r21, r21
- c74:	62 9f       	mul	r22, r18
- c76:	f0 01       	movw	r30, r0
- c78:	72 9f       	mul	r23, r18
- c7a:	bb 27       	eor	r27, r27
- c7c:	f0 0d       	add	r31, r0
- c7e:	b1 1d       	adc	r27, r1
- c80:	63 9f       	mul	r22, r19
- c82:	aa 27       	eor	r26, r26
- c84:	f0 0d       	add	r31, r0
- c86:	b1 1d       	adc	r27, r1
- c88:	aa 1f       	adc	r26, r26
- c8a:	64 9f       	mul	r22, r20
- c8c:	66 27       	eor	r22, r22
- c8e:	b0 0d       	add	r27, r0
- c90:	a1 1d       	adc	r26, r1
- c92:	66 1f       	adc	r22, r22
- c94:	82 9f       	mul	r24, r18
- c96:	22 27       	eor	r18, r18
- c98:	b0 0d       	add	r27, r0
- c9a:	a1 1d       	adc	r26, r1
- c9c:	62 1f       	adc	r22, r18
- c9e:	73 9f       	mul	r23, r19
- ca0:	b0 0d       	add	r27, r0
- ca2:	a1 1d       	adc	r26, r1
- ca4:	62 1f       	adc	r22, r18
- ca6:	83 9f       	mul	r24, r19
- ca8:	a0 0d       	add	r26, r0
- caa:	61 1d       	adc	r22, r1
- cac:	22 1f       	adc	r18, r18
- cae:	74 9f       	mul	r23, r20
- cb0:	33 27       	eor	r19, r19
- cb2:	a0 0d       	add	r26, r0
- cb4:	61 1d       	adc	r22, r1
- cb6:	23 1f       	adc	r18, r19
- cb8:	84 9f       	mul	r24, r20
- cba:	60 0d       	add	r22, r0
- cbc:	21 1d       	adc	r18, r1
- cbe:	82 2f       	mov	r24, r18
- cc0:	76 2f       	mov	r23, r22
- cc2:	6a 2f       	mov	r22, r26
- cc4:	11 24       	eor	r1, r1
- cc6:	9f 57       	subi	r25, 0x7F	; 127
- cc8:	50 40       	sbci	r21, 0x00	; 0
- cca:	9a f0       	brmi	.+38     	; 0xcf2 <__mulsf3_pse+0x88>
- ccc:	f1 f0       	breq	.+60     	; 0xd0a <__mulsf3_pse+0xa0>
- cce:	88 23       	and	r24, r24
- cd0:	4a f0       	brmi	.+18     	; 0xce4 <__mulsf3_pse+0x7a>
- cd2:	ee 0f       	add	r30, r30
- cd4:	ff 1f       	adc	r31, r31
- cd6:	bb 1f       	adc	r27, r27
- cd8:	66 1f       	adc	r22, r22
- cda:	77 1f       	adc	r23, r23
- cdc:	88 1f       	adc	r24, r24
- cde:	91 50       	subi	r25, 0x01	; 1
- ce0:	50 40       	sbci	r21, 0x00	; 0
- ce2:	a9 f7       	brne	.-22     	; 0xcce <__mulsf3_pse+0x64>
- ce4:	9e 3f       	cpi	r25, 0xFE	; 254
- ce6:	51 05       	cpc	r21, r1
- ce8:	80 f0       	brcs	.+32     	; 0xd0a <__mulsf3_pse+0xa0>
- cea:	0c 94 c9 05 	jmp	0xb92	; 0xb92 <__fp_inf>
- cee:	0c 94 14 06 	jmp	0xc28	; 0xc28 <__fp_szero>
- cf2:	5f 3f       	cpi	r21, 0xFF	; 255
- cf4:	e4 f3       	brlt	.-8      	; 0xcee <__mulsf3_pse+0x84>
- cf6:	98 3e       	cpi	r25, 0xE8	; 232
- cf8:	d4 f3       	brlt	.-12     	; 0xcee <__mulsf3_pse+0x84>
- cfa:	86 95       	lsr	r24
- cfc:	77 95       	ror	r23
- cfe:	67 95       	ror	r22
- d00:	b7 95       	ror	r27
- d02:	f7 95       	ror	r31
- d04:	e7 95       	ror	r30
- d06:	9f 5f       	subi	r25, 0xFF	; 255
- d08:	c1 f7       	brne	.-16     	; 0xcfa <__mulsf3_pse+0x90>
- d0a:	fe 2b       	or	r31, r30
- d0c:	88 0f       	add	r24, r24
- d0e:	91 1d       	adc	r25, r1
- d10:	96 95       	lsr	r25
- d12:	87 95       	ror	r24
- d14:	97 f9       	bld	r25, 7
- d16:	08 95       	ret
+00000cf4 <__fp_szero>:
+ cf4:	bb 27       	eor	r27, r27
+ cf6:	66 27       	eor	r22, r22
+ cf8:	77 27       	eor	r23, r23
+ cfa:	cb 01       	movw	r24, r22
+ cfc:	97 f9       	bld	r25, 7
+ cfe:	08 95       	ret
 
-00000d18 <_exit>:
- d18:	f8 94       	cli
+00000d00 <__gesf2>:
+ d00:	0e 94 0b 06 	call	0xc16	; 0xc16 <__fp_cmp>
+ d04:	08 f4       	brcc	.+2      	; 0xd08 <__gesf2+0x8>
+ d06:	8f ef       	ldi	r24, 0xFF	; 255
+ d08:	08 95       	ret
 
-00000d1a <__stop_program>:
- d1a:	ff cf       	rjmp	.-2      	; 0xd1a <__stop_program>
+00000d0a <__mulsf3>:
+ d0a:	0e 94 98 06 	call	0xd30	; 0xd30 <__mulsf3x>
+ d0e:	0c 94 46 06 	jmp	0xc8c	; 0xc8c <__fp_round>
+ d12:	0e 94 38 06 	call	0xc70	; 0xc70 <__fp_pscA>
+ d16:	38 f0       	brcs	.+14     	; 0xd26 <__mulsf3+0x1c>
+ d18:	0e 94 3f 06 	call	0xc7e	; 0xc7e <__fp_pscB>
+ d1c:	20 f0       	brcs	.+8      	; 0xd26 <__mulsf3+0x1c>
+ d1e:	95 23       	and	r25, r21
+ d20:	11 f0       	breq	.+4      	; 0xd26 <__mulsf3+0x1c>
+ d22:	0c 94 2f 06 	jmp	0xc5e	; 0xc5e <__fp_inf>
+ d26:	0c 94 35 06 	jmp	0xc6a	; 0xc6a <__fp_nan>
+ d2a:	11 24       	eor	r1, r1
+ d2c:	0c 94 7a 06 	jmp	0xcf4	; 0xcf4 <__fp_szero>
+
+00000d30 <__mulsf3x>:
+ d30:	0e 94 57 06 	call	0xcae	; 0xcae <__fp_split3>
+ d34:	70 f3       	brcs	.-36     	; 0xd12 <__mulsf3+0x8>
+
+00000d36 <__mulsf3_pse>:
+ d36:	95 9f       	mul	r25, r21
+ d38:	c1 f3       	breq	.-16     	; 0xd2a <__mulsf3+0x20>
+ d3a:	95 0f       	add	r25, r21
+ d3c:	50 e0       	ldi	r21, 0x00	; 0
+ d3e:	55 1f       	adc	r21, r21
+ d40:	62 9f       	mul	r22, r18
+ d42:	f0 01       	movw	r30, r0
+ d44:	72 9f       	mul	r23, r18
+ d46:	bb 27       	eor	r27, r27
+ d48:	f0 0d       	add	r31, r0
+ d4a:	b1 1d       	adc	r27, r1
+ d4c:	63 9f       	mul	r22, r19
+ d4e:	aa 27       	eor	r26, r26
+ d50:	f0 0d       	add	r31, r0
+ d52:	b1 1d       	adc	r27, r1
+ d54:	aa 1f       	adc	r26, r26
+ d56:	64 9f       	mul	r22, r20
+ d58:	66 27       	eor	r22, r22
+ d5a:	b0 0d       	add	r27, r0
+ d5c:	a1 1d       	adc	r26, r1
+ d5e:	66 1f       	adc	r22, r22
+ d60:	82 9f       	mul	r24, r18
+ d62:	22 27       	eor	r18, r18
+ d64:	b0 0d       	add	r27, r0
+ d66:	a1 1d       	adc	r26, r1
+ d68:	62 1f       	adc	r22, r18
+ d6a:	73 9f       	mul	r23, r19
+ d6c:	b0 0d       	add	r27, r0
+ d6e:	a1 1d       	adc	r26, r1
+ d70:	62 1f       	adc	r22, r18
+ d72:	83 9f       	mul	r24, r19
+ d74:	a0 0d       	add	r26, r0
+ d76:	61 1d       	adc	r22, r1
+ d78:	22 1f       	adc	r18, r18
+ d7a:	74 9f       	mul	r23, r20
+ d7c:	33 27       	eor	r19, r19
+ d7e:	a0 0d       	add	r26, r0
+ d80:	61 1d       	adc	r22, r1
+ d82:	23 1f       	adc	r18, r19
+ d84:	84 9f       	mul	r24, r20
+ d86:	60 0d       	add	r22, r0
+ d88:	21 1d       	adc	r18, r1
+ d8a:	82 2f       	mov	r24, r18
+ d8c:	76 2f       	mov	r23, r22
+ d8e:	6a 2f       	mov	r22, r26
+ d90:	11 24       	eor	r1, r1
+ d92:	9f 57       	subi	r25, 0x7F	; 127
+ d94:	50 40       	sbci	r21, 0x00	; 0
+ d96:	9a f0       	brmi	.+38     	; 0xdbe <__mulsf3_pse+0x88>
+ d98:	f1 f0       	breq	.+60     	; 0xdd6 <__mulsf3_pse+0xa0>
+ d9a:	88 23       	and	r24, r24
+ d9c:	4a f0       	brmi	.+18     	; 0xdb0 <__mulsf3_pse+0x7a>
+ d9e:	ee 0f       	add	r30, r30
+ da0:	ff 1f       	adc	r31, r31
+ da2:	bb 1f       	adc	r27, r27
+ da4:	66 1f       	adc	r22, r22
+ da6:	77 1f       	adc	r23, r23
+ da8:	88 1f       	adc	r24, r24
+ daa:	91 50       	subi	r25, 0x01	; 1
+ dac:	50 40       	sbci	r21, 0x00	; 0
+ dae:	a9 f7       	brne	.-22     	; 0xd9a <__mulsf3_pse+0x64>
+ db0:	9e 3f       	cpi	r25, 0xFE	; 254
+ db2:	51 05       	cpc	r21, r1
+ db4:	80 f0       	brcs	.+32     	; 0xdd6 <__mulsf3_pse+0xa0>
+ db6:	0c 94 2f 06 	jmp	0xc5e	; 0xc5e <__fp_inf>
+ dba:	0c 94 7a 06 	jmp	0xcf4	; 0xcf4 <__fp_szero>
+ dbe:	5f 3f       	cpi	r21, 0xFF	; 255
+ dc0:	e4 f3       	brlt	.-8      	; 0xdba <__mulsf3_pse+0x84>
+ dc2:	98 3e       	cpi	r25, 0xE8	; 232
+ dc4:	d4 f3       	brlt	.-12     	; 0xdba <__mulsf3_pse+0x84>
+ dc6:	86 95       	lsr	r24
+ dc8:	77 95       	ror	r23
+ dca:	67 95       	ror	r22
+ dcc:	b7 95       	ror	r27
+ dce:	f7 95       	ror	r31
+ dd0:	e7 95       	ror	r30
+ dd2:	9f 5f       	subi	r25, 0xFF	; 255
+ dd4:	c1 f7       	brne	.-16     	; 0xdc6 <__mulsf3_pse+0x90>
+ dd6:	fe 2b       	or	r31, r30
+ dd8:	88 0f       	add	r24, r24
+ dda:	91 1d       	adc	r25, r1
+ ddc:	96 95       	lsr	r25
+ dde:	87 95       	ror	r24
+ de0:	97 f9       	bld	r25, 7
+ de2:	08 95       	ret
+
+00000de4 <_exit>:
+ de4:	f8 94       	cli
+
+00000de6 <__stop_program>:
+ de6:	ff cf       	rjmp	.-2      	; 0xde6 <__stop_program>

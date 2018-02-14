@@ -4,6 +4,10 @@
  *  @brief Function prototypes, macros, constants, and global variables for the HCU Microcontroller.
  *
  *  @bug No known bugs.
+ *  @note Below is the blinking pattern for the LEDs
+ *  @note Mode 0 (Warming Mode) @c Warm_LED 0.5/0.5 (sec on / sec off), @c Alive_LED 1/1, @c Fuel_LED off
+ *  @note Mode 1 (Pumping Mode) @c Warm_LED constant on, @c Alive_LED 0.75/0.25, @c Fuel_LED 0.25/0.25
+ *  @note Mode 2 (Exhaustion Mode) @c Warm_LED constant on, @c Alive_LED 0.1/0.9, @c Fuel_LED constant on
  */ 
 #include <avr/sfr_defs.h>
 #include <float.h>
