@@ -1,0 +1,5 @@
+<map id="tempHeaterHelper" name="tempHeaterHelper">
+<area shape="rect" id="node2" href="$_h_c_u___funcs_8c.html#aba7fa75d6dd6ebcdc6225282a798fcd2" title="Sets the specified bit to the specified value or does nothing if it already set to that..." alt="" coords="473,31,555,57"/>
+<area shape="rect" id="node3" href="$_h_c_u___funcs_8c.html#af224025ba48225a48fc9eddc2e72150d" title="Changes the mode of the used timers such that they can perform new functions in the pumping phase of ..." alt="" coords="180,31,287,57"/>
+<area shape="rect" id="node4" href="$_h_c_u___funcs_8c.html#ae058494623946a8ea13c1cdb69082dd3" title="Checks if the ECU power circuit is closed and if it is not, it opens it. " alt="" coords="335,81,425,108"/>
+</map>

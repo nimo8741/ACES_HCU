@@ -1,19 +1,22 @@
 /** @file HCU_Funcs.c
- *  @brief Function implementations for the Master Microcontroller.
+ *  @author Nick Moore
+ *  @date February 14, 2018
+ *  @brief Function implementations for the HCU Microcontroller.
  *
  *  This contains the implementations for the functions described
  *  in HCU_Funcs.h
  *
- *  @author Nick Moore
- *
  *  @bug No known bugs.
  */
 
-#define F_CPU 1000000UL   // This is so that the delay functions work.  Sets clock to 1MHz
+
+//! This is so that the delay functions work.  Sets clock to 1MHz
+#define F_CPU 1000000UL   
 #include "HCU_Funcs.h"
 #include <avr/io.h>
 #include <util/delay.h>   // This library is so that easy delay functions can be implemented
 #include <avr/interrupt.h>
+#include <float.h>
 
 
 
@@ -36,36 +39,36 @@ void Initial(void)
 {
 	// First setup the port directions for the PWM lines and the
 	// 0 are inputs 1 are outputs
-	DDRA = 0b10000000;          //! Only PA7 is an output
-	DDRB = 0b11011000;         
-	DDRC = 0xFF;                //! Make all outputs
-	DDRD = 0xFF;                //! Make all outputs
+	DDRA = 0b10000000;          // Only PA7 is an output
+	DDRB = 0b11011010;         
+	DDRC = 0xFF;                // Make all outputs
+	DDRD = 0xFF;                // Make all outputs
 	
-	cur_ADC = 0;     //! This is for ADC0    
-	opMode = 0;     //! This sets the function mode to heating mode
+	opMode = 0;     // This sets the function mode to heating mode
 	desired_temp = 0;
-	duty_cycle = (pump_m*fuelFlow + pump_b) / pump_tot_V;    //! This is the initial guess for the fuel pump
-	pulse_error_allow = (uint8_t)(desired_pulses * (fuelError / fuelFlow));   //! This is the amount of pulses I can be off for it to still be considered a sucesses
+	duty_cycle = (pump_m*fuelFlow + pump_b) / pump_tot_V;    // This is the initial guess for the fuel pump
 	
 	// Now calculate the number of pulses I expect per 0.262144 seconds (max time for an 8 bit timer with prescalar of 1024)
 	float pulse_flow = (fuelFlow / density) * K_factor * max_time / 1000;
-	desired_pulses = (uint8_t) pulse_flow;     // round down and convert to an 8 bit number.  I expect it to be 170 so it will fit.
-	assign_bit(&MCUCSR,ISC2,1);      //! This will cause interrupts for INT2 to be caused on the rising edge
-	assign_bit(&GIFR, INTF2, 1);     //! Make sure the interrupt flag is cleared
+	desired_pulses = (uint8_t) pulse_flow;                                    // round down and convert to an 8 bit number.  I expect it to be 170 so it will fit.
+	pulse_error_allow = (uint8_t)(desired_pulses * (fuelError / fuelFlow));   // This is the amount of pulses I can be off for it to still be considered a successes
+	assign_bit(&MCUCSR,ISC2,1);                                               // This will cause interrupts for INT2 to be caused on the rising edge
+	assign_bit(&GIFR, INTF2, 1);                                              // Make sure the interrupt flag is cleared
+	
 	
 	// Configure the ADC
-	ADCSRA |= 1 << ADPS2;   //! This is so there is a prescalar of 16.  ADC needs frequency between 50-200kHz so 1,000,000/16 puts it in this range.
-	ADMUX |= 1 << ADLAR;    //! Cause the output registers to be left justified.  Check page 217 in the data sheet.
-	ADCSRA |= 1 << ADEN;    //! Enable the ADC
+	ADCSRA |= 1 << ADPS2;   // This is so there is a prescalar of 16.  ADC needs frequency between 50-200kHz so 1,000,000/16 puts it in this range.
+	ADCSRA |= 1 << ADEN;    // Enable the ADC
+	ADMUX |= 1 << REFS0;    // Make AVCC (5V) the reference voltage
 
-	sei();       //! This sets the global interrupt flag to allow for hardware interrupts
+	sei();       // This sets the global interrupt flag to allow for hardware interrupts
 	
 	// Now enable the timer1 for 0.5 sec
-	TIMSK |= 1 << TOIE1;   //! turn on overflow interrupts
-	TCCR1B |= (1<<CS11);    //! This has a prescalar of 8
-	TCNT1 = 3036;   //! This will load the value so that when using a prescalar of 8, it will overflow after 500ms
+	TIMSK |= 1 << TOIE1;                 // turn on overflow interrupts
+	TCCR1B |= (1<<CS11);                 // This has a prescalar of 8
+	TCNT1 = 3036;                        // This will load the value so that when using a prescalar of 8, it will overflow after 500ms
 	
-	saveTemps[0] = -100.0;        //! Assign initial temperature values that for sure will be colder than the specified temps 
+	saveTemps[0] = -100.0;        // Assign initial temperature values that for sure will be colder than the specified temps 
 	saveTemps[1] = -100.0;
 	saveTemps[2] = -100.0;
 	saveTemps[3] = -100.0;
@@ -77,24 +80,24 @@ void Initial(void)
 	// Start with the PWM for the ECU, this will be on timer0
 	TCNT0 = 0;      //! Clear the timer register to make sure I have the full range on the first cycle
 	assign_bit(&TCCR0, WGM01, 1);
-	assign_bit(&TCCR0, WGM00, 1);      //! These two set the PWM Mode to "Fast PWM"
+	assign_bit(&TCCR0, WGM00, 1);      // These two set the PWM Mode to "Fast PWM"
 	assign_bit(&TCCR0, COM01, 1); 
-	assign_bit(&TCCR0, COM00, 1);      //! These two set the PWM type to inverting PWM
+	assign_bit(&TCCR0, COM00, 1);      // These two set the PWM type to inverting PWM
 	
-	OCR0 = 255 - (255*ECU_duty);       //! This will set it to the specified duty by the #define
+	OCR0 = 255 - (255*ECU_duty);       // This will set it to the specified duty by the #define
 	
-	TCCR0 |= (1 << CS02);              //! This will start the PWM with a duty cycle of 65.536 ms
+	TCCR0 |= (1 << CS02);              // This will start the PWM with a duty cycle of 65.536 ms
 	
 	// Now do the PWM for the second fuel line which will use Timer 2,  this will look very similar to the last few lines of code
-	TCNT2 = 0;      //! Clear the timer register to make sure I have the full range on the first cycle
+	TCNT2 = 0;      // Clear the timer register to make sure I have the full range on the first cycle
 	assign_bit(&TCCR2, WGM21, 1);
-	assign_bit(&TCCR2, WGM20, 1);      //! These two set the PWM Mode to "Fast PWM"
+	assign_bit(&TCCR2, WGM20, 1);      // These two set the PWM Mode to "Fast PWM"
 	assign_bit(&TCCR2, COM21, 1);
-	assign_bit(&TCCR2, COM20, 1);      //! These two set the PWM type to inverting PWM
+	assign_bit(&TCCR2, COM20, 1);      // These two set the PWM type to inverting PWM
 		
-	OCR2 = 255 - (255*F_line_duty);       //! This will set it to the specified duty by the #define
+	OCR2 = 255 - (255*F_line_duty);    // This will set it to the specified duty by the #define
 		
-	TCCR2 |= (1 << CS22);              //! This will start the PWM with a duty cycle of 65.536 ms, just like before
+	TCCR2 |= (1 << CS22);              // This will start the PWM with a duty cycle of 65.536 ms, just like before
 	
 	// Now turn on all the other heaters
 	assign_bit(&PORTD, BatPin, 1);
@@ -124,10 +127,10 @@ ISR(TIMER1_OVF_vect)
 	if (alive_counter % 2 == 1)
 		PORTD ^= (1 << Alive_LED);
 		
-	PORTB ^= (1 << Warm_LED);   //! This will have the warming LED blink 0.5 sec on 0.5 sec off and the alive LED blinking twice as slow
+	PORTB ^= (1 << Warm_LED);   // This will have the warming LED blink 0.5 sec on 0.5 sec off and the alive LED blinking twice as slow
 	
 	// Now reset the register
-	TCNT1 = 3036;  //! The interrupt will clear automatically when this function is called
+	TCNT1 = 3036;  // The interrupt will clear automatically when this function is called
 }
 
 /** @brief Check for the completion of the ADC conversion, saves the result, and changes the channel
@@ -151,32 +154,38 @@ ISR(TIMER1_OVF_vect)
 void tempConversion(void)
 {
 	// First check if the ADC is done converting
+	assign_bit(&ADMUX,MUX0,0);    // Assign channel to 0
+	assign_bit(&ADMUX,MUX1,0);
+	assign_bit(&ADMUX,MUX2,0);
+	
 	for (unsigned char i = 0; i < 6; i++)
 	{
-		ADCSRA |= 1 << ADSC;   //! Start the conversion
-		while (bit_is_clear(ADCSRA, ADIF));   //! Hog execution until the ADC is done converting
+		ADCSRA |= 1 << ADSC;                             // Start the conversion
+		while (!((1 << ADIF) & ADCSRA));
+		
+		while (bit_is_clear(ADCSRA, ADIF));				 // Hog execution until the ADC is done converting
 
 		// Save this as a float for the respective variable
 		uint8_t low_bits = ADCL;
-		uint16_t ADC_res = (ADCH << 2) | (low_bits >> 6);    //! Do the shifting so that there is room made inside of the 16 bit register
+		uint8_t high_bits = ADCH;						 // Do the shifting so that there is room made inside of the 16 bit register
+		uint16_t result = (high_bits << 8) | low_bits;
 		
 		// Now I need to convert this 16 bit number into an actual temperature
-		float act_temp = (float) ADC_res * (5/1024);      //! Use the bin number and reference voltage to get the analog voltage again
-		act_temp = 208.8*act_temp - 79.6;                 //! Derivation for this on page 98 in the notebook
+		
+		float act_temp = (float)(0.0048828125*result);   // This dumb thing converts it to a voltage
+		act_temp = act_temp*208.8 - 79.6;
 		saveTemps[i] = act_temp;
 		
 		// Now update the channel the ADC is using
+		assign_bit(&ADMUX,MUX0,(i + 1) & 0x01);           // Assign bit 0
+		assign_bit(&ADMUX,MUX1,((i + 1) >> 1) & 0x01);    // Assign bit 1
+		assign_bit(&ADMUX,MUX2,((i + 1) >> 2) & 0x01);    // Assign bit 2
 		
-		
-		assign_bit(&ADMUX,MUX0,i & 0x01);    //! Assign bit 0
-		assign_bit(&ADMUX,MUX1,i & 0x02);    //! Assign bit 1
-		assign_bit(&ADMUX,MUX2,i & 0x04);    //! Assign bit 2
-		
-		assign_bit(&ADCSRA, ADIF, 1);     //! write a logical 1 to clear the flag, page 216 in the data sheet
+		assign_bit(&ADCSRA, ADIF, 1);     // write a logical 1 to clear the flag, page 216 in the data sheet
 
 	}
-	tempHeaterHelper();             //! Call the helper function.  This will serve the added bonus of killing some time so that if capacitors need to charge for the next conversion, it has the time here.  Data sheet didn't say that it needed this though.
-	_delay_ms(250);                 //! Delay for 1/4 of a second.   Need to check that the Alive LED will still interrupt properly
+	tempHeaterHelper();             // Call the helper function.  This will serve the added bonus of killing some time so that if capacitors need to charge for the next conversion, it has the time here.  Data sheet didn't say that it needed this though.
+	_delay_ms(250);                 // Delay for 1/4 of a second.   Need to check that the Alive LED will still interrupt properly
 	
 }
 
@@ -196,17 +205,18 @@ void tempConversion(void)
  *
  *  @param void
  *  @return void
+ *  @note Need to confirm that heater operation is still sufficient for phase 1 and 2.
  */
 void tempHeaterHelper(void)
 {
 	for (uint8_t i = 0; i < 6; i++)
 	{
 		switch(i){
-			case 0:       //! This is the case for the Lipo batteries might need to incorporate ranges for this to actually work   /////////
-				if (saveTemps[0] > TempBat )    //! safety first so make sure that the temperature always turns off if one of the batteries is getting too hot
+			case 0:                             // This is the case for the Lipo batteries   //////////////////////////////////////////////
+				if (saveTemps[0] > TempBat )    // safety first so make sure that the temperature always turns off if one of the batteries is getting too hot
 				{
 					desired_temp |= 0x01;
-					assign_bit(&PORTD, BatPin, 0);       //! Turn the heater off if either of these get too high
+					assign_bit(&PORTD, BatPin, 0);       // Turn the heater off if either of these get too high
 				}
 				else if(saveTemps[0] < TempBat)
 				{
@@ -214,35 +224,35 @@ void tempHeaterHelper(void)
 				}
 				break;
 				
-			case 1:       //! This is the case for the Hopper    /////////////////////////////////////////////////
-				if (saveTemps[2] < TempHopper)   //! Temp is too low so turn on the heater
+			case 1:       // This is the case for the Hopper    /////////////////////////////////////////////////
+				if (saveTemps[2] < TempHopper)           // Temp is too low so turn on the heater
 					assign_bit(&PORTD, HopperPin, 1);
 				else if(saveTemps[2] > TempHopper)
 				{
-					assign_bit(&PORTC, HopperPin, 0);   //! Too hot so turn off
+					assign_bit(&PORTD, HopperPin, 0);    // Too hot so turn off
 					desired_temp |= 0x02;				
 				}
 				break;
 				
-			case 2:       //! This is the case for the ECU  /////////////////////////////////////////////////
+			case 2:       // This is the case for the ECU  /////////////////////////////////////////////////
 				if (saveTemps[3] < TempECU)
 					if (!opMode)
-						assign_bit(&TCCR0, CS02, 1);      //! This will turn the PWM back on
+						assign_bit(&TCCR0, CS02, 1);      // This will turn the PWM back on
 					else
-						assign_bit(&PORTB, ECU_pin, 1);   //! Turn the heater on manually
+						assign_bit(&PORTB, ECU_pin, 1);   // Turn the heater on manually
 				else if (saveTemps[3] > TempECU)
 				{
 					if (!opMode)
 					{
-						assign_bit(&TCCR0, CS02, 0);      //! This will turn the PWM off
+						assign_bit(&TCCR0, CS02, 0);      // This will turn the PWM off
 						desired_temp |= 0x04;
 					}
 					else
-						assign_bit(&PORTB, ECU_pin, 0);   //! Turn the heater off manually.  Don't do the same thing with desired_temp for the manual mode
+						assign_bit(&PORTB, ECU_pin, 0);   // Turn the heater off manually.  Don't do the same thing with desired_temp for the manual mode
 				}
 				break;
 				
-			case 3:       //! This is the case for Fuel Line 1  /////////////////////////////////////////////////
+			case 3:       // This is the case for Fuel Line 1  /////////////////////////////////////////////////
 				if (saveTemps[4] < TempFLine1)
 					assign_bit(&PORTD, FLine1Pin, 1);
 				else if(saveTemps[4] > TempFLine1)
@@ -252,26 +262,26 @@ void tempHeaterHelper(void)
 				}
 				break;
 				
-			case 4:       //! This is the case for Fuel Line 2 /////////////////////////////////////////////////
+			case 4:       // This is the case for Fuel Line 2 /////////////////////////////////////////////////
 				if (saveTemps[5] < TempFLine2){
-					if (!opMode)      //! We are in the warming mode so this can use the PWM
-						assign_bit(&TCCR2, CS22, 1);       //! Turn the PWM back on 
+					if (!opMode)      // We are in the warming mode so this can use the PWM
+						assign_bit(&TCCR2, CS22, 1);          // Turn the PWM back on 
 					else
-						assign_bit(&PORTD,Fline2Pin,1);       //! Turn the heater on manually
+						assign_bit(&PORTD,Fline2Pin,1);       // Turn the heater on manually
 				}
 				else if (saveTemps[5] > TempFLine2)
 				{
-					if (!opMode)           //! We are in warming mode so this can use the PWM
+					if (!opMode)           // We are in warming mode so this can use the PWM
 					{
-						assign_bit(&TCCR2, CS22, 0);       //! Turn the PWM off
+						assign_bit(&TCCR2, CS22, 0);       // Turn the PWM off
 						desired_temp |= 0x10;
 					}
 					else
-						assign_bit(&PORTD, Fline2Pin, 0);    //! Turn the heater off manually
+						assign_bit(&PORTD, Fline2Pin, 0);    // Turn the heater off manually
 				}
 				break;
 				
-			case 5:       //! This is the case for the ESB    /////////////////////////////////////////////////
+			case 5:       // This is the case for the ESB    /////////////////////////////////////////////////
 				if (saveTemps[5] < TempESB)
 					assign_bit(&PORTD, ESB_Pin, 1);
 				else if(saveTemps[6] > TempESB)
@@ -283,15 +293,16 @@ void tempHeaterHelper(void)
 		}
 		
 	}
-	if (!(~(desired_temp | 0xC0)))      //! Will go in here every time after it stops being mode 0
+	
+	if (desired_temp == 0x3F)      // Will go in here every time after it stops being mode 0
 	{
-		/** If desired_temp was 0111 1111, it would go to 1111 1111 with the or.
+		/* If desired_temp was 0111 1111, it would go to 1111 1111 with the or.
 		*   Then the bitwise not (~) would make it 0000 0000.  And finally,
 		*   the logical not (!) would make it 0000 0001 and it would go into the if statement.
 		*   If desired_temp is anything but this, it will not go in here 
 		*/
-		if (!opMode)    //! only do this if it has never gone in here before
-			change_timers();                     //! New initialization routine which will change the prescalars and such for the timers which will be serving different purposes
+		if (!opMode)    // only do this if it has never gone in here before
+			change_timers();                     // New initialization routine which will change the prescalars and such for the timers which will be serving different purposes
 	}
 }
 
@@ -311,47 +322,52 @@ void tempHeaterHelper(void)
  *
  *  @param void
  *  @return void
+ *  @note Need to do a pump test to ensure that the voltage to flow rate function is actually correct.
+ *  @note Need to add a function to return the timers to the proper configuration for phase 2 operation.
  */
 void flowMeter(void)
 {
 	// First I need to enable interrupt on INT2
-	pulse_count = 0;
-	GICR |= (1 << INT2);     //! enable INT2 external interrupts
-	// Second I need to begin timer2
+	pulse_count = 1;
+	GICR |= (1 << INT2);     // enable INT2 external interrupts
 	
-	TCNT0 = 0;                     //! Make sure the timer/counter register is cleared so the full range can be used
+	// Second I need to begin timer2
+	TCNT0 = 0;                                 // Make sure the timer/counter register is cleared so the full range can be used
+	assign_bit(&TIFR,TOV1,1);                  // Make sure the overflow flag is set
 	assign_bit(&TCCR0,CS02,1);
 	assign_bit(&TCCR0,CS01,0);
-	assign_bit(&TCCR0,CS00,1);     //! TThis will start the timer with a prescalar of 1024
+	assign_bit(&TCCR0,CS00,1);                 // TThis will start the timer with a prescalar of 1024
 	
-	while (!(TIFR & 0x01));        //! Hog the execution until the overflow flag is set
+	while (!(TIFR & 0x01));                    // Hog the execution until the overflow flag is set
 	
-	assign_bit(&GICR, INT2, 0);   // disable external interrupts for INT2
-	
-	if (!pulse_count)    //! There is either no more fuel or there is a stoppage.  This if statement might be the end of me...
+	assign_bit(&GICR, INT2, 0);                // disable external interrupts for INT2
+		
+	if (!pulse_count)                          // There is either no more fuel or there is a stoppage.  This if statement might be the end of me...
 	{
-		opMode = 2;    //!  This means that the pumping has concluded
-		assign_bit(&TCCR1B, CS10, 0);              //! This should stop the PWM for the pump
+		opMode = 2;                            //  This means that the pumping has concluded
+		assign_bit(&TCCR1B, CS10, 0);          // This should stop the PWM for the pump
 		assign_bit(&PORTD, Alive_LED, 1);
 		assign_bit(&PORTD, Fuel_LED, 1);
-		assign_bit(&PORTB, Warm_LED, 1);    //! Make sure all of the LEDs are solid on to signify the end of the mission. (The warming will still continue until power is turned off)
+		assign_bit(&PORTB, Warm_LED, 1);       // Make sure all of the LEDs are solid on to signify the end of the mission. (The warming will still continue until power is turned off)
 		
 	}
 	else
 	{
 		// Now I need to compare the number of pulses I got with what I should have received
-		char pulse_error = desired_pulses - pulse_count;   //! This will be able to handle negative numbers
-		OCR1B -= pulse_error * V_per_pulse * ICR1 / pump_tot_V;    //! Check page 94 in notebook for correct derivation.
+		int8_t pulse_error = desired_pulses - pulse_count;   // This will be able to handle negative numbers
+		float change = (float) pulse_error * V_per_pulse * ((float) ICR1) / pump_tot_V;   // Check page 94 in notebook for correct derivation.
+		OCR1B -= (uint16_t) change;   
 		// The above line should immediately change the PWM as well
+		
 		if (pulse_error < 0)
-			pulse_error = -pulse_error;    //! Make it the absolute value 
-		if (pulse_error < pulse_error_allow) //! mission is a success
-			PORTD |= (1 << Fuel_LED);        //! Make the fuel LED just stay on
+			pulse_error = -pulse_error;          // Make it the absolute value 
+		if (pulse_error <= pulse_error_allow)    // mission is a success
+			PORTD |= (1 << Fuel_LED);            // Make the fuel LED just stay on
 		else
-			PORTD ^= (1 << Fuel_LED);       //! Make the fuel LED blink saying that it is not done yet.
+			PORTD ^= (1 << Fuel_LED);            // Make the fuel LED blink saying that it is not done yet.
 	
 		// Now since some time has elapsed, toggle the Alive_LED
-		PORTD ^= (1 << Alive_LED);       //! So the Alive_LED should blink on ~0.25 sec off ~0.25 sec
+		PORTD ^= (1 << Alive_LED);               // So the Alive_LED should blink on ~0.25 sec off ~0.25 sec
 	}
 }
 
@@ -362,7 +378,7 @@ void flowMeter(void)
  */
 void ECU_toggle(uint8_t ECU_mode)
 {
-	assign_bit(&PORTA, ECUon_Pin, ECU_mode);   //! make sure the ECU has its power circuit closed if it is an operational ECU
+	assign_bit(&PORTA, ECUon_Pin, ECU_mode);   // make sure the ECU has its power circuit closed if it is an operational ECU
 }
 
 /** @brief Sets the specified bit to the specified value or does nothing if it already set to that.
@@ -374,11 +390,16 @@ void ECU_toggle(uint8_t ECU_mode)
  */
 void assign_bit(volatile uint8_t *sfr,uint8_t bit, uint8_t val)
 {
-	// First I need to figure out if that bit is already set or not
-	val ^= 0x01;      //! This will flip between 0 and 1
-	val = (val << bit) ^ 0xFF;
-	*sfr &= val;
-
+	if (val)      // This is for if I want the value to be a 1
+	{
+		val = (val << bit);
+		*sfr |= val;
+	}
+	else             // This is for if I want the value to be a 0
+	{
+		val = ~(1 << bit);
+		*sfr &= val;
+	}
 }
 
 /** @brief Changes the mode of the used timers such that they can perform new functions in the pumping phase of operation.
@@ -388,39 +409,42 @@ void assign_bit(volatile uint8_t *sfr,uint8_t bit, uint8_t val)
  */
 void change_timers(void)
 {
-	opMode = 1;                          //! Change the operational mode
-	assign_bit(&PORTB,Warm_LED,1);    //! Turn on the LED to signal the heating sequence is complete
+	opMode = 1;                          // Change the operational mode
+	assign_bit(&PORTB,Warm_LED,1);    // Turn on the LED to signal the heating sequence is complete
 	ECU_toggle(ECU_present);
 	
 	if (!ECU_present)
 	{
 		// First change Timer 1 to serve as the PWM output port for the pump
-		assign_bit(&TIMSK,TOIE1,0);    //! remove overflow interrupts for timer 1
-		TCCR1A |= (1 << WGM11);     //! The sets one of the bits for the mode 14 waveform
-		TCCR1B |= (1 << WGM12) | (1 << WGM13);   //! This sets the other two bits for the waveform generation
-		TCCR1A |= (1 << COM1B1) | (1 << COM1B0);   //! These set the output mode
-		ICR1 = 20000;     //! this will set the period of oscillation to 20ms
+		assign_bit(&TIMSK,TOIE1,0);    // remove overflow interrupts for timer 1
+		TCCR1A |= (1 << WGM11);     // The sets one of the bits for the mode 14 waveform
+		TCCR1B |= (1 << WGM12) | (1 << WGM13);   // This sets the other two bits for the waveform generation
+		TCCR1A |= (1 << COM1B1) | (1 << COM1B0);   // These set the output mode
+		ICR1 = 20000;     // this will set the period of oscillation to 20ms
 			
-		OCR1B = ICR1 - (int)(ICR1*duty_cycle);     //! This will set the count at which the PWM will change to on. Also make sure to round down to int
-		assign_bit(&TCCR1B, CS10, 1);              //! This should start the PWM with a prescalar of 1
+		OCR1B = ICR1 - (int)(ICR1*duty_cycle);     // This will set the count at which the PWM will change to on. Also make sure to round down to int
+		assign_bit(&TCCR1B, CS10, 1);              // This should start the PWM with a prescalar of 1
 		// Now the PWM should be running
 			
 		// Second change Timer 2 to serve as the counter for the pulse train from the flow meter
 		assign_bit(&TCCR0,CS02,0);
 		assign_bit(&TCCR0,CS01,0);
-		assign_bit(&TCCR0,CS00,0);     //! TThis will make sure that the timer is stopped for now	
+		assign_bit(&TCCR0,CS00,0);     // TThis will make sure that the timer is stopped for now	
 		
 		// Third set the MCU Control and Status Register for the Interrupt Sense Control 2
-		MCUCSR |= (1 << ISC2);         //! This will make interrupts occur on the rising edge, so the beginning of the pulse
+		MCUCSR |= (1 << ISC2);         // This will make interrupts occur on the rising edge, so the beginning of the pulse
+
 	}
 }
 
 /** @brief Interrupt Service Routine which reads in the pulse train and increments a count.
  *
- *  @param[in] pulse_count This is the number which describes how many pulses have been received for the sampling period.
+ *  @param[in] pulse_count This is the number which describes how many pulses have been received for the sampling period.  It is an implicit argument as it is a global variable which is not explicitly passed in.
  *  @return void
  */
 ISR(INT2_vect)
 {
 	pulse_count++;  // The interrupt flag will automatically be cleared by hardware
 }
+
+

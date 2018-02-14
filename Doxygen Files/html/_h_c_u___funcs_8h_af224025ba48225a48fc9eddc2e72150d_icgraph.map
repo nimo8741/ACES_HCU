@@ -1,0 +1,4 @@
+<map id="change_timers" name="change_timers">
+<area shape="rect" id="node2" href="$_h_c_u___funcs_8h.html#a7eb1892912f647fc11a82891ac8b0408" title="Checks the recorded temperatures and ensures there is no overheating. " alt="" coords="160,5,287,32"/>
+<area shape="rect" id="node3" href="$_h_c_u___funcs_8h.html#ab42f8654f10b780bd735bb55bd53d60d" title="Check for the completion of the ADC conversion, saves the result, and changes the channel..." alt="" coords="335,5,449,32"/>
+</map>

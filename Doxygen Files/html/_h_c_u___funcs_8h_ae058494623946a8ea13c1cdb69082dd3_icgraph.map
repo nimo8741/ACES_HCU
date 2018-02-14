@@ -1,0 +1,5 @@
+<map id="ECU_toggle" name="ECU_toggle">
+<area shape="rect" id="node2" href="$_h_c_u___funcs_8h.html#af224025ba48225a48fc9eddc2e72150d" title="Changes the mode of the used timers such that they can perform new functions in the pumping phase of ..." alt="" coords="144,5,251,32"/>
+<area shape="rect" id="node3" href="$_h_c_u___funcs_8h.html#a7eb1892912f647fc11a82891ac8b0408" title="Checks the recorded temperatures and ensures there is no overheating. " alt="" coords="299,5,425,32"/>
+<area shape="rect" id="node4" href="$_h_c_u___funcs_8h.html#ab42f8654f10b780bd735bb55bd53d60d" title="Check for the completion of the ADC conversion, saves the result, and changes the channel..." alt="" coords="473,5,588,32"/>
+</map>

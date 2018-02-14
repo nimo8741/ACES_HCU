@@ -1,0 +1,4 @@
+<map id="change_timers" name="change_timers">
+<area shape="rect" id="node2" href="$_h_c_u___funcs_8c.html#aba7fa75d6dd6ebcdc6225282a798fcd2" title="Sets the specified bit to the specified value or does nothing if it already set to that..." alt="" coords="299,5,380,32"/>
+<area shape="rect" id="node3" href="$_h_c_u___funcs_8c.html#ae058494623946a8ea13c1cdb69082dd3" title="Checks if the ECU power circuit is closed and if it is not, it opens it. " alt="" coords="160,31,251,57"/>
+</map>

@@ -1,0 +1,8 @@
+<map id="assign_bit" name="assign_bit">
+<area shape="rect" id="node2" href="$_h_c_u___funcs_8h.html#a23459ced73501cbafb717ca9cbb10ce7" title="Initializes the microcontroller for its mainline execution. " alt="" coords="154,5,206,32"/>
+<area shape="rect" id="node3" href="$_h_c_u___funcs_8h.html#ab42f8654f10b780bd735bb55bd53d60d" title="Check for the completion of the ADC conversion, saves the result, and changes the channel..." alt="" coords="603,81,717,108"/>
+<area shape="rect" id="node4" href="$_h_c_u___funcs_8h.html#a7eb1892912f647fc11a82891ac8b0408" title="Checks the recorded temperatures and ensures there is no overheating. " alt="" coords="428,107,555,133"/>
+<area shape="rect" id="node5" href="$_h_c_u___funcs_8h.html#a560b1b76f46bf0b687417029801fd05a" title="Reads/times the pulse train coming from the flow meter and passes this to pumpOperation. " alt="" coords="141,157,219,184"/>
+<area shape="rect" id="node6" href="$_h_c_u___funcs_8h.html#ae058494623946a8ea13c1cdb69082dd3" title="Checks if the ECU power circuit is closed and if it is not, it opens it. " alt="" coords="135,208,225,235"/>
+<area shape="rect" id="node7" href="$_h_c_u___funcs_8h.html#af224025ba48225a48fc9eddc2e72150d" title="Changes the mode of the used timers such that they can perform new functions in the pumping phase of ..." alt="" coords="273,208,380,235"/>
+</map>

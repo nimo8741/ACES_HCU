@@ -1,0 +1,6 @@
+<map id="tempConversion" name="tempConversion">
+<area shape="rect" id="node2" href="$_h_c_u___funcs_8c.html#aba7fa75d6dd6ebcdc6225282a798fcd2" title="Sets the specified bit to the specified value or does nothing if it already set to that..." alt="" coords="636,56,717,83"/>
+<area shape="rect" id="node3" href="$_h_c_u___funcs_8c.html#a7eb1892912f647fc11a82891ac8b0408" title="Checks the recorded temperatures and ensures there is no overheating. " alt="" coords="168,31,295,57"/>
+<area shape="rect" id="node4" href="$_h_c_u___funcs_8c.html#af224025ba48225a48fc9eddc2e72150d" title="Changes the mode of the used timers such that they can perform new functions in the pumping phase of ..." alt="" coords="343,81,449,108"/>
+<area shape="rect" id="node5" href="$_h_c_u___funcs_8c.html#ae058494623946a8ea13c1cdb69082dd3" title="Checks if the ECU power circuit is closed and if it is not, it opens it. " alt="" coords="497,132,588,159"/>
+</map>
