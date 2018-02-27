@@ -31,7 +31,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_small.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">ACES HCU
-   &#160;<span id="projectnumber">1.1.1</span>
+   &#160;<span id="projectnumber">1.1.2</span>
    </div>
    <div id="projectbrief">Software for the operation of the Heating Control Unit</div>
   </td>
@@ -191,7 +191,7 @@ Macros</h2></td></tr>
 <tr class="memdesc:aca3168372614244d98d74b54e6b89a26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pin location for the heating circuit for the second section of the fuel line. <br /></td></tr>
 <tr class="separator:aca3168372614244d98d74b54e6b89a26"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a062607eaaffe8c3f8193991755e024f9"><td class="memItemLeft" align="right" valign="top"><a id="a062607eaaffe8c3f8193991755e024f9"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_h_c_u___funcs_8h.html#a062607eaaffe8c3f8193991755e024f9">K_factor</a>&#160;&#160;&#160;110000</td></tr>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_h_c_u___funcs_8h.html#a062607eaaffe8c3f8193991755e024f9">K_factor</a>&#160;&#160;&#160;91387</td></tr>
 <tr class="memdesc:a062607eaaffe8c3f8193991755e024f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assumed K factor for the flow meter in pulses per liter. <br /></td></tr>
 <tr class="separator:a062607eaaffe8c3f8193991755e024f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a959f7b5d831006ba86ebf2754975fdfc"><td class="memItemLeft" align="right" valign="top"><a id="a959f7b5d831006ba86ebf2754975fdfc"></a>
@@ -214,10 +214,6 @@ Macros</h2></td></tr>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_h_c_u___funcs_8h.html#a2a302251d845a16c65382845bf0ce773">pump_tot_V</a>&#160;&#160;&#160;6.0</td></tr>
 <tr class="memdesc:a2a302251d845a16c65382845bf0ce773"><td class="mdescLeft">&#160;</td><td class="mdescRight">Total voltage which will be sent to the pump. <br /></td></tr>
 <tr class="separator:a2a302251d845a16c65382845bf0ce773"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af6df0f502576f1240a2c274a4b3e8aaf"><td class="memItemLeft" align="right" valign="top"><a id="af6df0f502576f1240a2c274a4b3e8aaf"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_h_c_u___funcs_8h.html#af6df0f502576f1240a2c274a4b3e8aaf">V_per_pulse</a>&#160;&#160;&#160;0.0107393</td></tr>
-<tr class="memdesc:af6df0f502576f1240a2c274a4b3e8aaf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Volts required to get a single change in pulse count. <br /></td></tr>
-<tr class="separator:af6df0f502576f1240a2c274a4b3e8aaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5771c39b4bd816a79ea85d2cf49e54e1"><td class="memItemLeft" align="right" valign="top"><a id="a5771c39b4bd816a79ea85d2cf49e54e1"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_h_c_u___funcs_8h.html#a5771c39b4bd816a79ea85d2cf49e54e1">ECU_duty</a>&#160;&#160;&#160;0.5</td></tr>
 <tr class="memdesc:a5771c39b4bd816a79ea85d2cf49e54e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Duty cycle for the ECU heater (0.5 = 50%) <br /></td></tr>
@@ -285,6 +281,14 @@ uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_
 uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_h_c_u___funcs_8h.html#a55274be3d823eb7a4bf281eaa3e74d4a">alive_counter</a></td></tr>
 <tr class="memdesc:a55274be3d823eb7a4bf281eaa3e74d4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Variable to delay the alive_led so that it blinks twice as slow as the warming LED. <br /></td></tr>
 <tr class="separator:a55274be3d823eb7a4bf281eaa3e74d4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d33ec29c2398728e80d752eeced889e"><td class="memItemLeft" align="right" valign="top"><a id="a4d33ec29c2398728e80d752eeced889e"></a>
+float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_h_c_u___funcs_8h.html#a4d33ec29c2398728e80d752eeced889e">V_per_pulse</a></td></tr>
+<tr class="memdesc:a4d33ec29c2398728e80d752eeced889e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Variable to convert the pulses into a voltage. <br /></td></tr>
+<tr class="separator:a4d33ec29c2398728e80d752eeced889e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2d37748f452db8cb9f661c07f5835c9"><td class="memItemLeft" align="right" valign="top"><a id="aa2d37748f452db8cb9f661c07f5835c9"></a>
+float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_h_c_u___funcs_8h.html#aa2d37748f452db8cb9f661c07f5835c9">measured_flow</a></td></tr>
+<tr class="memdesc:aa2d37748f452db8cb9f661c07f5835c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Value for what the code thinks the mass flow is (g/sec) useful for debugging. <br /></td></tr>
+<tr class="separator:aa2d37748f452db8cb9f661c07f5835c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Function prototypes, macros, constants, and global variables for the HCU Microcontroller. </p>
@@ -344,7 +348,7 @@ Mode 2 (Exhaustion Mode) <code>Warm_LED</code> constant on, <code>Alive_LED</cod
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_h_c_u___funcs_8c_source.html#l00393">393</a> of file <a class="el" href="_h_c_u___funcs_8c_source.html">HCU_Funcs.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_h_c_u___funcs_8c_source.html#l00408">408</a> of file <a class="el" href="_h_c_u___funcs_8c_source.html">HCU_Funcs.c</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -393,7 +397,7 @@ Here is the caller graph for this function:</div>
 <dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="_h_c_u___funcs_8c.html#a560b1b76f46bf0b687417029801fd05a" title="Reads/times the pulse train coming from the flow meter and passes this to pumpOperation. ">flowMeter</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_h_c_u___funcs_8c_source.html#l00424">424</a> of file <a class="el" href="_h_c_u___funcs_8c_source.html">HCU_Funcs.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_h_c_u___funcs_8c_source.html#l00439">439</a> of file <a class="el" href="_h_c_u___funcs_8c_source.html">HCU_Funcs.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -440,7 +444,7 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_h_c_u___funcs_8c_source.html#l00381">381</a> of file <a class="el" href="_h_c_u___funcs_8c_source.html">HCU_Funcs.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_h_c_u___funcs_8c_source.html#l00396">396</a> of file <a class="el" href="_h_c_u___funcs_8c_source.html">HCU_Funcs.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -494,7 +498,7 @@ Here is the caller graph for this function:</div>
 <dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>Need to do a pump test to ensure that the voltage to flow rate function is actually correct. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_h_c_u___funcs_8c_source.html#l00330">330</a> of file <a class="el" href="_h_c_u___funcs_8c_source.html">HCU_Funcs.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_h_c_u___funcs_8c_source.html#l00331">331</a> of file <a class="el" href="_h_c_u___funcs_8c_source.html">HCU_Funcs.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -579,7 +583,7 @@ Here is the call graph for this function:</div>
 <dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="_h_c_u___funcs_8c.html#a7eb1892912f647fc11a82891ac8b0408" title="Checks the recorded temperatures and ensures there is no overheating. ">tempHeaterHelper</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_h_c_u___funcs_8c_source.html#l00155">155</a> of file <a class="el" href="_h_c_u___funcs_8c_source.html">HCU_Funcs.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_h_c_u___funcs_8c_source.html#l00156">156</a> of file <a class="el" href="_h_c_u___funcs_8c_source.html">HCU_Funcs.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -626,7 +630,7 @@ Here is the call graph for this function:</div>
 <dl class="section note"><dt>Note</dt><dd>Need to confirm that heater operation is still sufficient for phase 1 and 2. </dd></dl>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="_h_c_u___funcs_8c.html#ab42f8654f10b780bd735bb55bd53d60d" title="Check for the completion of the ADC conversion, saves the result, and changes the channel...">tempConversion</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_h_c_u___funcs_8c_source.html#l00213">213</a> of file <a class="el" href="_h_c_u___funcs_8c_source.html">HCU_Funcs.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_h_c_u___funcs_8c_source.html#l00214">214</a> of file <a class="el" href="_h_c_u___funcs_8c_source.html">HCU_Funcs.c</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">

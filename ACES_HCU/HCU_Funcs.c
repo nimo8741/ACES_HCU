@@ -50,6 +50,7 @@ void Initial(void)
 	
 	// Now calculate the number of pulses I expect per 0.262144 seconds (max time for an 8 bit timer with prescalar of 1024)
 	float pulse_flow = (fuelFlow / density) * K_factor * max_time / 1000;
+	V_per_pulse = pump_m * (fuelFlow / pulse_flow);
 	desired_pulses = (uint8_t) pulse_flow;                                    // round down and convert to an 8 bit number.  I expect it to be 170 so it will fit.
 	pulse_error_allow = (uint8_t)(desired_pulses * (fuelError / fuelFlow));   // This is the amount of pulses I can be off for it to still be considered a successes
 	assign_bit(&MCUCSR,ISC2,1);                                               // This will cause interrupts for INT2 to be caused on the rising edge
@@ -125,10 +126,10 @@ ISR(TIMER1_OVF_vect)
 	// The LED is on PD5
 	alive_counter++;
 	if (alive_counter % 2 == 1)
-		PORTD ^= (1 << Alive_LED);
+	PORTD ^= (1 << Alive_LED);
 		
 	PORTB ^= (1 << Warm_LED);   // This will have the warming LED blink 0.5 sec on 0.5 sec off and the alive LED blinking twice as slow
-	
+		
 	// Now reset the register
 	TCNT1 = 3036;  // The interrupt will clear automatically when this function is called
 }
@@ -329,9 +330,16 @@ void tempHeaterHelper(void)
  */
 void flowMeter(void)
 {
+	// This is the test code for the kerosene test
+	/*PORTB |= (1 << PB4);                // the trigger for the pump will be on PB4
+	for (unsigned i = 0; i < 14; i++){
+		_delay_ms(250);                 // this should delay for 3.5 seconds
+	}*/
+	
 	// First I need to enable interrupt on INT2
 	pulse_count = 0;
 	GICR |= (1 << INT2);     // enable INT2 external interrupts
+	
 	
 	// Second I need to begin timer0
 	TCNT0 = 0;                                 // Make sure the timer/counter register is cleared so the full range can be used
@@ -343,7 +351,12 @@ void flowMeter(void)
 	while (!(TIFR & 0x01));                    // Hog the execution until the overflow flag is set
 	
 	assign_bit(&GICR, INT2, 0);                // disable external interrupts for INT2
-		
+	
+	/*for (unsigned i = 0; i < 14; i++){      // delay for another 3.5 sec for a total of 7 seconds.  we should have enough fuel for this
+		_delay_ms(250);	
+	}
+	assign_bit(&PORTB, PB4, 0);            // turn off the pump   NEED TO DELETE THIS LINE LATER
+	*/	
 	if (!pulse_count)                          // There is either no more fuel or there is a stoppage.  This if statement might be the end of me...
 	{
 		opMode = 2;                            //  This means that the pumping has concluded
@@ -359,6 +372,8 @@ void flowMeter(void)
 	{
 		// Now I need to compare the number of pulses I got with what I should have received
 		int8_t pulse_error = desired_pulses - pulse_count;   // This will be able to handle negative numbers
+		measured_flow = V_per_pulse * (float) pulse_count;
+		measured_flow = (measured_flow - pump_b) / pump_m;
 		float change = (float) pulse_error * V_per_pulse * ((float) ICR1) / pump_tot_V;   // Check page 94 in notebook for correct derivation.
 		OCR1B -= (uint16_t) change;   
 		// The above line should immediately change the PWM as well
@@ -550,4 +565,3 @@ ISR(TIMER2_OVF_vect)
 		}
 	}
 }
-

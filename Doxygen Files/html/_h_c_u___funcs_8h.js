@@ -28,7 +28,6 @@ var _h_c_u___funcs_8h =
     [ "TempFLine1", "_h_c_u___funcs_8h.html#ae379e3fb4b72cee7e07f0ef6a89ea474", null ],
     [ "TempFLine2", "_h_c_u___funcs_8h.html#a83fa1def7c7b1f50dc6c81cbc4d283d0", null ],
     [ "TempHopper", "_h_c_u___funcs_8h.html#a0b5ab129139e036dc4806dafa6334356", null ],
-    [ "V_per_pulse", "_h_c_u___funcs_8h.html#af6df0f502576f1240a2c274a4b3e8aaf", null ],
     [ "Warm_LED", "_h_c_u___funcs_8h.html#a9f877a9f91f3f250db97a58abe796eb9", null ],
     [ "assign_bit", "_h_c_u___funcs_8h.html#aba7fa75d6dd6ebcdc6225282a798fcd2", null ],
     [ "change_timers", "_h_c_u___funcs_8h.html#af224025ba48225a48fc9eddc2e72150d", null ],
@@ -41,8 +40,10 @@ var _h_c_u___funcs_8h =
     [ "desired_pulses", "_h_c_u___funcs_8h.html#a6cff4477702c9d73bce03b5ae33a9814", null ],
     [ "desired_temp", "_h_c_u___funcs_8h.html#ab5455edceedf93454775e749a89e1014", null ],
     [ "duty_cycle", "_h_c_u___funcs_8h.html#ab752277653bf4ca366fd22ad687edb9a", null ],
+    [ "measured_flow", "_h_c_u___funcs_8h.html#aa2d37748f452db8cb9f661c07f5835c9", null ],
     [ "opMode", "_h_c_u___funcs_8h.html#ab1fa4bbd357586cbfa309f1b8614c1ae", null ],
     [ "pulse_count", "_h_c_u___funcs_8h.html#af9e36069f73b8a3642ae276fd3b672a1", null ],
     [ "pulse_error_allow", "_h_c_u___funcs_8h.html#a2302a051f375379aca3b99b110345408", null ],
-    [ "saveTemps", "_h_c_u___funcs_8h.html#a60c744c09c8dbe9ea1233ba22b158d7d", null ]
+    [ "saveTemps", "_h_c_u___funcs_8h.html#a60c744c09c8dbe9ea1233ba22b158d7d", null ],
+    [ "V_per_pulse", "_h_c_u___funcs_8h.html#a4d33ec29c2398728e80d752eeced889e", null ]
 ];

@@ -104,7 +104,7 @@
 ///////////////////////////////////////////////////////////////////////////
 
 //! Assumed K factor for the flow meter in pulses per liter
-#define K_factor 110000      
+#define K_factor 91387      // This is the experimentally determined K factor      
 
 //! Density of the kerosene in g/ml         
 #define density 0.81  
@@ -119,10 +119,7 @@
 #define pump_b 0.195783     
 
 //! Total voltage which will be sent to the pump             
-#define pump_tot_V 6.0     
-
-//! Volts required to get a single change in pulse count              
-#define V_per_pulse 0.0107393            
+#define pump_tot_V 6.0                
 
 //! Duty cycle for the ECU heater (0.5 = 50%)
 #define ECU_duty 0.5       
@@ -159,7 +156,7 @@ float saveTemps[6];
 unsigned char desired_temp;   
 
 //! Number of pulse which should be observed during the 8 bit timing window  
-uint8_t desired_pulses;      
+uint8_t desired_pulses;    
 
 //! Most amount of error in the difference in the pulse amounts to be considered a success   
 uint8_t pulse_error_allow;  
@@ -169,6 +166,12 @@ uint8_t pulse_count;
 
 //! Variable to delay the alive_led so that it blinks twice as slow as the warming LED        
 uint8_t alive_counter; 
+
+//! Variable to convert the pulses into a voltage
+float V_per_pulse;
+
+//! Value for what the code thinks the mass flow is (g/sec) useful for debugging
+float measured_flow;
 
 
 
