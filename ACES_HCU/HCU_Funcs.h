@@ -119,7 +119,7 @@
 #define pump_b 0.195783     
 
 //! Total voltage which will be sent to the pump             
-#define pump_tot_V 6.0                
+#define pump_tot_V 22.2                
 
 //! Duty cycle for the ECU heater (0.5 = 50%)
 #define ECU_duty 0.5       

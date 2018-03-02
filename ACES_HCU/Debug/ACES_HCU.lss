@@ -196,10 +196,10 @@ void Initial(void)
 	desired_temp = 0;
  104:	10 92 67 00 	sts	0x0067, r1	; 0x800067 <desired_temp>
 	duty_cycle = (pump_m*fuelFlow + pump_b) / pump_tot_V;    // This is the initial guess for the fuel pump
- 108:	89 e1       	ldi	r24, 0x19	; 25
- 10a:	9a e6       	ldi	r25, 0x6A	; 106
- 10c:	ad ea       	ldi	r26, 0xAD	; 173
- 10e:	be e3       	ldi	r27, 0x3E	; 62
+ 108:	8e e9       	ldi	r24, 0x9E	; 158
+ 10a:	99 e7       	ldi	r25, 0x79	; 121
+ 10c:	ab eb       	ldi	r26, 0xBB	; 187
+ 10e:	bd e3       	ldi	r27, 0x3D	; 61
  110:	80 93 6e 00 	sts	0x006E, r24	; 0x80006e <duty_cycle>
  114:	90 93 6f 00 	sts	0x006F, r25	; 0x80006f <duty_cycle+0x1>
  118:	a0 93 70 00 	sts	0x0070, r26	; 0x800070 <duty_cycle+0x2>
@@ -579,10 +579,10 @@ void flowMeter(void)
  390:	c7 01       	movw	r24, r14
  392:	b6 01       	movw	r22, r12
  394:	0e 94 b5 06 	call	0xd6a	; 0xd6a <__mulsf3>
- 398:	20 e0       	ldi	r18, 0x00	; 0
- 39a:	30 e0       	ldi	r19, 0x00	; 0
- 39c:	40 ec       	ldi	r20, 0xC0	; 192
- 39e:	50 e4       	ldi	r21, 0x40	; 64
+ 398:	2a e9       	ldi	r18, 0x9A	; 154
+ 39a:	39 e9       	ldi	r19, 0x99	; 153
+ 39c:	41 eb       	ldi	r20, 0xB1	; 177
+ 39e:	51 e4       	ldi	r21, 0x41	; 65
  3a0:	0e 94 56 05 	call	0xaac	; 0xaac <__divsf3>
 		OCR1B -= (uint16_t) change;   
  3a4:	08 b5       	in	r16, 0x28	; 40
