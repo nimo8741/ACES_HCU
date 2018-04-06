@@ -41,13 +41,13 @@
 #define TempHopper 10     
 
 //! Desired temperature of the ECU in degF                     (ADC3) 
-#define TempECU 10   
+#define TempECU 1000   
 
 //! Desired temperature of the fuel line to the pump in degF   (ADC4)      
 #define TempFLine1 10      
 
 //! Desired temperature of the fuel line to the engine in degF (ADC5)
-#define TempFLine2 10    
+#define TempFLine2 1000    
 
 //! Desired temperature of the ESB in degF                     (ADC6)   
 #define TempESB 10         

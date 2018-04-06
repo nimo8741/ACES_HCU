@@ -105,7 +105,7 @@ void Initial(void)
 	assign_bit(&PORTD, HopperPin, 1);
 	assign_bit(&PORTD, FLine1Pin, 1);
 	assign_bit(&PORTD, ESB_Pin, 1);     // I can omit doing this for the ECU and FuelLine1
-		
+			
 }
 
 /** @brief Interrupt service routine for the timer which controls the alive LED and warming LED
@@ -330,11 +330,11 @@ void tempHeaterHelper(void)
  */
 void flowMeter(void)
 {
-	// This is the test code for the kerosene test
-	/*PORTB |= (1 << PB4);                // the trigger for the pump will be on PB4
-	for (unsigned i = 0; i < 14; i++){
-		_delay_ms(250);                 // this should delay for 3.5 seconds
-	}*/
+	// This is the test code for the kerosene test COMMENT OUT IF NOT DOING THE PUMP TEST
+	//PORTD |= (1 << PD4);                // the trigger for the pump will be on PD4
+	//for (unsigned i = 0; i < 14; i++){
+	//	_delay_ms(250);                 // this should delay for 3.5 seconds
+	//}
 	
 	// First I need to enable interrupt on INT2
 	pulse_count = 0;
@@ -352,11 +352,12 @@ void flowMeter(void)
 	
 	assign_bit(&GICR, INT2, 0);                // disable external interrupts for INT2
 	
-	/*for (unsigned i = 0; i < 14; i++){      // delay for another 3.5 sec for a total of 7 seconds.  we should have enough fuel for this
-		_delay_ms(250);	
-	}
-	assign_bit(&PORTB, PB4, 0);            // turn off the pump   NEED TO DELETE THIS LINE LATER
-	*/	
+	//		THIS IS FOR THE PUMP TEST, COMMENT OUT IF NOT DOING THE PUMP TEST    
+	//for (unsigned i = 0; i < 14; i++){      // delay for another 3.5 sec for a total of 7 seconds.  we should have enough fuel for this
+	//	_delay_ms(250);	
+	//}
+	//assign_bit(&PORTD, PD4, 0);            // turn off the pump   NEED TO DELETE THIS LINE LATER
+	
 	if (!pulse_count)                          // There is either no more fuel or there is a stoppage.  This if statement might be the end of me...
 	{
 		opMode = 2;                            //  This means that the pumping has concluded
@@ -384,7 +385,6 @@ void flowMeter(void)
 			PORTD |= (1 << Fuel_LED);            // Make the fuel LED just stay on
 		else
 			PORTD ^= (1 << Fuel_LED);            // Make the fuel LED blink saying that it is not done yet.
-	
 	}
 }
 
@@ -440,6 +440,7 @@ void change_timers(void)
 {
 	opMode = 1;                          // Change the operational mode
 	assign_bit(&PORTB,Warm_LED,1);    // Turn on the LED to signal the heating sequence is complete
+	
 	ECU_toggle(ECU_present);
 	
 	// Now need to assign timer 2 to the alive LED
@@ -451,7 +452,7 @@ void change_timers(void)
 		TCCR1A |= (1 << WGM11);     // The sets one of the bits for the mode 14 waveform
 		TCCR1B |= (1 << WGM12) | (1 << WGM13);   // This sets the other two bits for the waveform generation
 		TCCR1A |= (1 << COM1B1) | (1 << COM1B0);   // These set the output mode
-		ICR1 = 20000;     // this will set the period of oscillation to 20ms
+		ICR1 = 1500;     // this will set the period of oscillation to 20ms  this was 20000
 			
 		OCR1B = ICR1 - (int)(ICR1*duty_cycle);     // This will set the count at which the PWM will change to on. Also make sure to round down to int
 		assign_bit(&TCCR1B, CS10, 1);              // This should start the PWM with a prescalar of 1
