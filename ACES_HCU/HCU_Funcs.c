@@ -43,10 +43,11 @@ void Initial(void)
 	DDRB = 0b11011010;         
 	DDRC = 0xFF;                // Make all outputs
 	DDRD = 0xFF;                // Make all outputs
+		
 	
 	opMode = 0;     // This sets the function mode to heating mode
 	desired_temp = 0;
-	duty_cycle = (pump_m*fuelFlow + pump_b) / pump_tot_V;    // This is the initial guess for the fuel pump
+	duty_cycle = 0.55;    // Experimentally determined duty cycle which is pretty good. 0.53
 	
 	// Now calculate the number of pulses I expect per 0.262144 seconds (max time for an 8 bit timer with prescalar of 1024)
 	float pulse_flow = (fuelFlow / density) * K_factor * max_time / 1000;
@@ -105,7 +106,10 @@ void Initial(void)
 	assign_bit(&PORTD, HopperPin, 1);
 	assign_bit(&PORTD, FLine1Pin, 1);
 	assign_bit(&PORTD, ESB_Pin, 1);     // I can omit doing this for the ECU and FuelLine1
-			
+	output_count = 0;
+	hand_pwm = 7;     // This means that the fuel line 2 will have a 10 percent 
+	pwm_count = 0;
+				
 }
 
 /** @brief Interrupt service routine for the timer which controls the alive LED and warming LED
@@ -178,10 +182,18 @@ void tempConversion(void)
 		act_temp = act_temp*208.8 - 79.6;
 		saveTemps[i] = act_temp;
 		
+		if (i == 4){
+			assign_bit(&ADMUX, MUX1,0);
+		}
 		// Now update the channel the ADC is using
 		assign_bit(&ADMUX,MUX0,(i + 1) & 0x01);           // Assign bit 0
 		assign_bit(&ADMUX,MUX1,((i + 1) >> 1) & 0x01);    // Assign bit 1
 		assign_bit(&ADMUX,MUX2,((i + 1) >> 2) & 0x01);    // Assign bit 2
+		
+		if (i == 3){
+			assign_bit(&ADMUX, MUX1,1);
+		}
+
 		
 		assign_bit(&ADCSRA, ADIF, 1);     // write a logical 1 to clear the flag, page 216 in the data sheet
 
@@ -229,9 +241,9 @@ void tempHeaterHelper(void)
 				break;
 				
 			case 1:       // This is the case for the Hopper    /////////////////////////////////////////////////
-				if (saveTemps[2] < TempHopper)           // Temp is too low so turn on the heater
+				if (saveTemps[1] < TempHopper)           // Temp is too low so turn on the heater
 					assign_bit(&PORTD, HopperPin, 1);
-				else if(saveTemps[2] > TempHopper)
+				else if(saveTemps[1] > TempHopper)
 				{
 					assign_bit(&PORTD, HopperPin, 0);    // Too hot so turn off
 					desired_temp |= 0x02;				
@@ -239,27 +251,44 @@ void tempHeaterHelper(void)
 				break;
 				
 			case 2:       // This is the case for the ECU  /////////////////////////////////////////////////
-				if (saveTemps[3] < TempECU)
-					if (!opMode)
+				if (saveTemps[2] < TempECU){
+					if (!opMode){
+						assign_bit(&TCCR0, COM01, 1);
+						assign_bit(&TCCR0, COM00, 1);    // give the PWM its output pin back
 						assign_bit(&TCCR0, CS02, 1);      // This will turn the PWM back on
-					else
-						assign_bit(&PORTB, ECU_pin, 1);   // Turn the heater on manually
-				else if (saveTemps[3] > TempECU)
+
+					}
+					else if (opMode == 2){
+						// I need to implement the 10% DS
+						if (pwm_count == hand_pwm){
+							assign_bit(&PORTB,ECU_pin,1);   // turn it on for the one count
+						}
+						else{
+							assign_bit(&PORTB, ECU_pin,0);  // turn it off otherwise
+						}
+					}
+				}
+				else if (saveTemps[2] > TempECU)
 				{
-					if (!opMode)
+					if (opMode != 1)
 					{
 						assign_bit(&TCCR0, CS02, 0);      // This will turn the PWM off
+						// now force the PWM module off of the pin
+						assign_bit(&TCCR0, COM01, 0);
+						assign_bit(&TCCR0, COM00, 0);
+						assign_bit(&PORTB,ECU_pin,0);     // and force the pin low
 						desired_temp |= 0x04;
 					}
-					else
-						assign_bit(&PORTB, ECU_pin, 0);   // Turn the heater off manually.  Don't do the same thing with desired_temp for the manual mode
+					else{
+						assign_bit(&PORTB,ECU_pin,0);    // drive the pin low if it is too high
+					}
 				}
 				break;
 				
 			case 3:       // This is the case for Fuel Line 1  /////////////////////////////////////////////////
-				if (saveTemps[4] < TempFLine1)
+				if (saveTemps[3] < TempFLine1)
 					assign_bit(&PORTD, FLine1Pin, 1);
-				else if(saveTemps[4] > TempFLine1)
+				else if(saveTemps[3] > TempFLine1)
 				{
 					assign_bit(&PORTD, FLine1Pin, 0);
 					desired_temp |= 0x08;
@@ -267,21 +296,34 @@ void tempHeaterHelper(void)
 				break;
 				
 			case 4:       // This is the case for Fuel Line 2 /////////////////////////////////////////////////
-				if (saveTemps[5] < TempFLine2){
-					if (!opMode)      // We are in the warming mode so this can use the PWM
-						assign_bit(&TCCR2, CS22, 1);          // Turn the PWM back on 
-					else
-						assign_bit(&PORTD,Fline2Pin,1);       // Turn the heater on manually
+				if (saveTemps[4] < TempFLine2){
+					if (!opMode){      // We are in the warming mode so this can use the PWM
+						// force the PWM to be on
+						assign_bit(&TCCR2, COM21, 1);
+						assign_bit(&TCCR2, COM20, 1);   // This will set it to inverting mode
+						assign_bit(&TCCR2, CS22, 1);    // this will turn the PWM on
+					}
+					else if (opMode == 2){
+						// I need to implement the 10% DS
+						if (pwm_count == hand_pwm){
+							assign_bit(&PORTD,Fline2Pin,1);   // turn it on for the one count
+						}
+						else{
+							assign_bit(&PORTD, Fline2Pin,0);  // turn it off otherwise
+						}
+					}
 				}
-				else if (saveTemps[5] > TempFLine2)
+				else if (saveTemps[4] > TempFLine2)
 				{
 					if (!opMode)           // We are in warming mode so this can use the PWM
 					{
 						assign_bit(&TCCR2, CS22, 0);       // Turn the PWM off
+						// now need to disconnect the port from the PWM module
+						assign_bit(&TCCR2, COM21, 0);
+						assign_bit(&TCCR2, COM20, 0);
+						assign_bit(&PORTD, Fline2Pin, 0);    // force the pin to be low
 						desired_temp |= 0x10;
 					}
-					else
-						assign_bit(&PORTD, Fline2Pin, 0);    // Turn the heater off manually
 				}
 				break;
 				
@@ -298,7 +340,7 @@ void tempHeaterHelper(void)
 		
 	}
 	
-	if (desired_temp == 0x3F)      // Will go in here every time after it stops being mode 0
+	if (desired_temp == 0x3F)      // Will go in here every time after it stops being mode 0 this was 3F
 	{
 		/* If desired_temp was 0111 1111, it would go to 1111 1111 with the or.
 		*   Then the bitwise not (~) would make it 0000 0000.  And finally,
@@ -330,12 +372,6 @@ void tempHeaterHelper(void)
  */
 void flowMeter(void)
 {
-	// This is the test code for the kerosene test COMMENT OUT IF NOT DOING THE PUMP TEST
-	//PORTD |= (1 << PD4);                // the trigger for the pump will be on PD4
-	//for (unsigned i = 0; i < 14; i++){
-	//	_delay_ms(250);                 // this should delay for 3.5 seconds
-	//}
-	
 	// First I need to enable interrupt on INT2
 	pulse_count = 0;
 	GICR |= (1 << INT2);     // enable INT2 external interrupts
@@ -351,32 +387,51 @@ void flowMeter(void)
 	while (!(TIFR & 0x01));                    // Hog the execution until the overflow flag is set
 	
 	assign_bit(&GICR, INT2, 0);                // disable external interrupts for INT2
+	pump_count--;
 	
-	//		THIS IS FOR THE PUMP TEST, COMMENT OUT IF NOT DOING THE PUMP TEST    
-	//for (unsigned i = 0; i < 14; i++){      // delay for another 3.5 sec for a total of 7 seconds.  we should have enough fuel for this
-	//	_delay_ms(250);	
-	//}
-	//assign_bit(&PORTD, PD4, 0);            // turn off the pump   NEED TO DELETE THIS LINE LATER
+	int8_t pulse_error = desired_pulses - pulse_count;   // This will be able to handle negative numbers
+	measured_flow = V_per_pulse * (float) pulse_count;
+	measured_flow = measured_flow / pump_m;
+	flow_save[pump_count] = measured_flow;
+	pulse_count_array[pump_count] = pulse_count;
+
+
 	
-	if (!pulse_count)                          // There is either no more fuel or there is a stoppage.  This if statement might be the end of me...
+	if (pump_lock){     // decrease the pump lock by one. 
+		pump_lock--;
+	}
+	else if ((!pump_count))                          // There is either no more fuel or there is a stoppage.  This if statement might be the end of me...
 	{
-		opMode = 2;                            //  This means that the pumping has concluded
 		assign_bit(&TCCR1B, CS10, 0);          // This should stop the PWM for the pump
+		assign_bit(&TCCR1B, WGM12, 0);
+		assign_bit(&TCCR1B, WGM13, 0);
+		assign_bit(&TCCR1A, COM1B1, 0);
+		assign_bit(&TCCR1A, COM1B0, 0);
+
+
+		assign_bit(&PORTD, PD4, 0);            // This will drive the state of the pin low
 		assign_bit(&PORTD, Fuel_LED, 1);
 		TCNT2 = 60;                               // Value needed for the timer to run for 0.05 second
 		assign_bit(&PORTD, Alive_LED, 1);         // Start with turning on the LED
 		alive_counter = 0;                        // reset the hand made prescalar
 		TCCR2 = 0x06;                             // This will start the Timer with a prescalar of 256 and stop the PWM stuff
 		
+		// Now need to turn off all of the heaters real quick
+		assign_bit(&PORTD,PD0,0);
+		assign_bit(&PORTD,PD1,0);
+		assign_bit(&PORTD,PD2,0);
+		assign_bit(&PORTD,PD3,0);
+		assign_bit(&PORTD,PD7,0);
+		assign_bit(&PORTB,PB3,0);
+		
+		opMode = 2;    // this is when I can view the flow data
+		
 	}
 	else
 	{
 		// Now I need to compare the number of pulses I got with what I should have received
-		int8_t pulse_error = desired_pulses - pulse_count;   // This will be able to handle negative numbers
-		measured_flow = V_per_pulse * (float) pulse_count;
-		measured_flow = (measured_flow - pump_b) / pump_m;
 		float change = (float) pulse_error * V_per_pulse * ((float) ICR1) / pump_tot_V;   // Check page 94 in notebook for correct derivation.
-		OCR1B -= (uint16_t) change;   
+		OCR1B -= (uint16_t) (change / 3.0);   // the larger the number, the slower it is to respond, but the less overshoot it has
 		// The above line should immediately change the PWM as well
 		
 		if (pulse_error < 0)
@@ -440,7 +495,7 @@ void change_timers(void)
 {
 	opMode = 1;                          // Change the operational mode
 	assign_bit(&PORTB,Warm_LED,1);    // Turn on the LED to signal the heating sequence is complete
-	
+	pump_count = 39;   // this was 39, was 44
 	ECU_toggle(ECU_present);
 	
 	// Now need to assign timer 2 to the alive LED
@@ -449,13 +504,16 @@ void change_timers(void)
 	{
 		// First change Timer 1 to serve as the PWM output port for the pump
 		assign_bit(&TIMSK,TOIE1,0);    // remove overflow interrupts for timer 1
+		assign_bit(&TCCR1B, CS11, 0);  // need to do this so that the prescalar will be set to 1 later
 		TCCR1A |= (1 << WGM11);     // The sets one of the bits for the mode 14 waveform
 		TCCR1B |= (1 << WGM12) | (1 << WGM13);   // This sets the other two bits for the waveform generation
 		TCCR1A |= (1 << COM1B1) | (1 << COM1B0);   // These set the output mode
-		ICR1 = 1500;     // this will set the period of oscillation to 20ms  this was 20000
+		ICR1 = 1000;     // this will set the period of oscillation to 10ms This is exactly 100 Hz on the o-scope.
+		// This seems to cause the motor to operate smoothly even though the voltage across the pump oscillates much more
 			
 		OCR1B = ICR1 - (int)(ICR1*duty_cycle);     // This will set the count at which the PWM will change to on. Also make sure to round down to int
 		assign_bit(&TCCR1B, CS10, 1);              // This should start the PWM with a prescalar of 1
+		pump_lock = 5;                             // This should lock the pump at the starting duty for 2 second
 		// Now the PWM should be running
 			
 		// Second change Timer0 to serve as the counter for the pulse train from the flow meter
@@ -492,7 +550,6 @@ void change_timers(void)
 		TCCR0 = 0;
 		TCCR1B = 0;         // This set is to prevent any unexpected triggering of the heating circuits
 		TCCR1A = 0;
-		
 		
 	}
 }

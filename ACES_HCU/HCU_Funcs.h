@@ -6,7 +6,7 @@
  *  @bug No known bugs.
  *  @note Below is the blinking pattern for the LEDs
  *  @note Mode 0 (Warming Mode) @c Warm_LED 0.5/0.5 (sec on / sec off), @c Alive_LED 1/1, @c Fuel_LED off
- *  @note Mode 1 (Pumping Mode) @c Warm_LED constant on, @c Alive_LED 0.75/0.25, @c Fuel_LED 0.25/0.25
+ *  @note Mode 1 (Pumping Mode) @c Warm_LED constant on, @c Alive_LED 0.75/0.25, @c Fuel_LED 0.25/0.25, @c  Fuel_LED constant on when correct flow rate (with tolerance)
  *  @note Mode 2 (Exhaustion Mode) @c Warm_LED constant on, @c Alive_LED 0.1/0.9, @c Fuel_LED constant on
  */ 
 #include <avr/sfr_defs.h>
@@ -38,16 +38,16 @@
 #define TempBat 10         
 
 //! Desired temperature of the hopper in degF                  (ADC2)
-#define TempHopper 10     
+#define TempHopper 10
 
 //! Desired temperature of the ECU in degF                     (ADC3) 
-#define TempECU 1000   
+#define TempECU 10  
 
 //! Desired temperature of the fuel line to the pump in degF   (ADC4)      
-#define TempFLine1 10      
+#define TempFLine1 10     
 
 //! Desired temperature of the fuel line to the engine in degF (ADC5)
-#define TempFLine2 1000    
+#define TempFLine2 80    
 
 //! Desired temperature of the ESB in degF                     (ADC6)   
 #define TempESB 10         
@@ -118,14 +118,14 @@
 //! Y-intercept for the linear relationship between voltage and mass flow                
 #define pump_b 0.195783     
 
-//! Total voltage which will be sent to the pump             
-#define pump_tot_V 22.2                
+//! Total voltage which will be sent to the pump, this should be the max seen when the pump gets a 100% duty           
+#define pump_tot_V 6.42                
 
 //! Duty cycle for the ECU heater (0.5 = 50%)
-#define ECU_duty 0.5       
+#define ECU_duty 0.5       // was 0.3 for cold test       
 
 //! Duty cycle for the second fuel line heater             
-#define F_line_duty 0.20946              
+#define F_line_duty 0.2    // was 0.2 for cold test  
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////  Functions  ///////////////////////////////
@@ -172,6 +172,22 @@ float V_per_pulse;
 
 //! Value for what the code thinks the mass flow is (g/sec) useful for debugging
 float measured_flow;
+
+//! Lock used to keep the duty cycle for the pump at 70 percent until startup has been reached
+uint8_t pump_lock;
+
+//! Value to keep track of how many iterations the pump has been running
+uint8_t pump_count;
+
+//! Array saving the measured flow rates at each iteration
+float flow_save[40];
+
+//! Array saving the measured pulse counts at each iteration
+uint8_t pulse_count_array[40];
+uint16_t output_count;
+uint8_t hand_pwm;
+uint8_t pwm_count;
+
 
 
 

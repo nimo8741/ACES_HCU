@@ -12,9 +12,13 @@ int main(void)
     Initial();
     while (1) 
     {
+		output_count++;
 		tempConversion();
 		if (!ECU_present && (opMode == 1))    // Will only go in here if the ECU is not present and in pumping mode
 			flowMeter();
+		pwm_count++;
+		if (pwm_count > hand_pwm)
+			pwm_count = 0;
     }
 }
 
